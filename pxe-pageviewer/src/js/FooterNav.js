@@ -1,7 +1,6 @@
 import React from 'react';
 import SvgIcon from 'material-ui/SvgIcon';
 import ReactDOM from 'react-dom';
-
 import '../scss/pageviewer.scss';
 
 class FooterNav extends React.Component {
@@ -12,12 +11,12 @@ class FooterNav extends React.Component {
     };
   }
 
-  componentWillUnmount () {
+  componentWillUnmount = () => {
     this.navInterval && clearInterval(this.navInterval);
     this.navInterval = false;
   }
 
-  componentDidMount() {
+  componentDidMount = () => {
     const that = this;
     let didScroll = false;
     let lastScrollPosition = 0;

@@ -7,15 +7,15 @@ class Annotation extends Component {
     this.annotationEvent = this.annotationEvent.bind(this);
   }
 
-  componentDidMount() { 
+  componentDidMount = () => { 
     this.annotationEventHandler();
   }
 
-  componentWillReceiveProps(nextProps) {    
+  componentWillReceiveProps = (nextProps) => {    
     $('#' + nextProps.contentId).annotator().annotator('loadAnnotations', nextProps.annotationData);
   }  
 
-  annotationEventHandler() {
+  annotationEventHandler = () => {
     const annotation = $('#' + this.props.contentId).annotator();
     annotation.data('annotator').on('beforeAnnotationCreated', this.annotationEvent.bind(null, 'beforeAnnotationCreated'));
     annotation.data('annotator').on('annotationCreated', this.annotationEvent.bind(null, 'annotationCreated'));
@@ -29,11 +29,11 @@ class Annotation extends Component {
     annotation.data('annotator').on('annotationViewerTextField', this.annotationEvent.bind(null, 'annotationViewerTextField'));
   }
 
-  annotationEvent(eventType, data, viewer) {
+  annotationEvent = (eventType, data, viewer) => {
     data.playOrder=this.props.currentPageDetails.playOrder;
     data.href=this.props.currentPageDetails.href;
     this.props.annotationEventHandler(eventType, data, viewer);
-  }
+  } 
   
   render() {
     return (<div></div>);

@@ -10,8 +10,8 @@ import { booksdata, pageDetails, tocData } from '../../../../const/Mocdata';
 
 import './Book.scss';
 
-import { PageViewer } from '@pearson-incubator/pxe-pageviewer'
-import { Annotation } from '@pearson-incubator/pxe-annotation'
+import { PageViewer } from 'pxe-pageviewer'
+import { Annotation } from 'pxe-annotation'
 import { getAnnCallService, postAnnCallService, deleteAnnCallService } from '../../../actions/annotation'
 
 export class Book extends Component {
@@ -23,6 +23,7 @@ export class Book extends Component {
       currentPageDetails: "",
       pageDetails:pageDetails
     };
+    //Bind this values to the onPageChange func
     this.onPageChange.bind(this);
     this.nodesToUnMount = [];
     document.body.addEventListener('contentLoaded', this.parseDom);
@@ -105,12 +106,12 @@ export class Book extends Component {
     this.props.removeBookmark(this.props.params.bookId, targetBookmarkId);
   };
 
+  //Pageviewer CallBack Function for onchangepage
   onPageChange = (type,data) => {
     this.setState({
       currentPageDetails :data
     });
     let pageId = data.playOrder;
-    console.log("currentPage url" , pageId);
     this.props.dispatch(getAnnCallService(pageId));    
   }
 
@@ -120,6 +121,7 @@ export class Book extends Component {
     return !(targetBookmark === undefined);
   };
 
+//Pageviewer CallBack Function for gotopage 
   goToPageCallback = (pageId) => {
     let playListData={
       urlsJson:pageDetails.urlsJson,
@@ -161,8 +163,6 @@ export class Book extends Component {
     callbacks.removeBookmarkHandler = this.removeBookmarkHandler;
     callbacks.isCurrentPageBookmarked = this.isCurrentPageBookmarked;
     callbacks.goToPageCallback = this.goToPageCallback;
-    //this.props.book.toc.content = {};
-    //this.props.book.toc.content.list = tocData;
    
     return (
       <div>
