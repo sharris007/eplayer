@@ -10,7 +10,7 @@ module.exports = {
   },
   output: {
     path: './',
-    filename: 'build/[name].annotation.js',
+    filename: 'build/[name].glossaryPopup.js',
     libraryTarget: 'umd'
   },
   contentBase: './demo', // for webpack dev server
