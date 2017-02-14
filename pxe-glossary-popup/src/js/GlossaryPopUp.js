@@ -1,4 +1,4 @@
-import React, {  Component, PropTypes } from 'react';
+import {  Component, PropTypes } from 'react';
 import axios from 'axios';
 import renderHTML from 'react-render-html';
 import Popup from 'react-popup';
@@ -34,34 +34,31 @@ class GlossaryPopUp extends Component {
     const glossaryNode =  document.getElementById(event.target.hash.replace('#', '')); 
     const popOverTitle = glossaryNode.getElementsByTagName('dfn')[0].textContent;
     const popOverDescription = glossaryNode.nextElementSibling.getElementsByTagName('p')[0].textContent;
-    //console.log("event :- ", event);
     Popup.registerPlugin('popover', function (target) {
-    this.create({
+      this.create({
         title: popOverTitle,
         content: popOverDescription,
         className: 'popover',
         noOverlay: true,
         position: function (box) {
-            let bodyRect      = document.body.getBoundingClientRect();
-            let btnRect       = target.getBoundingClientRect();
-            let btnOffsetTop  = btnRect.top - bodyRect.top;
-            let btnOffsetLeft = btnRect.left - bodyRect.left;
-            let scroll        = document.documentElement.scrollTop || document.body.scrollTop;
-            box.style.top = (event.clientY + 10) + 'px';
-            box.style.left = event.clientX + 'px';
-            /*box.style.top  = (btnOffsetTop - box.offsetHeight - 10) - scroll + 'px';
-            box.style.left = (btnOffsetLeft + (target.offsetWidth / 2) - (box.offsetWidth / 2)) + 'px';*/
-            box.style.margin = 0;
-            box.style.opacity = 1;
-            console.debug("document.body.getBoundingClientRect()",  document.body.getBoundingClientRect());
-            console.debug("target.getBoundingClientRect()",  target.getBoundingClientRect())
+          /*const bodyRect      = document.body.getBoundingClientRect();
+          const btnRect       = target.getBoundingClientRect();
+          const btnOffsetTop  = btnRect.top - bodyRect.top;
+          const btnOffsetLeft = btnRect.left - bodyRect.left;
+          const scroll        = document.documentElement.scrollTop || document.body.scrollTop;*/
+          box.style.top = (event.clientY + 10) + 'px';
+          box.style.left = event.clientX + 'px';
+          /*box.style.top  = (btnOffsetTop - box.offsetHeight - 10) - scroll + 'px';
+          box.style.left = (btnOffsetLeft + (target.offsetWidth / 2) - (box.offsetWidth / 2)) + 'px';*/
+          box.style.margin = 0;
+          box.style.opacity = 1;
+          console.debug('document.body.getBoundingClientRect()',  document.body.getBoundingClientRect());
+          console.debug('target.getBoundingClientRect()',  target.getBoundingClientRect())
             //console.log("box.style.top :- ", box.style.top, "box.style.left :- ", box.style.left)
         }
-    });
-  });
-
-    
-  Popup.plugins.popover(event.target);
+      });
+    }); 
+    Popup.plugins.popover(event.target);
     //console.log('event.target :- ', event.target,  'popOverTitle :- ', popOverTitle, 'popOverDescription :- ', popOverDescription)
   }
   
@@ -78,6 +75,8 @@ class GlossaryPopUp extends Component {
 }
 
 GlossaryPopUp.PropTypes = {
+  glossaryurl: PropTypes.string.isRequired,
+  glossaryResponse: PropTypes.string.isRequired
 }
 
 export default GlossaryPopUp;
