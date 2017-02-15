@@ -125,7 +125,44 @@ class PageViewer extends React.Component {
     base.href = this.props.src.baseUrl + this.getRequestedPageUrl(this.state.currentPage)[0].href;
     document.getElementsByTagName('head')[0].appendChild(base);
   }
-  componentDidUpdate() {
+
+  //Common function for disable rightclick
+  disableCOntextMenu = (getElem) => { 
+    getElem.oncontextmenu = () => {
+      return false;
+    }
+  }
+
+  componentDidUpdate = () => {
+    //Disable contextmenu based on copyCharlimt and copyImage Props
+    if ((this.props.src.copyCharLimit < 0 || this.props.src.copyCharLimit > 0) && (!this.props.src.copyImages) ) {
+      const images = this.refs['book-container'].getElementsByTagName('img');
+      for (let i = 0; i < images.length; i++) {
+        this.disableCOntextMenu(images[i]);
+      }
+    }
+
+    else if (this.props.src.copyCharLimit === 0 && (!this.props.src.copyImages) ) {  
+      this.disableCOntextMenu(this.refs['book-container']);
+    }
+
+  //Check the Text selection onCopy event
+    this.refs['book-container'].oncopy = () => {
+      if (this.props.src.copyCharLimit > 0) {
+        let selection;
+        selection = window.getSelection();
+        const copytext = selection.toString().substring(0, this.props.src.copyCharLimit) ;
+        const newdiv = this.refs.drm_block;
+        newdiv.innerHTML = copytext.substring(0, this.props.src.copyCharLimit);
+        selection.selectAllChildren(newdiv);
+        window.setTimeout(function () {
+          newdiv.innerHTML = ' ';
+        }, 0);
+      }
+      else if (this.props.src.copyCharLimit === 0) {
+        return false;
+      }
+    };
     this.enablePageNo();
   };
   componentDidMount() {
@@ -135,8 +172,9 @@ class PageViewer extends React.Component {
   render() {
     return (
       <div id="book-render-component" tabIndex="0"  onKeyUp={this.arrowNavigation}>
-        <div className="book-container">{renderHTML(this.state.renderSrc)}</div>
+        <div className="book-container" ref="book-container">{renderHTML(this.state.renderSrc)}</div>
         <FooterNav data={this.state} onClickNextCallBack={this.goToNext} onClickPrevCallBack={this.goToPrev}/>
+        <div ref="drm_block"></div>
       </div>
     );
   };
