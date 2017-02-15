@@ -56,7 +56,7 @@
       }
     },
     "start": {
-      "command": "webpack",
+      "command": "node bin/server",
       "env": {
         "DEBUG": "app:*"
       }
