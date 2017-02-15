@@ -127,7 +127,7 @@ class PageViewer extends React.Component {
   }
 
   //Common function for disable rightclick
-  disableCOntextMenu = (getElem) => { 
+  disableContextMenu = (getElem) => { 
     getElem.oncontextmenu = () => {
       return false;
     }
@@ -138,12 +138,12 @@ class PageViewer extends React.Component {
     if ((this.props.src.copyCharLimit < 0 || this.props.src.copyCharLimit > 0) && (!this.props.src.copyImages) ) {
       const images = this.refs['book-container'].getElementsByTagName('img');
       for (let i = 0; i < images.length; i++) {
-        this.disableCOntextMenu(images[i]);
+        this.disableContextMenu(images[i]);
       }
     }
 
     else if (this.props.src.copyCharLimit === 0 && (!this.props.src.copyImages) ) {  
-      this.disableCOntextMenu(this.refs['book-container']);
+      this.disableContextMenu(this.refs['book-container']);
     }
 
   //Check the Text selection onCopy event
@@ -152,11 +152,11 @@ class PageViewer extends React.Component {
         let selection;
         selection = window.getSelection();
         const copytext = selection.toString().substring(0, this.props.src.copyCharLimit) ;
-        const newdiv = this.refs.drm_block;
-        newdiv.innerHTML = copytext.substring(0, this.props.src.copyCharLimit);
-        selection.selectAllChildren(newdiv);
+        const drmdiv = this.refs.drm_block;
+        drmdiv.innerHTML = copytext.substring(0, this.props.src.copyCharLimit);
+        selection.selectAllChildren(drmdiv);
         window.setTimeout(function () {
-          newdiv.innerHTML = ' ';
+          drmdiv.innerHTML = ' ';
         }, 0);
       }
       else if (this.props.src.copyCharLimit === 0) {
