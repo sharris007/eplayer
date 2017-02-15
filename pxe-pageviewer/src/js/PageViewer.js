@@ -142,7 +142,7 @@ class PageViewer extends React.Component {
       }
     }
 
-    else if (this.props.src.copyCharLimit === 0 && (!this.props.src.copyImages) ) {  
+    else if (this.props.src.copyCharLimit === 0 && (!this.props.src.copyImages) ) {
       this.disableContextMenu(this.refs['book-container']);
     }
 
