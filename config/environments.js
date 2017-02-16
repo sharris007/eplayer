@@ -22,7 +22,7 @@ module.exports = {
       chunkModules : true,
       colors       : true
     }
-  })
+  }),
 
   // ======================================================
   // Overrides when NODE_ENV === 'production'
