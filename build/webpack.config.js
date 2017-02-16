@@ -142,7 +142,7 @@ webpackConfig.module.loaders.push({
   ]
 });
 webpackConfig.module.loaders.push({
-  test: /\.(css|scss)$/,
+  test: /\.css$/,
   exclude: null,
   loaders: [
     'style',
