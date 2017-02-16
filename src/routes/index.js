@@ -7,9 +7,9 @@ import bookRoute from './Book';
     PlainRoute objects to build route definitions.   */
 
 export const createRoutes = store => ({
-  path: '/',
+  path: '/eplayer/dist',
   component: CoreLayout,
-  indexRoute: { onEnter: (nextState, replace) => replace('/bookshelf') },
+  indexRoute: { onEnter: (nextState, replace) => replace('/eplayer/dist/bookshelf') },
   childRoutes: [
     bookshelfRoute(store),
     bookRoute(store)
