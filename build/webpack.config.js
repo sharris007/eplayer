@@ -137,17 +137,17 @@ webpackConfig.module.loaders.push({
   loaders: [
     'style',
     BASE_CSS_LOADER,
-    'postcss?sourceMap',
+    'postcss',
     'sass?sourceMap'
   ]
 });
 webpackConfig.module.loaders.push({
-  test: /\.css$/,
+  test: /\.scss$/,
   exclude: null,
   loaders: [
     'style',
     BASE_CSS_LOADER,
-    'postcss?sourceMap'
+    'postcss'
   ]
 });
 
