@@ -132,12 +132,12 @@ webpackConfig.module.loaders = [{
 const BASE_CSS_LOADER = 'css?sourceMap&-minimize';
 
 webpackConfig.module.loaders.push({
-  test: /\.(css|scss)$/,
+  test: /\.scss$/,
   exclude: null,
   loaders: [
     'style',
     BASE_CSS_LOADER,
-    'postcss',
+    'postcss?sourceMap',
     'sass?sourceMap'
   ]
 });
@@ -147,7 +147,7 @@ webpackConfig.module.loaders.push({
   loaders: [
     'style',
     BASE_CSS_LOADER,
-    'postcss'
+    'postcss?sourceMap'
   ]
 });
 
