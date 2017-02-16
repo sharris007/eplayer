@@ -12,7 +12,7 @@ module.exports = {
   //   compiler_public_path : `http://${config.server_host}:${config.server_port}/`
   // }),
 
-   development : (config) => ({
+  development : (config) => ({
     compiler_public_path     : '/',
     compiler_fail_on_warning : false,
     compiler_hash_type       : 'chunkhash',
