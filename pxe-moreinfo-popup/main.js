@@ -20,7 +20,7 @@ export default class MoreInfoPopUpComponent extends Component {
     		  <BookViewer/>
         </div>
        
-        <MoreInfoPopUp  bookDiv = "bookDiv"/> 
+        <MoreInfoPopUp  bookDiv = "bookDiv" moreInfoUrl = "https://content.openclass.com/eps/pearson-reader/api/item/0c0c9911-1724-41d7-8d05-f1be29193d3c/1/file/qatesting_changing_planet_v2_sjg/changing_planet/OPS/s9ml/glossary.xhtml"/> 
  
         </div>,
         document.getElementById(config.contentId)
