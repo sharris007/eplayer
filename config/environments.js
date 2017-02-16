@@ -21,9 +21,9 @@ module.exports = {
     compiler_hash_type       : 'chunkhash',
     compiler_devtool         : null,
     compiler_stats           : {
-      chunks       : false,
-      chunkModules : false,
-      colors       : false
+      chunks       : true,
+      chunkModules : true,
+      colors       : true
     }
   })
 }
