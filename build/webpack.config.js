@@ -169,7 +169,7 @@ webpackConfig.postcss = [
     mergeIdents: false,
     reduceIdents: false,
     safe: true,
-    sourcemap: false
+    sourcemap: true
   })
 ];
 
