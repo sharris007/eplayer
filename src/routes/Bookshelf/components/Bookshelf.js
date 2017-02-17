@@ -15,7 +15,7 @@ export default class BookshelfPage extends React.Component {
   }
 
   handleBookClick = (bookId) => {
-    browserHistory.push(`/book/${bookId}`);
+    browserHistory.push(`/eplayer/dist/book/${bookId}`);
   }
 
   render() {
