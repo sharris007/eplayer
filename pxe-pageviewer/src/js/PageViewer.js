@@ -133,21 +133,22 @@ class PageViewer extends React.Component {
   componentDidUpdate = () => {
     //Disable contextmenu based on copyCharlimt and copyImage Props
     if ((this.props.src.copyCharLimit < 0 || this.props.src.copyCharLimit > 0) && (!this.props.src.copyImages)) {
-      const images = this.refs['book-container'].getElementsByTagName('img');
+      const images = this.bookContainerRef.getElementsByTagName('img');
       for (let i = 0; i < images.length; i++) {
         this.disableContextMenu(images[i]);
       }
     } else if (this.props.src.copyCharLimit === 0 && (!this.props.src.copyImages)) {
-      this.disableContextMenu(this.refs['book-container']);
+      this.disableContextMenu(this.bookContainerRef);
     }
 
     //Check the Text selection onCopy event
-    this.refs['book-container'].oncopy = () => {
+    //this.bookContainerRef is used to access the document.getElementById
+    this.bookContainerRef.oncopy = () => {
       if (this.props.src.copyCharLimit > 0) {
         let selection;
         selection = window.getSelection();
         const copytext = selection.toString().substring(0, this.props.src.copyCharLimit);
-        const drmdiv = this.refs.drm_block;
+        const drmdiv = this.drmBlockRef;
         drmdiv.innerHTML = copytext.substring(0, this.props.src.copyCharLimit);
         selection.selectAllChildren(drmdiv);
         window.setTimeout(function() {
@@ -165,10 +166,10 @@ class PageViewer extends React.Component {
 
   render() {
     return ( < div id = "book-render-component"  tabIndex = "0" onKeyUp = {this.arrowNavigation} >
-      < div className = "book-container" ref = "book-container" > {renderHTML(this.state.renderSrc)} < /div> 
+      < div className = "book-container" ref = {(el) => { this.bookContainerRef = el }} > {renderHTML(this.state.renderSrc)} < /div> 
       {this.props.src.enableGoToPage ? < div className = "goto-group" > 
       < TextField hintText = "Page No" value = {this.state.goTo} onChange = {(e) => this.updateGoTo(e)}  onKeyDown = {(e) => this.goToKeyUp(e)}       /><RaisedButton label="Go.." primary={true} onClick={() => this.handlerGoEvent()}/ > < /div>:''} 
-      < FooterNav data = {this.state}  onClickNextCallBack = {this.goToNext} onClickPrevCallBack = {this.goToPrev} /> < div ref = "drm_block" > < /div >< /div >
+      < FooterNav data = {this.state}  onClickNextCallBack = {this.goToNext} onClickPrevCallBack = {this.goToPrev} /> < div ref = {(el) => { this.drmBlockRef = el }} > < /div >< /div >
     );
   };
 };
