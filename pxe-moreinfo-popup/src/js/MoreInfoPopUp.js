@@ -26,16 +26,22 @@ class MoreInfoPopUp extends Component {
         const bookDiv = document.getElementById(this.props.bookDiv);
 
         bookDiv.querySelectorAll('.lc_ec_aside').forEach((item) => {
-          const obj = { className : 'lc_ec_aside'};
+          const obj = {className : 'lc_ec_aside'};
           item.addEventListener('click', this.framePopOver.bind(this, obj));
         });
           
         bookDiv.querySelectorAll('dfn.keyword').forEach((item) => {
-          const obj = { className : 'dfn.keyword'};
+          const obj = {className : 'dfn.keyword'};
           item.addEventListener('click', this.framePopOver.bind(this, obj));
         });
         
-      }).catch((err) =>{
+        bookDiv.querySelectorAll('.noteref_footnote').forEach((item) => {
+          console.log(item)
+          const obj = {className : 'noteref_footnote'};
+          item.addEventListener('click', this.framePopOver.bind(this, obj));
+        });
+
+      }).catch((err) => {
         console.debug(err);
       })
     
@@ -43,10 +49,7 @@ class MoreInfoPopUp extends Component {
 
   framePopOver = (args, event) => {
     event.preventDefault();
-    const docBoundingClientRect = document.body.getBoundingClientRect();
-    const elementBoundingClientRect = event.target.getBoundingClientRect();
-    const elementTopPosition = -(docBoundingClientRect.top) +  elementBoundingClientRect.top + 10;
-    const moreInfoIconDOM  = event.target.parentElement;
+    let moreInfoIconDOM  = event.target.parentElement;
     const bookDivHeight = document.getElementById(this.props.bookDiv).clientHeight + 'px';
     document.getElementsByClassName('mm-popup')[0].style.height = bookDivHeight;
     let popOverTitle = '';
@@ -60,30 +63,30 @@ class MoreInfoPopUp extends Component {
     }
 
     case 'dfn.keyword' : {
-      console.log(moreInfoIconDOM.parent)
       popOverTitle = document.getElementById(moreInfoIconDOM.href.split('#')[1]).nextElementSibling.getElementsByTagName('h4')[0].textContent;
       popOverDescription = document.getElementById(moreInfoIconDOM.href.split('#')[1]).nextElementSibling.getElementsByTagName('p')[0].textContent;
       break;
     }
 
+    case 'noteref_footnote' : {
+      moreInfoIconDOM = moreInfoIconDOM.href ? moreInfoIconDOM : moreInfoIconDOM.children[0];
+      popOverTitle = '';
+      popOverDescription = renderHTML(document.getElementById(moreInfoIconDOM.href.split('#')[1]).getElementsByTagName('p')[0].innerHTML);
+      break;
     }
 
-    
+    }
 
-    Popup.registerPlugin('popover', function (target) {
+    Popup.registerPlugin('popover', function () {
       this.create({
         title: popOverTitle,
         content: popOverDescription,
         noOverlay: true,
         position: function (box) {
-          box.style.top = elementTopPosition + 'px';
+          box.style.top = event.pageY + 'px';
           box.style.left = event.clientX + 'px';
           box.style.margin = 0;
           box.style.opacity = 1;
-
-          console.debug('target.getBoundingClientRect()',  target.getBoundingClientRect())
-          console.debug('event.pageX :- ', event.pageX, 'event.pageY :- ', event.pageY )
-          console.debug('e.pageX - rect.left :- ', event.pageX - target.getBoundingClientRect().left )
         }
       });
     }); 
