@@ -1,6 +1,6 @@
 {
   "name": "pxe-pageviewer",
-  "version": "1.0.6",
+  "version": "1.0.8",
   "description": "",
   "main": "./main.js",
   "scripts": {
@@ -20,7 +20,7 @@
   "repository": {},
   "dependencies": {
     "intl": "^1.2.5",
-    "react-highlighted-text": "^1.0.2",
+    "react-intl": "^2.2.3",
     "react-render-html": "^0.1.6"
   },
   "devDependencies": {

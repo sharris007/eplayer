@@ -104,6 +104,11 @@ webpackConfig.module.loaders = [{
   include: path.join(__dirname, '../node_modules/pxe-pageviewer'),
   loader: 'babel',
   query: config.compiler_babel
+},{
+  test: /\.(js|jsx)$/,
+  include: path.join(__dirname, '../node_modules/pxe-glossary-popup'),
+  loader: 'babel',
+  query: config.compiler_babel
 }, {
   test: /\.(js|jsx)$/,
   include: path.join(__dirname, '../node_modules/pxe-annotation'),
@@ -137,7 +142,6 @@ webpackConfig.module.loaders.push({
   loaders: [
     'style',
     BASE_CSS_LOADER,
-    'postcss',
     'sass?sourceMap'
   ]
 });
