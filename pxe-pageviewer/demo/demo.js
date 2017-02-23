@@ -7,8 +7,8 @@ function init() {
   new PageViewerComponent({
     renderId:'pxeViewer',
     locale: 'en-us',
-    copyImages: false,
-    copyCharLimit: 0,
+    copyImages: true,
+    copyCharLimit: 10,
     crossRefSettings:'lightbox',
     enablePrintOption: false,
     showPageNo:true,
@@ -36,6 +36,7 @@ function init() {
                     'playOrder': 5, 'title': '1.4 Evaluating Scientific Information' }],
     currentPageURL:{'href': 'OPS/s9ml/chapter01/filep700049577700000000000000000067f.xhtml', 'playOrder': 1, 'title': 'Chapter 1: Can Science Cure the Common Cold?'}
   });
+  $('body').annotator();
 }
 function onPageChange(type, data) {
   console.log(type, data);
