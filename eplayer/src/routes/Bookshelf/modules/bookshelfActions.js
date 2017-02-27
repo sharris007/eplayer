@@ -5,7 +5,7 @@ const bookshelfActions = {
   fetch(urn) {
     return {
       type: 'BOOKS',
-      payload: clients.scapi.get(`content/${urn}`)
+      payload: clients.scapi.get('')
     };
   }
 

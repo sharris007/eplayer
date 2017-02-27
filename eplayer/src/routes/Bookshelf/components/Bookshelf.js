@@ -20,14 +20,15 @@ export default class BookshelfPage extends React.Component {
 
   render() {
     const { books, fetching, fetched, error } = this.props.bookshelf;
+    console.log("Book", books);
     const booksdata = [];
     if (fetched && !isEmpty(books)) {
-      books.data.bookshelf.forEach((bookData) => {
+      books.data.entries.forEach((bookData) => {
         const bookRef = bookData;
         const book = {
-          id: bookRef.manifestId || '',
-          author: bookRef.author || '',
-          image: bookRef.thumbnail ? bookRef.thumbnail.src : '',
+          id: bookRef.bookId || '',
+          author: bookRef.creator || '',
+          image: bookRef.thumbnailImageUrl,
           title: bookRef.title || '',
           description: bookRef.description || '',
           tocId: ''
