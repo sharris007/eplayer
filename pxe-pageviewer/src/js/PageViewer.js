@@ -7,12 +7,13 @@ import renderHTML from 'react-render-html';
 
 import FooterNav from './FooterNav';
 import crossRef from './CrossRef';
+import replaceAllRelByAbs from './ConstructUrls';
 
 class PageViewer extends React.Component {
   
   constructor(props) {
     super(props);
-    console.log("PROPS", props);
+    this.startTimer=new Date();
   };
 
   init = (props) => {
@@ -22,7 +23,7 @@ class PageViewer extends React.Component {
       return parseInt(el.playOrder)===parseInt(this.props.src.currentPageURL.playOrder); 
     }): '';
     this.state = {
-      renderSrc: 'the',
+      renderSrc: '',
       currentPage: initPageIndex ? initPageIndex : 0,
       goTo: '',
       pageNoDetails: '',
@@ -51,12 +52,8 @@ class PageViewer extends React.Component {
     const thisRef = this;
     const playListURL = thisRef.props.src.playListURL;
     currentPage = currentPage + (isInitOrGo ? 0 : thisRef.state.currentPage);
-    console.log("goToPage" , goToPage);
-    console.log("playListURL" , playListURL);
-    console.log("playListURL.currentPage" , playListURL[currentPage]);
     thisRef.props.sendPageDetails(goToPage, playListURL[currentPage]);
     const url = thisRef.props.src.baseUrl + playListURL[currentPage].href;
-    console.log("URL1", url);
     const request = new Request(url, {
       headers: new Headers({
         'Content-Type': 'text/plain'
@@ -67,8 +64,9 @@ class PageViewer extends React.Component {
     }).then((response) => {
       return response.text();
     }).then((text) => {
+      const currentHref=thisRef.state.currentStatePlayListUrl.href;
       thisRef.setState({
-        renderSrc: text,
+        renderSrc: replaceAllRelByAbs(text, thisRef.props.src.baseUrl+currentHref.substring(0, currentHref.lastIndexOf('/'))),
         currentPage: currentPage,
         isFirstPage: currentPage === 0,
         isLastPage: currentPage >= playListURL.length - 1,
@@ -76,11 +74,11 @@ class PageViewer extends React.Component {
         nextPageTitle: (currentPage === playListURL.length - 1) ? '' : playListURL[currentPage+1].title,
         currentStatePlayListUrl: playListURL[currentPage]
       });
-
+      this.props.onBookLoaded();
       //callback
       scrollWindowTopCallBack();
-    }).catch((err) => {
-      console.log(err);
+    }).catch(() => {//err param
+      //console.log(err);
     });
   }
 
@@ -140,11 +138,37 @@ class PageViewer extends React.Component {
     getElem.oncontextmenu = () => {
       return false;
     };
-  }
+  };
  
+  scrollToFragment =(eleID) => {
+    const ele=document.getElementById(eleID);
+    if (ele) {
+      setTimeout(function() {
+        window.scrollTo(ele.offsetLeft, ele.offsetTop);
+      }, 0);
+      // window.scrollTo(ele.offsetLeft, ele.offsetTop);
+    }
+  };
+
+  loadMultimediaNscrollToFragment =() => {
+    let i=0;
+    const imagesInPage=document.getElementsByTagName('img');
+    const images=[...imagesInPage];
+    images.map(ele=>{
+      const img = new Image();
+      img.onload =  () => {
+        i++;
+        if (i === images.length) {
+          this.scrollToFragment(this.state.currentStatePlayListUrl.href.split('#')[1]);
+        }
+      };
+      img.src = ele.src;
+    });
+  };
+
   componentWillMount = () => {
     this.init(this.props);
-    this.createHtmlBaseTag();//inserts base tag with baseUrl as a reference to relative paths
+    //this.createHtmlBaseTag();// inserts base tag with baseUrl as a reference to relative paths
   };
 
   componentWillReceiveProps(newProps) {
@@ -153,41 +177,7 @@ class PageViewer extends React.Component {
     }
   };
 
-  copyChar = (e) => {
-    if( e.ctrlKey && e.keyCode===67 ){
-      let selection;
-        selection = window.getSelection();
-      console.log($('.annotator-hl-temporary').text());
-      //this.props.src.copyCharLimit
-      const copytext = $('.annotator-hl-temporary').text().substring(0, 14);
-      const drmdiv = this.drmBlockRef;
-      console.log("copytext", copytext);
-      drmdiv.innerHTML = copytext;
-      selection.selectAllChildren(drmdiv);
-      window.setTimeout(function() {
-        drmdiv.innerHTML = ' ';
-      }, 0);
-    }
-  }
-
-  componentDidMount = () => {
-    if(this.props.src.highlightWord){
-      //console.log("***",'<span>'+this.props.src.highlightWord+'</span>');
-      const x = this.props.src.highlightWord;
-      console.log(x);
-      console.log("***",/ + {x} +/g);
-     // document.body.innerHTML = document.body.innerHTML.replace(/the/g, '<span>theeeeee</span>');
-    //  this.innerHTML = document.body.innerHTML.replace(/+{this.props.src.highlightWord}+/g, '<span>'+ {this.props.src.highlightWord}+'</span>');
-    }
-  } 
   componentDidUpdate = () => {
-    if(this.props.src.highlightWord){
-      console.log("x", this.props.src.highlightWord);
-      const replace = this.props.src.highlightWord;
-const re = new RegExp(replace,"g");
-      console.log("reg", this.props.src.highlightWord);
-        document.body.innerHTML = document.body.innerHTML.replace(re, '<span class="react-highlighted-text">'+this.props.src.highlightWord+'</span>');
-  }
     //Disable contextmenu based on copyCharlimt and copyImage Props
     if ((this.props.src.copyCharLimit < 0 || this.props.src.copyCharLimit > 0) && (!this.props.src.copyImages)) {
       const images = this.bookContainerRef.getElementsByTagName('img');
@@ -199,12 +189,7 @@ const re = new RegExp(replace,"g");
     }
 
     //Check the Text selection onCopy event
-  
-  /*  this.bookContainerRef.oncopy = () => {
-            var range = document.body.createTextRange();
-        range.moveToElementText($('.annotator-hl-temporary'));
-        range.select();
-
+    this.bookContainerRef.oncopy = () => {
       if (this.props.src.copyCharLimit > 0) {
         let selection;
         selection = window.getSelection();
@@ -218,10 +203,13 @@ const re = new RegExp(replace,"g");
       } else if (this.props.src.copyCharLimit === 0) {
         return false;
       }
-    }; */
+    };
     //prints page no in the page rendered
     this.enablePageNo();
+    this.loadMultimediaNscrollToFragment();
     crossRef(this);
+    // const difference_ms = new Date()-this.startTimer;
+    // console.log('time took in seconds',  Math.floor(difference_ms % 60));
   };
 
   getGoToElement = () =>{
@@ -234,15 +222,13 @@ const re = new RegExp(replace,"g");
 
   render() {
     return ( 
-    <div>
       <div id = "book-render-component"  tabIndex = "0" onKeyUp = {this.arrowNavigation} >
         <div id={this.props.src.contentId}>
-          <div className = "book-container" ref = {(el) => { this.bookContainerRef = el; }} tabIndex="1" onKeyDown = {(e) => this.copyChar(e)}> {renderHTML(this.state.renderSrc)} </div>
+          <div className = "book-container" ref = {(el) => { this.bookContainerRef = el; }} > {renderHTML(this.state.renderSrc)} </div>
         </div>
         {this.props.src.enableGoToPage ?this.getGoToElement():''} 
         <FooterNav data = {this.state}  onClickNextCallBack = {this.goToNext} onClickPrevCallBack = {this.goToPrev}/> 
         <div ref = {(el) => { this.drmBlockRef = el; }}> </div >
-      </div>
       </div>
     );
   };

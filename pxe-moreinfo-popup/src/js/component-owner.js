@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import { injectIntl } from 'react-intl';
 
-import GlossaryPopUp from './GlossaryPopUp';
+import MoreInfoPopUp from './MoreInfoPopUp';
 import BookViewer from '../../demo/BookViewer';
 
 
@@ -23,10 +23,10 @@ class ComponentOwner extends React.Component {
     return (
         <div> 
         <div id = "bookDiv">
-          <BookViewer bookUrl = {this.props.bookUrl} onBookLoad = {this.onBookLoad.bind(this)}/>
+          <BookViewer bookUrl = {this.props.bookUrl} onBookLoad = {() => this.onBookLoad()}/>
         </div>  
         <div>     
-          {this.state.isBookLoaded ? <GlossaryPopUp bookDiv = "bookDiv"/> : ''}
+          {this.state.isBookLoaded ? <MoreInfoPopUp bookDiv = "bookDiv"/> : ''}
         </div>  
         </div>
     )
@@ -34,8 +34,7 @@ class ComponentOwner extends React.Component {
 }
 
 ComponentOwner.PropTypes = {
-  bookUrl: PropTypes.string.isRequired,
-  glossaryurl: PropTypes.string.isRequired
+  bookUrl: PropTypes.string.isRequired
 }
 
 export default injectIntl(ComponentOwner); // Inject this.props.intl into the component context
