@@ -12,6 +12,7 @@ class PageViewer extends React.Component {
   
   constructor(props) {
     super(props);
+    console.log("PROPS", props);
   };
 
   init = (props) => {
@@ -21,7 +22,7 @@ class PageViewer extends React.Component {
       return parseInt(el.playOrder)===parseInt(this.props.src.currentPageURL.playOrder); 
     }): '';
     this.state = {
-      renderSrc: '',
+      renderSrc: 'the',
       currentPage: initPageIndex ? initPageIndex : 0,
       goTo: '',
       pageNoDetails: '',
@@ -50,8 +51,12 @@ class PageViewer extends React.Component {
     const thisRef = this;
     const playListURL = thisRef.props.src.playListURL;
     currentPage = currentPage + (isInitOrGo ? 0 : thisRef.state.currentPage);
+    console.log("goToPage" , goToPage);
+    console.log("playListURL" , playListURL);
+    console.log("playListURL.currentPage" , playListURL[currentPage]);
     thisRef.props.sendPageDetails(goToPage, playListURL[currentPage]);
     const url = thisRef.props.src.baseUrl + playListURL[currentPage].href;
+    console.log("URL1", url);
     const request = new Request(url, {
       headers: new Headers({
         'Content-Type': 'text/plain'
@@ -71,6 +76,7 @@ class PageViewer extends React.Component {
         nextPageTitle: (currentPage === playListURL.length - 1) ? '' : playListURL[currentPage+1].title,
         currentStatePlayListUrl: playListURL[currentPage]
       });
+
       //callback
       scrollWindowTopCallBack();
     }).catch((err) => {
@@ -147,7 +153,41 @@ class PageViewer extends React.Component {
     }
   };
 
+  copyChar = (e) => {
+    if( e.ctrlKey && e.keyCode===67 ){
+      let selection;
+        selection = window.getSelection();
+      console.log($('.annotator-hl-temporary').text());
+      //this.props.src.copyCharLimit
+      const copytext = $('.annotator-hl-temporary').text().substring(0, 14);
+      const drmdiv = this.drmBlockRef;
+      console.log("copytext", copytext);
+      drmdiv.innerHTML = copytext;
+      selection.selectAllChildren(drmdiv);
+      window.setTimeout(function() {
+        drmdiv.innerHTML = ' ';
+      }, 0);
+    }
+  }
+
+  componentDidMount = () => {
+    if(this.props.src.highlightWord){
+      //console.log("***",'<span>'+this.props.src.highlightWord+'</span>');
+      const x = this.props.src.highlightWord;
+      console.log(x);
+      console.log("***",/ + {x} +/g);
+     // document.body.innerHTML = document.body.innerHTML.replace(/the/g, '<span>theeeeee</span>');
+    //  this.innerHTML = document.body.innerHTML.replace(/+{this.props.src.highlightWord}+/g, '<span>'+ {this.props.src.highlightWord}+'</span>');
+    }
+  } 
   componentDidUpdate = () => {
+    if(this.props.src.highlightWord){
+      console.log("x", this.props.src.highlightWord);
+      const replace = this.props.src.highlightWord;
+const re = new RegExp(replace,"g");
+      console.log("reg", this.props.src.highlightWord);
+        document.body.innerHTML = document.body.innerHTML.replace(re, '<span class="react-highlighted-text">'+this.props.src.highlightWord+'</span>');
+  }
     //Disable contextmenu based on copyCharlimt and copyImage Props
     if ((this.props.src.copyCharLimit < 0 || this.props.src.copyCharLimit > 0) && (!this.props.src.copyImages)) {
       const images = this.bookContainerRef.getElementsByTagName('img');
@@ -159,7 +199,12 @@ class PageViewer extends React.Component {
     }
 
     //Check the Text selection onCopy event
-    this.bookContainerRef.oncopy = () => {
+  
+  /*  this.bookContainerRef.oncopy = () => {
+            var range = document.body.createTextRange();
+        range.moveToElementText($('.annotator-hl-temporary'));
+        range.select();
+
       if (this.props.src.copyCharLimit > 0) {
         let selection;
         selection = window.getSelection();
@@ -173,7 +218,7 @@ class PageViewer extends React.Component {
       } else if (this.props.src.copyCharLimit === 0) {
         return false;
       }
-    };
+    }; */
     //prints page no in the page rendered
     this.enablePageNo();
     crossRef(this);
@@ -189,13 +234,15 @@ class PageViewer extends React.Component {
 
   render() {
     return ( 
+    <div>
       <div id = "book-render-component"  tabIndex = "0" onKeyUp = {this.arrowNavigation} >
         <div id={this.props.src.contentId}>
-          <div className = "book-container" ref = {(el) => { this.bookContainerRef = el; }} > {renderHTML(this.state.renderSrc)} </div>
+          <div className = "book-container" ref = {(el) => { this.bookContainerRef = el; }} tabIndex="1" onKeyDown = {(e) => this.copyChar(e)}> {renderHTML(this.state.renderSrc)} </div>
         </div>
         {this.props.src.enableGoToPage ?this.getGoToElement():''} 
         <FooterNav data = {this.state}  onClickNextCallBack = {this.goToNext} onClickPrevCallBack = {this.goToPrev}/> 
         <div ref = {(el) => { this.drmBlockRef = el; }}> </div >
+      </div>
       </div>
     );
   };
