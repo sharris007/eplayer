@@ -357,12 +357,9 @@ export function fetchBookDetails(bookId) {
     return clients.etext.get('/books/'+bookId+'/details?platformId=&profile=yes&backlinking=yes&includeEndpoints=true&moduleIds=all&includeRoles=true&userId=xlet2edu&courseInfo=true&includeBookData=true')
     .then((response) => {
       const tocData = response.data;
-      console.log("tocData", tocData);
-      return clients.etext.get('custom/playlist/contextId/'+bookId+'?provider='+tocData.bookDetail.metadata.toc[0])
-      //return clients.etext.get('https://paperapi-qa.stg-openclass.com/nextext-api/api/nextext/custom/toc/contextId/1TKA10OC8T7?provider=https%3A%2F%2Fcontent.stg-openclass.com%2Feps%2Fpearson-reader%2Fapi%2Fitem%2F542d7ded-e63b-4bc5-9e82-62ccc7c6039c%2F1%2Ffile%2FLutgensAtm13-071415-MJ-DW%2FOPS%2Ftoc.xhtml')
+      return clients.etext.get('/custom/playlist/contextId/'+bookId+'?provider='+tocData.bookDetail.metadata.toc[0])
         .then((pageData) => {
           const playlistData = pageData.data;
-          console.log("playlistData ------", playlistData)
           dispatch({ type: RECEIVE_PLAYLIST, playlistData});
         });
     });

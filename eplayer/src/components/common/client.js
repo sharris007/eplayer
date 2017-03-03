@@ -21,6 +21,12 @@ export const clients = {
     headers: {
     }
   }),
+  etext: axios.create({
+    baseURL: 'https://paperapi-qa.stg-openclass.com/nextext-api/api/nextext',
+    timeout: 5000,
+    headers: {
+    }
+  }),
   panera: contentful.createClient({
     space: '415o8j07ef07',
     accessToken: 'f80e9320e96f0eabbb2aac94a71755160a538cb989bdf6a8701cf2c229ce20e6'
