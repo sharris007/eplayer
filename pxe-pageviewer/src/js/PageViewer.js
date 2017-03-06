@@ -7,6 +7,7 @@ import renderHTML from 'react-render-html';
 
 import FooterNav from './FooterNav';
 import crossRef from './CrossRef';
+import highlightText from './HighlightText';
 import replaceAllRelByAbs from './ConstructUrls';
 
 class PageViewer extends React.Component {
@@ -209,6 +210,8 @@ class PageViewer extends React.Component {
     this.enablePageNo();
     this.loadMultimediaNscrollToFragment();
     crossRef(this);
+    //Highlight Searched Text
+    highlightText(this);
     // const difference_ms = new Date()-this.startTimer;
     // console.log('time took in seconds',  Math.floor(difference_ms % 60));
   };

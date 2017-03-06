@@ -21,6 +21,7 @@ function init() {
     enableAnnotation: true,
     annotationShareable: true,
     clearSearchHighlights: false,
+    highlightText: '',
     elementId: 'demo',
     sendPageDetails:onPageChange,
     pdfSearch:false,
