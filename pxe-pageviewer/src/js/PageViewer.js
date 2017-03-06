@@ -7,7 +7,6 @@ import renderHTML from 'react-render-html';
 
 import FooterNav from './FooterNav';
 import crossRef from './CrossRef';
-import HighlightText from './HighlightText';
 import replaceAllRelByAbs from './ConstructUrls';
 
 class PageViewer extends React.Component {
@@ -49,8 +48,8 @@ class PageViewer extends React.Component {
     });
   };
 
-  getResponse = (currentPage, isInitOrGo, goToPage, scrollWindowTopCallBack) => {
-   // this.props.onBookLoaded(false);
+  getResponse = (currentPage, isInitOrGo, goToPage, scrollWindowTopCallBack, pageFragmentID) => {
+    this.props.onBookLoaded(false);
     const thisRef = this;
     const playListURL = thisRef.props.src.playListURL;
     currentPage = currentPage + (isInitOrGo ? 0 : thisRef.state.currentPage);
@@ -66,6 +65,7 @@ class PageViewer extends React.Component {
     }).then((response) => {
       return response.text();
     }).then((text) => {
+      text  = text.replace(/ epub:type\S*\B/g, '').replace('<body', '<body>');
       const currentHref=thisRef.state.currentStatePlayListUrl.href;
       thisRef.setState({
         renderSrc: replaceAllRelByAbs(text, thisRef.props.src.baseUrl+currentHref.substring(0, currentHref.lastIndexOf('/'))),
@@ -76,9 +76,13 @@ class PageViewer extends React.Component {
         nextPageTitle: (currentPage === playListURL.length - 1) ? '' : playListURL[currentPage+1].title,
         currentStatePlayListUrl: playListURL[currentPage]
       });
-      //this.props.onBookLoaded(true);
+      this.props.onBookLoaded(true);
       //callback
-      scrollWindowTopCallBack();
+      if (pageFragmentID) {
+        this.scrollToFragment(pageFragmentID);
+      }else  {
+        scrollWindowTopCallBack();
+      }
     }).catch(() => {//err param
       //console.log(err);
     });
@@ -130,11 +134,6 @@ class PageViewer extends React.Component {
     }
   };
 
-  createHtmlBaseTag = () => {
-    const base = document.createElement('base');
-    base.href = this.props.src.baseUrl + this.state.currentStatePlayListUrl.href;
-    document.getElementsByTagName('head')[0].appendChild(base);
-  };
   //Common function for disable rightclick
   disableContextMenu = (getElem) => {
     getElem.oncontextmenu = () => {
@@ -146,7 +145,8 @@ class PageViewer extends React.Component {
     const ele=document.getElementById(eleID);
     if (ele) {
       setTimeout(function() {
-        window.scrollTo(ele.offsetLeft, ele.offsetTop);
+        //window.scrollTo(ele.offsetLeft, ele.offsetTop);
+        ele.scrollIntoView();
       }, 0);
       // window.scrollTo(ele.offsetLeft, ele.offsetTop);
     }
@@ -168,21 +168,8 @@ class PageViewer extends React.Component {
     });
   };
 
-  clearSearchHighlights = (e) => {
-    if (!e.target.closest('.book-container')) {
-      console.log("inside");
-      const span = this.bookContainerRef.getElementsByTagName('span');
-      for (let i = 0; i < span.length; i++) {
-        if ( span[i].className === 'react-highlighted-text') {
-          span[i].className = '';
-        }
-      }
-    }
-  }
-
   componentWillMount = () => {
     this.init(this.props);
-    //this.createHtmlBaseTag();// inserts base tag with baseUrl as a reference to relative paths
   };
 
   componentWillReceiveProps(newProps) {
@@ -222,8 +209,6 @@ class PageViewer extends React.Component {
     this.enablePageNo();
     this.loadMultimediaNscrollToFragment();
     crossRef(this);
-    //Highlight Searched Text
-    HighlightText(this);
     // const difference_ms = new Date()-this.startTimer;
     // console.log('time took in seconds',  Math.floor(difference_ms % 60));
   };
@@ -239,11 +224,9 @@ class PageViewer extends React.Component {
   render() {
     return ( 
       <div id = "book-render-component"  tabIndex = "0" onKeyUp = {this.arrowNavigation} >
-        <div> cnaskjcnaskn </div>
         <div id={this.props.src.contentId}>
-          <div id = "book-container" myid = "haiiiiiiiii" className = "book-container" ref = {(el) => { this.bookContainerRef = el; }} > {renderHTML(this.state.renderSrc)} </div>
+          <div id = "book-container" className = "book-container" ref = {(el) => { this.bookContainerRef = el; }} > {renderHTML(this.state.renderSrc)} </div>
         </div>
-
         {this.props.src.enableGoToPage ?this.getGoToElement():''} 
         <FooterNav data = {this.state}  onClickNextCallBack = {this.goToNext} onClickPrevCallBack = {this.goToPrev}/> 
         <div ref = {(el) => { this.drmBlockRef = el; }}> </div >
