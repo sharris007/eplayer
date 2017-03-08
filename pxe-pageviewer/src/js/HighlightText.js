@@ -7,6 +7,6 @@ class HighlightText {
       return htmlText;
     }
   }
-}
+};
 
 export default HighlightText;	
