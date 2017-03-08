@@ -7,7 +7,7 @@ import renderHTML from 'react-render-html';
 
 import FooterNav from './FooterNav';
 import crossRef from './CrossRef';
-import highlightText from './HighlightText';
+import HighlightText from './HighlightText';
 import replaceAllRelByAbs from './ConstructUrls';
 
 class PageViewer extends React.Component {
@@ -66,6 +66,9 @@ class PageViewer extends React.Component {
     }).then((response) => {
       return response.text();
     }).then((text) => {
+      if (this.props.src.highlightText) {
+        text=HighlightText.highlightText(this, text);
+      }
       text  = text.replace(/ epub:type\S*\B/g, '').replace('<body', '<body>');
       const currentHref=thisRef.state.currentStatePlayListUrl.href;
       thisRef.setState({
@@ -91,6 +94,7 @@ class PageViewer extends React.Component {
 
   goToNext = () => {
     this.getResponse(1, false, 'Next', this.scrollWindowTop);
+
   };
 
   goToPrev = () => {
@@ -171,8 +175,8 @@ class PageViewer extends React.Component {
 
   componentWillMount = () => {
     this.init(this.props);
-  };
 
+  };
   componentWillReceiveProps(newProps) {
     if (parseInt(this.props.src.currentPageURL.playOrder) !== parseInt(newProps.src.currentPageURL.playOrder)) {
       this.getResponse(parseInt(newProps.src.currentPageURL.playOrder), true, 'propChanged', this.scrollWindowTop);
@@ -206,16 +210,30 @@ class PageViewer extends React.Component {
         return false;
       }
     };
+    //Highlight Searched Text
+    
+    
     //prints page no in the page rendered
     this.enablePageNo();
     this.loadMultimediaNscrollToFragment();
     crossRef(this);
-    //Highlight Searched Text
-    highlightText(this);
+    document.addEventListener('click', this.clearSearchHighlights);
     // const difference_ms = new Date()-this.startTimer;
     // console.log('time took in seconds',  Math.floor(difference_ms % 60));
   };
 
+  clearSearchHighlights = (e) => {
+    if (!e.target.closest('.book-container')) {
+      if (this.props.src.clearSearchHighlights) {
+        const span = this.bookContainerRef.getElementsByTagName('span');
+        for (let i = 0; i < span.length; i++) {
+          if ( span[i].className === 'react-highlighted-text') {
+            span[i].className = '';
+          }
+        }
+      }
+    }
+  }
   getGoToElement = () =>{
     return (
       <div className = "goto-group" >
@@ -228,7 +246,7 @@ class PageViewer extends React.Component {
     return ( 
       <div id = "book-render-component"  tabIndex = "0" onKeyUp = {this.arrowNavigation} >
         <div id={this.props.src.contentId}>
-          <div id = "book-container" className = "book-container" ref = {(el) => { this.bookContainerRef = el; }} > {renderHTML(this.state.renderSrc)} </div>
+          <div id = "book-container"  className = "book-container" ref = {(el) => { this.bookContainerRef = el; }} > {renderHTML(this.state.renderSrc)} </div>
         </div>
         {this.props.src.enableGoToPage ?this.getGoToElement():''} 
         <FooterNav data = {this.state}  onClickNextCallBack = {this.goToNext} onClickPrevCallBack = {this.goToPrev}/> 
