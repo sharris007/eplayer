@@ -11,7 +11,7 @@ import ETbookRoute from './ETBook';
 export const createRoutes = store => ({
   path: '/eplayer',
   component: CoreLayout,
-  indexRoute: { onEnter: (nextState, replace) => replace('/eplayer/bookshelf') },
+  indexRoute: { onEnter: (nextState, replace) => replace('/eplayer/#/bookshelf') },
   childRoutes: [
     bookshelfRoute(store),
     bookRoute(store)
@@ -19,7 +19,7 @@ export const createRoutes = store => ({
 },{
   path: '/eplayer',
   component: CoreLayout,
-  indexRoute: { onEnter: (nextState, replace) => replace('/eplayer/etbookshelf') },
+  indexRoute: { onEnter: (nextState, replace) => replace('/eplayer/#/etbookshelf') },
   childRoutes: [
     ETbookshelfRoute(store),
     ETbookRoute(store)
