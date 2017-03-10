@@ -10,14 +10,8 @@ export const clients = {
     }
   }),
   scapi: axios.create({
-    baseURL: 'https://paperapi-qa.stg-openclass.com/nextext-api/api/nextext/users/xlet2edu/bookshelf',
-    timeout: 5000,
-    headers: {
-    }
-  }),
-  etext: axios.create({
-    baseURL: 'https://paperapi-qa.stg-openclass.com/nextext-api/api/nextext',
-    timeout: 5000,
+    baseURL: 'https://scapi-dev-use.pearsoncms.net/sc-api/apis',
+    timeout: 20000,
     headers: {
     }
   }),
