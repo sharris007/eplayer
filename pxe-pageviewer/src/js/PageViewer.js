@@ -7,6 +7,7 @@ import renderHTML from 'react-render-html';
 
 import FooterNav from './FooterNav';
 import crossRef from './CrossRef';
+import copyCharLimit from './CopyCharLimit';
 import HighlightText from './HighlightText';
 import replaceAllRelByAbs from './ConstructUrls';
 
@@ -139,13 +140,6 @@ class PageViewer extends React.Component {
     }
   };
 
-  //Common function for disable rightclick
-  disableContextMenu = (getElem) => {
-    getElem.oncontextmenu = () => {
-      return false;
-    };
-  };
- 
   scrollToFragment =(eleID) => {
     const ele=document.getElementById(eleID);
     if (ele) {
@@ -172,18 +166,7 @@ class PageViewer extends React.Component {
       img.src = ele.src;
     });
   };
-  clearSearchHighlights = (e) => {
-    if (!e.target.closest('.book-container')) {
-      if (this.props.src.clearSearchHighlights) {
-        const span = this.bookContainerRef.getElementsByTagName('span');
-        for (let i = 0; i < span.length; i++) {
-          if ( span[i].className === 'react-highlighted-text') {
-            span[i].className = '';
-          }
-        }
-      }
-    }
-  };
+
   componentWillMount = () => {
     this.init(this.props);
 
@@ -194,36 +177,9 @@ class PageViewer extends React.Component {
     }
   };
 
-  componentDidUpdate = () => {
-    //Disable contextmenu based on copyCharlimt and copyImage Props
-    if ((this.props.src.copyCharLimit < 0 || this.props.src.copyCharLimit > 0) && (!this.props.src.copyImages)) {
-      const images = this.bookContainerRef.getElementsByTagName('img');
-      for (let i = 0; i < images.length; i++) {
-        this.disableContextMenu(images[i]);
-      }
-    } else if (this.props.src.copyCharLimit === 0 && (!this.props.src.copyImages)) {
-      this.disableContextMenu(this.bookContainerRef);
-    }
 
-    //Check the Text selection onCopy event
-    this.bookContainerRef.oncopy = () => {
-      if (this.props.src.copyCharLimit > 0) {
-        let selection;
-        selection = window.getSelection();
-        const copytext = selection.toString().substring(0, this.props.src.copyCharLimit);
-        const drmdiv = this.drmBlockRef;
-        drmdiv.innerHTML = copytext.substring(0, this.props.src.copyCharLimit);
-        selection.selectAllChildren(drmdiv);
-        window.setTimeout(function() {
-          drmdiv.innerHTML = ' ';
-        }, 0);
-      } else if (this.props.src.copyCharLimit === 0) {
-        return false;
-      }
-    };
-    //Highlight Searched Text
-    
-    
+  componentDidUpdate = () => {
+    copyCharLimit(this);
     //prints page no in the page rendered
     this.enablePageNo();
     this.loadMultimediaNscrollToFragment();
@@ -254,10 +210,11 @@ class PageViewer extends React.Component {
   };
 
   render() {
+    const zommLevel = this.props.src.pageZoom ? this.props.src.pageZoom + '%' : '100%';
     return ( 
       <div id = "book-render-component"  tabIndex = "0" onKeyUp = {this.arrowNavigation} >
         <div id={this.props.src.contentId}>
-          <div id = "book-container"  className = "book-container" ref = {(el) => { this.bookContainerRef = el; }} > {renderHTML(this.state.renderSrc)} </div>
+          <div id = "book-container"  className = "book-container" ref = {(el) => { this.bookContainerRef = el; }} style={{zoom : zommLevel}}> {renderHTML(this.state.renderSrc)} </div>
         </div>
         {this.props.src.enableGoToPage ?this.getGoToElement():''} 
         <FooterNav data = {this.state}  onClickNextCallBack = {this.goToNext} onClickPrevCallBack = {this.goToPrev}/> 

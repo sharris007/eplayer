@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { PageViewer } from 'pxe-pageviewer';
 import { Annotation } from 'pxe-annotation';
 import { GlossaryPopUp } from 'pxe-glossary-popup';
-import { MoreInfoPopUp } from 'pxe-moreinfo-popup';
+//import { MoreInfoPopUp } from 'pxe-moreinfo-popup';
 // import { Annotation } from 'pxe-annotation';
 // import { Viewer } from '@pearson-incubator/viewer';
 import find from 'lodash/find';

@@ -10,15 +10,15 @@ import pdfbookRoute from './PdfBook';
     PlainRoute objects to build route definitions.   */
 
 export const createRoutes = store => ({
-  path: '/eplayer',
-  component: CoreLayout,
-  indexRoute: { onEnter: (nextState, replace) => replace('/eplayer/bookshelf') },
-  childRoutes: [
-    bookshelfRoute(store),
-    bookRoute(store),
-    pdfbookRoute(store)
-  ]
-}/*,{
+//   path: '/eplayer',
+//   component: CoreLayout,
+//   indexRoute: { onEnter: (nextState, replace) => replace('/eplayer/bookshelf') },
+//   childRoutes: [
+//     bookshelfRoute(store),
+//     bookRoute(store),
+//     pdfbookRoute(store)
+//   ]
+// },{
   path: '/eplayer',
   component: CoreLayout,
   indexRoute: { onEnter: (nextState, replace) => replace('/eplayer/etbookshelf') },
@@ -26,7 +26,7 @@ export const createRoutes = store => ({
     ETbookshelfRoute(store),
     ETbookRoute(store)
   ]
-}*/);
+});
 
 /*  Note: childRoutes can be chunked or otherwise loaded programmatically
     using getChildRoutes with the following signature:

@@ -9,4 +9,4 @@ class HighlightText {
   }
 };
 
-export default HighlightText;	
+export default HighlightText;
