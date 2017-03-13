@@ -15,7 +15,7 @@ function init() {
     orientation: 'horizontal',
     theme:'black',
     pageFontSize:'12px',
-    pageZoom:'50', 
+    pageZoom:'', 
     enableGoToPage:true,
     includeMathMLLib: false,
     enableAnnotation: true,
@@ -27,7 +27,7 @@ function init() {
     allowLightboxFullscreen:false,
     contentId: 'pxe-viewer',
     onBookLoaded:()=>{},
-    highlightText:'the',
+    highlightText:'',
     baseUrl: 'https://content.stg-openclass.com/eps/pearson-reader/api/item/542d7ded-e63b-4bc5-9e82-62ccc7c6039c/1/file/LutgensAtm13-071415-MJ-DW/',
     playListURL:[
       {
