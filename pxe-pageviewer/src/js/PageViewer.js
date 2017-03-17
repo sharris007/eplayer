@@ -3,7 +3,7 @@ import React, { PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
-import renderHTML from 'react-render-html';
+// import renderHTML from 'react-render-html';
 
 import FooterNav from './FooterNav';
 import crossRef from './CrossRef';
@@ -69,7 +69,7 @@ class PageViewer extends React.Component {
       if (this.props.src.highlightText) {
         text=HighlightText.highlightText(this, text);
       }
-      text  = text.replace(/ epub:type\S*\B/g, '').replace('<body', '<body>');
+      //text  = text.replace(/ epub:type\S*\B/g, '').replace('<body', '<body>');
       const currentHref=thisRef.state.currentStatePlayListUrl.href;
       thisRef.setState({
         renderSrc: replaceAllRelByAbs(text, thisRef.props.src.baseUrl+currentHref.substring(0, currentHref.lastIndexOf('/'))),
@@ -236,12 +236,13 @@ class PageViewer extends React.Component {
       </div>
       );
   };
-
+ 
   render() {
     return ( 
       <div id = "book-render-component"  tabIndex = "0" onKeyUp = {this.arrowNavigation} >
         <div id={this.props.src.contentId}>
-          <div id = "book-container" className = "book-container" ref = {(el) => { this.bookContainerRef = el; }} > {renderHTML(this.state.renderSrc)} </div>
+          <div id = "book-container" className = "book-container" ref = {(el) => { this.bookContainerRef = el; }}>
+            {this.state.renderSrc?<div dangerouslySetInnerHTML={{__html: this.state.renderSrc}}></div>:''} </div>
         </div>
         {this.props.src.enableGoToPage ?this.getGoToElement():''} 
         <FooterNav data = {this.state}  onClickNextCallBack = {this.goToNext} onClickPrevCallBack = {this.goToPrev}/> 
