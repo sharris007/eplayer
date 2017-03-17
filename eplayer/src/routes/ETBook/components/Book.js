@@ -163,7 +163,7 @@ export class Book extends Component {
     
     if(playlistReceived){
         this.state.pageDetails.baseUrl                = playlistData.baseUrl;
-        this.state.pageDetails.currentPageURL         = playlistData.content[1];
+        this.state.pageDetails.currentPageURL         = playlistData.content[2];
         this.state.pageDetails.playListURL            = playlistData.content; 
         if(this.props.params.pageId){
           // for the first page it is set to current page URL
@@ -180,7 +180,7 @@ export class Book extends Component {
         <Header
           classname={this.state.classname}
           pageTitle = {this.state.currentPageTitle}
-          bookData={this.props.book}
+          bookData={this.state.pageDetails}
           bookCallbacks={callbacks}
           store={this.context.store}
           viewerContentCallBack={this.viewerContentCallBack}

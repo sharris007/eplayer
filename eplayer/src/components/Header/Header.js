@@ -169,11 +169,9 @@ export class Header extends React.Component {
       removeBookmarkHandler: this.props.bookCallbacks.removeBookmarkHandler,
       isCurrentPageBookmarked: this.props.bookCallbacks.isCurrentPageBookmarked
     };
-
-    const targetPageId = this.props.bookData.viewer.currentPageId;
-    const currPageObj = find(this.props.bookData.viewer.pages, page => page.id === targetPageId);
-
-    return (
+     
+    const targetPageId = this.props.bookData.currentPageURL.playOrder;
+    const currPageObj = find(this.props.bookData.playListURL, page => page.playOrder === targetPageId);    return (
       <div className={`${this.props.classname} ${this.state.headerExists ? 'nav-up' : ''}`} >
         <AppBar
           title={currPageObj ? currPageObj.title : ''}
