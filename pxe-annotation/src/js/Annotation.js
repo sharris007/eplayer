@@ -9,10 +9,11 @@ class Annotation extends Component {
     this.onDocumentClick=this.onDocumentClick.bind(this);
     $('#' + props.contentId).annotator().annotator('loadAnnotations', props.annotationData);
     $(document).on('mousedown', this.onDocumentClick);
+    $(document).keyup(this.onDocumentClick);
   }
 
   onDocumentClick(e) {
-    if (!$(e.target).closest('.annotator-editor').length && !$('.annotator-editor').hasClass('annotator-hide')) {
+    if ((e.keyCode === 27 ||!$(e.target).closest('.annotator-editor').length) && !$('.annotator-editor').hasClass('annotator-hide')) {
       $('#' + this.props.contentId).data('annotator').editor.hide();
     }
   }

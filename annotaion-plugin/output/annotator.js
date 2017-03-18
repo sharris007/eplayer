@@ -1716,9 +1716,10 @@ Annotator = (function(_super) {
     if (event != null) {
       event.preventDefault();
     }
-    position = Util.mousePosition(event, this.wrapper[0]);
     this.adder.hide();
     annotation = this.setupAnnotation(this.createAnnotation());
+    event.pageY=$(annotation.highlights).offset().top;
+    position = Util.mousePosition(event, this.wrapper[0]);
     // this.clearTextSelection();
     $(annotation.highlights).addClass('annotator-hl-temporary');
     save = (function(_this) {
@@ -2052,10 +2053,10 @@ Annotator.Editor = (function(_super) {
 
   Editor.prototype.onColorChange=function(event) {
     window.getSelection().removeAllRanges();
-    if (!this.annotation.color) {
-      this.element.css({top:this.element.offset().top+58});
-    }
     this.element.removeClass('hide-note');
+    if (!this.annotation.color) {
+      this.element.css({top:this.element.position().top + this.element.find('form').height()-this.element.find('.annotator-panel-1').height()});
+    }
     this.annotation.color=this.annotation.lastColor=event.target.value;
     $('.annotator-color').removeClass('active');
     $(event.target).addClass('active');
