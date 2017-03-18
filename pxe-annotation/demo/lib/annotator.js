@@ -496,9 +496,10 @@ Annotator = (function(_super) {
     if (event != null) {
       event.preventDefault();
     }
-    position = Util.mousePosition(event, this.wrapper[0]);
     this.adder.hide();
     annotation = this.setupAnnotation(this.createAnnotation());
+    event.pageY=$(annotation.highlights).offset().top;
+    position = Util.mousePosition(event, this.wrapper[0]);
     // this.clearTextSelection();
     $(annotation.highlights).addClass('annotator-hl-temporary');
     save = (function(_this) {

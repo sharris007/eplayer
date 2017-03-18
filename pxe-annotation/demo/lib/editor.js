@@ -130,8 +130,9 @@ Annotator.Editor = (function(_super) {
 
   Editor.prototype.onColorChange=function(event) {
     window.getSelection().removeAllRanges();
+    this.element.removeClass('hide-note');
     if (!this.annotation.color) {
-      this.element.css({top:this.element.offset().top+58});
+      this.element.css({top:this.element.position().top + this.element.find('form').height()-this.element.find('.annotator-panel-1').height()});
     }
     this.element.removeClass('hide-note');
     this.annotation.color=this.annotation.lastColor=event.target.value;
