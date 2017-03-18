@@ -117,10 +117,10 @@ Annotator.Editor = (function(_super) {
     var inputCharLength = event.currentTarget.value.length, actualChar = this.const.characters;
     var remainingCount = actualChar-inputCharLength;
     this.element.find('#letter-count').text(remainingCount);
-    if(inputCharLength >= 25){
-      var selectors = this.element.find('.annotator-item textarea'), textareaHeight = selectors.height();
-      selectors.css('height','90px');
-    }
+    var selectors = this.element.find('.annotator-item textarea'); 
+    selectors.height(1);
+    var textareaHeight = selectors.prop('scrollHeight');
+    selectors.height(textareaHeight);
   }
 
 
@@ -141,6 +141,7 @@ Annotator.Editor = (function(_super) {
     $(this.annotation.highlights).css('background', event.target.value);
     this.element.find('.annotator-listing .characters-left').remove();
     this.element.find('.annotator-listing').append(panel5);
+    $('#annotator-field-0').removeAttr('style');
     this.publish('save', [this.annotation]);
   }
 
