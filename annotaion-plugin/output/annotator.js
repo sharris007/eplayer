@@ -1960,8 +1960,7 @@ Annotator.Editor = (function(_super) {
     ".annotator-edit-container click":"onEditClick",
     ".annotator-listing textarea keyup":"onNoteChange",
     ".annotator-delete-container click":"onDeleteIconClick",
-    ".annotator-confirm-cancel click":"onCancelClick",
-    "#annotator-field-0 keyup" :"onTextareachange"
+    ".annotator-confirm-cancel click":"onCancelClick"
   };
 
   Editor.prototype.classes = {
@@ -1973,13 +1972,13 @@ Annotator.Editor = (function(_super) {
     characters :3000
   }
 
-  var panel1 = '<div class="annotator-panel-1"><div class="annotator-color-container"><input type="button" class="annotator-color annotator-yellow" value="#FCF37F"/><input type="button" class="annotator-color annotator-green" value="#55DF49"/><input type="button" class="annotator-color annotator-pink" value="#FC92CF"/></div><div class="annotator-delete-container"></div><div class="annotator-edit-container"></div></div>'
+  var panel1 = '<div class="annotator-panel-1 annotator-panel-triangle"><div class="annotator-color-container"><input type="button" class="annotator-color annotator-yellow" value="#FCF37F"/><input type="button" class="annotator-color annotator-green" value="#55DF49"/><input type="button" class="annotator-color annotator-pink" value="#FC92CF"/></div><div class="annotator-delete-container"></div><div class="annotator-edit-container"></div></div>'
 
   var panel2 ='<div class="annotator-panel-2"><ul class="annotator-listing"></ul></div>';
 
   var panel3 ='<div class="annotator-panel-3"><div class="annotator-controls"><div class="ann-share-section"><label class="annotator-share-text">Share</label><div class="annotator-share"></div></div><div class="ann-cancelsave-section"><a class="annotator-cancel">' + _t("CANCEL") + '</a><a class="annotator-save annotator-focus">' + _t("SAVE") + '</a></div></div></div>';
 
- var panel4 ='<div class="annotator-panel-4"><div class="ann-confirm-section"><label class="annotator-confirm">Confirm?</label></div><div class="ann-canceldelete-section"><a class="annotator-confirm-cancel">' + _t("CANCEL") + '</a><a class="annotator-confirm-delete">' + _t("DELETE") + '</a></div></div></div>';
+ var panel4 ='<div class="annotator-panel-4 annotator-panel-triangle"><div class="ann-confirm-section"><label class="annotator-confirm">Confirm?</label></div><div class="ann-canceldelete-section"><a class="annotator-confirm-cancel">' + _t("CANCEL") + '</a><a class="annotator-confirm-delete">' + _t("DELETE") + '</a></div></div></div>';
 
  var panel5 ='<li class="characters-left"><span id="letter-count">'+(Editor.prototype.const.characters)+'</span id="letter-text">  Characters left<span><span></li>';
 
@@ -2001,7 +2000,6 @@ Annotator.Editor = (function(_super) {
     this.onCancelClick=__bind(this.onCancelClick, this);
     this.onEditClick=__bind(this.onEditClick, this);
     this.onNoteChange=__bind(this.onNoteChange, this);
-    this.onTextareachange = __bind(this.onTextareachange,this);
     Editor.__super__.constructor.call(this, $(this.html)[0], options);
     this.fields = [];
     this.annotation = {};
@@ -2038,8 +2036,9 @@ Annotator.Editor = (function(_super) {
     return $('.annotator-outer.annotator-viewer').triggerHandler.apply($('.annotator-outer.annotator-viewer'), ['delete', [this.annotation]]);
   }
   Editor.prototype.onDeleteIconClick=function(event){  
-    var panel1Sec =  this.element.find('.annotator-panel-1'), panel2Sec =  this.element.find('.annotator-panel-2'),panel3Sec =  this.element.find('.annotator-panel-3');
+    var panel1Sec =  this.element.find('.annotator-panel-1'), panel2Sec =  this.element.find('.annotator-panel-2'),panel3Sec =  this.element.find('.annotator-panel-3'),panel4Sec = this.element.find('.annotator-panel-4');
     panel1Sec.addClass('hide-popup').after(panel4);
+    panel4Sec.addClass('annotator-panel-triangle');
     panel2Sec.addClass('overlay');
     panel3Sec.addClass('overlay');
 
@@ -2055,7 +2054,8 @@ Annotator.Editor = (function(_super) {
     this.element.addClass('show-edit-options');
   }
   
-  Editor.prototype.onTextareachange=function(event){  
+  Editor.prototype.onNoteChange=function(event) {
+    this.element[(event.target.value.length)?'addClass':'removeClass']('show-edit-options');
     var inputCharLength = event.currentTarget.value.length, actualChar = this.const.characters;
     var remainingCount = actualChar-inputCharLength;
     this.element.find('#letter-count').text(remainingCount);
@@ -2063,11 +2063,6 @@ Annotator.Editor = (function(_super) {
     selectors.height(1);
     var textareaHeight = selectors.prop('scrollHeight');
     selectors.height(textareaHeight);
-  }
-
-
-  Editor.prototype.onNoteChange=function(event) {
-    this.element[(event.target.value.length)?'addClass':'removeClass']('show-edit-options');
   }
 
   Editor.prototype.onColorChange=function(event) {
