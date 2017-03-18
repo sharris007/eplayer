@@ -919,6 +919,7 @@
   float: right;
   margin:10px;
   display: inline-block;
+  cursor: pointer;
 
 }
 .show-edit-options .annotator-edit-container, .show-edit-options .annotator-share-text, .show-edit-options .annotator-share{
@@ -1048,7 +1049,7 @@
   letter-spacing: -0.4px;
   text-align: left;
   color: #047a9c;
-  margin: 11px 11px 11px 11px;
+  margin: 11px 11px 11px 15px;
   text-decoration: none;
   cursor: pointer;
 }
