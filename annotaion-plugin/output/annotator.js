@@ -1960,13 +1960,18 @@ Annotator.Editor = (function(_super) {
     ".annotator-edit-container click":"onEditClick",
     ".annotator-listing textarea keyup":"onNoteChange",
     ".annotator-delete-container click":"onDeleteIconClick",
-    ".annotator-confirm-cancel click":"onCancelClick"
+    ".annotator-confirm-cancel click":"onCancelClick",
+    "#annotator-field-0 keyup" :"onTextareachange"
   };
 
   Editor.prototype.classes = {
     hide: 'annotator-hide',
     focus: 'annotator-focus'
   };
+  
+  Editor.prototype.const={
+    characters :3000
+  }
 
   var panel1 = '<div class="annotator-panel-1"><div class="annotator-color-container"><input type="button" class="annotator-color annotator-yellow" value="#FCF37F"/><input type="button" class="annotator-color annotator-green" value="#55DF49"/><input type="button" class="annotator-color annotator-pink" value="#FC92CF"/></div><div class="annotator-delete-container"></div><div class="annotator-edit-container"></div></div>'
 
@@ -1975,6 +1980,8 @@ Annotator.Editor = (function(_super) {
   var panel3 ='<div class="annotator-panel-3"><div class="annotator-controls"><div class="ann-share-section"><label class="annotator-share-text">Share</label><div class="annotator-share"></div></div><div class="ann-cancelsave-section"><a class="annotator-cancel">' + _t("CANCEL") + '</a><a class="annotator-save annotator-focus">' + _t("SAVE") + '</a></div></div></div>';
 
  var panel4 ='<div class="annotator-panel-4"><div class="ann-confirm-section"><label class="annotator-confirm">Confirm?</label></div><div class="ann-canceldelete-section"><a class="annotator-confirm-cancel">' + _t("CANCEL") + '</a><a class="annotator-confirm-delete">' + _t("DELETE") + '</a></div></div></div>';
+
+ var panel5 ='<li class="characters-left"><span id="letter-count">'+(Editor.prototype.const.characters)+'</span id="letter-text">  Characters left<span><span></li>';
 
   Editor.prototype.html = '<div class="annotator-outer annotator-editor hide-note"><form class="annotator-widget">'+panel1+ panel2+panel3+'</form></div>';
   
@@ -1994,6 +2001,7 @@ Annotator.Editor = (function(_super) {
     this.onCancelClick=__bind(this.onCancelClick, this);
     this.onEditClick=__bind(this.onEditClick, this);
     this.onNoteChange=__bind(this.onNoteChange, this);
+    this.onTextareachange = __bind(this.onTextareachange,this);
     Editor.__super__.constructor.call(this, $(this.html)[0], options);
     this.fields = [];
     this.annotation = {};
@@ -2046,6 +2054,17 @@ Annotator.Editor = (function(_super) {
   Editor.prototype.onEditClick=function(event){  
     this.element.addClass('show-edit-options');
   }
+  
+  Editor.prototype.onTextareachange=function(event){  
+    var inputCharLength = event.currentTarget.value.length, actualChar = this.const.characters;
+    var remainingCount = actualChar-inputCharLength;
+    this.element.find('#letter-count').text(remainingCount);
+    if(inputCharLength >= 25){
+      var selectors = this.element.find('.annotator-item textarea'), textareaHeight = selectors.height();
+      selectors.css('height','90px');
+    }
+  }
+
 
   Editor.prototype.onNoteChange=function(event) {
     this.element[(event.target.value.length)?'addClass':'removeClass']('show-edit-options');
@@ -2057,10 +2076,13 @@ Annotator.Editor = (function(_super) {
     if (!this.annotation.color) {
       this.element.css({top:this.element.position().top + this.element.find('form').height()-this.element.find('.annotator-panel-1').height()});
     }
+    this.element.removeClass('hide-note');
     this.annotation.color=this.annotation.lastColor=event.target.value;
     $('.annotator-color').removeClass('active');
     $(event.target).addClass('active');
     $(this.annotation.highlights).css('background', event.target.value);
+    this.element.find('.annotator-listing .characters-left').remove();
+    this.element.find('.annotator-listing').append(panel5);
     this.publish('save', [this.annotation]);
   }
 

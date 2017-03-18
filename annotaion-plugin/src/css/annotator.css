@@ -214,6 +214,9 @@
 	padding: 0;
 	margin: 0;
 	list-style: none;
+  min-height: 45px;
+  height: auto;
+
 }
 
 .annotator-widget::after {
@@ -229,6 +232,8 @@
 }
 
 .annotator-invert-x .annotator-widget::after {
+	left: auto;
+	right: 8px;
 }
 
 .annotator-invert-y .annotator-widget::after {
@@ -373,6 +378,7 @@
   border: none;
   padding: 0px;
   resize: none;
+  min-height: 22px;
 }
 .annotator-editor .annotator-item:first-child textarea {
 	min-height: 40px;
@@ -981,6 +987,7 @@
   color: #047a9c;
   text-decoration: none;
   cursor: pointer;
+  margin-left: 10px;
 
 }
 .annotator-cancel{
@@ -1066,4 +1073,18 @@
     display: inline-block;
     margin-left: 13.5px;
     margin-top: 10px;
+}
+.characters-left {
+  width: 250px;
+  height: 19px;
+  font-family: Open Sans;
+  font-size: 14px;
+  font-weight: normal;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: -0.3px;
+  text-align: right;
+  color: #74797b;
+  margin: 10px 19px;
 }
