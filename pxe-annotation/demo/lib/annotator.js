@@ -425,6 +425,7 @@ Annotator = (function(_super) {
   Annotator.prototype.checkForEndSelection = function(event) {
     var container, range, _i, _len, _ref;
     this.mouseIsDown = false;
+    this.ignoreMouseup=$(event.target).hasClass('annotator-confirm-delete')?false:this.ignoreMouseup;
     if (this.ignoreMouseup) {
       return;
     }
