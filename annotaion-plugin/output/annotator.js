@@ -1601,7 +1601,7 @@ Annotator = (function(_super) {
   Annotator.prototype.showEditor = function(annotation, location, isAdderClick) {
     var position= {
       right:-30,
-      top:(39+location.top+(!isAdderClick?90:0))
+      top:(39+location.top+(!isAdderClick?140:0))
     }
     this.editor.element.css(position);
     this.editor.load(annotation,this.isShareable);
@@ -2068,16 +2068,17 @@ Annotator.Editor = (function(_super) {
   Editor.prototype.onColorChange=function(event) {
     window.getSelection().removeAllRanges();
     this.element.removeClass('hide-note');
-    if (!this.annotation.color) {
-      this.element.css({top:this.element.position().top + this.element.find('form').height()-this.element.find('.annotator-panel-1').height()});
-    }
-    this.element.removeClass('hide-note');
+    var isTopAlign=(!this.annotation.color)?true:false;
     this.annotation.color=this.annotation.lastColor=event.target.value;
     $('.annotator-color').removeClass('active');
     $(event.target).addClass('active');
     $(this.annotation.highlights).css('background', event.target.value);
     this.element.find('.annotator-listing .characters-left').remove();
     this.element.find('.annotator-listing').append(panel5);
+    if (isTopAlign) {
+      var topPosition=this.element.position().top + this.element.find('form').height()-this.element.find('.annotator-panel-1').height();
+      this.element.css({top:topPosition});
+    }
     $('#annotator-field-0').removeAttr('style');
     this.publish('save', [this.annotation]);
   }
@@ -2103,6 +2104,8 @@ Annotator.Editor = (function(_super) {
     $('.annotator-color[value="'+this.annotation.color+'"]').addClass('active');
     this.element.find('.annotator-save').addClass(this.classes.focus);
     this.checkOrientation();
+    if(this.annotation.text === undefined)
+      this.element.find('textarea').css({'pointer-events':'all','opacity':'1'});
     this.element.find(":input:first").focus();
     this.setupDraggables();
     return this.publish('show');
@@ -2114,6 +2117,7 @@ Annotator.Editor = (function(_super) {
     this.element.addClass(this.classes.hide);
     this.element.addClass('hide-note').removeClass('show-edit-options');
     $('.annotator-edit-container').show();
+    this.element.find('textarea').removeAttr("style"); 
     return this.publish('hide');
   };
 

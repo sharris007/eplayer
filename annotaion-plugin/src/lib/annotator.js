@@ -381,7 +381,7 @@ Annotator = (function(_super) {
   Annotator.prototype.showEditor = function(annotation, location, isAdderClick) {
     var position= {
       right:-30,
-      top:(39+location.top+(!isAdderClick?90:0))
+      top:(39+location.top+(!isAdderClick?140:0))
     }
     this.editor.element.css(position);
     this.editor.load(annotation,this.isShareable);

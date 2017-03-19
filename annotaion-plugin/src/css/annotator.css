@@ -365,6 +365,8 @@
   padding: 0px;
   resize: none;
   min-height: 22px;
+  pointer-events:none;
+  opacity:0.3;
 }
 .annotator-editor .annotator-item:first-child textarea {
 	min-height: 40px;
