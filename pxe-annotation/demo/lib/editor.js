@@ -66,6 +66,7 @@ Annotator.Editor = (function(_super) {
   }
 
   Editor.prototype.onShareClick=function(event) {
+    var that=this;
     if ($(event.target).hasClass('on')) {
        $(event.target).removeClass('on');
        this.annotation.color=this.annotation.lastColor;
@@ -83,7 +84,7 @@ Annotator.Editor = (function(_super) {
        $(this.annotation.highlights).css('background', '#ccf5fd');
        $('.annotator-color-container').addClass('disabled-save');
     }
-    this.submit();
+    setTimeout(function(){ that.submit(); }, 800);    
   }
   
   Editor.prototype.onDeleteClick=function(event){  
