@@ -807,6 +807,7 @@
 	background-color: #3e3e3e;
 	position: absolute;
     content: '';
+	transition: all 0.5s ease 0s;
     right: 25px;
     top: 3px;
 }
