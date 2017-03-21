@@ -139,7 +139,7 @@ Annotator.Editor = (function(_super) {
     window.getSelection().removeAllRanges();
     this.element.removeClass('hide-note');
     var isTopAlign=(!this.annotation.color)?true:false;
-    if(this.annotation._id===undefined){    
+    if(this.annotation._id===undefined && this.currentAnnotation !== null){     
         var curAnn =this.currentAnnotation;   
         Object.assign(this.annotation, curAnn);   
     }
@@ -152,7 +152,8 @@ Annotator.Editor = (function(_super) {
       this.element.css({top:topPosition});
     }
     this.publish('save', [this.annotation]);
-    // $('.annotator-outer.annotator-viewer').triggerHandler.apply($('.annotator-outer.annotator-viewer'), ['delete', [this.annotation]]);
+    if(isTopAlign)
+       $('.annotator-outer.annotator-viewer').triggerHandler.apply($('.annotator-outer.annotator-viewer'), ['delete', [this.annotation]]);
   }
 
   Editor.prototype.show = function(event) {
@@ -204,6 +205,7 @@ Annotator.Editor = (function(_super) {
     $('.annotator-panel-1').removeClass('disabled-save');
     this.onCancelClick();
     this.element.find('textarea').removeAttr("style"); 
+    this.currentAnnotation =null;
     return this.publish('hide');
   };
 
