@@ -157,7 +157,6 @@ export class Book extends Component {
     let annData = [];
     const { annotionData, loading ,playlistData, playlistReceived} = this.props;// eslint-disable-line react/prop-types
     annData  = annotionData;
-    console.log("annotionData--------",annotionData);
     const filteredData = find(playlistData.content, list => list.id === this.props.params.pageId);
     
     if(Array.isArray(annotionData)==false){

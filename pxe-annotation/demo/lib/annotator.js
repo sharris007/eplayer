@@ -253,7 +253,7 @@ Annotator = (function(_super) {
     annotation.quote = annotation.quote.join(' / ');
     $(annotation.highlights).data('annotation', annotation);
     $(annotation.highlights).attr('data-annotation-id', annotation.id);
-    $(annotation.highlights).attr('data-ann-id', annotation._id.$oid);
+    $(annotation.highlights).attr('data-ann-id', annotation._id?annotation._id.$oid:null);
     return annotation;
   };
 
@@ -285,10 +285,13 @@ Annotator = (function(_super) {
     return this.isShareable=isShareable;
   };
 
-  Annotator.prototype.loadAnnotations = function(annotations) {
+  Annotator.prototype.loadAnnotations = function(annotations,isUpdate) {
     var clone, loader;
     if (annotations == null) {
       annotations = [];
+    }
+    if(isUpdate){   
+        this.editor.currentAnnotation=annotations[0];   
     }
     loader = (function(_this) {
       return function(annList) {

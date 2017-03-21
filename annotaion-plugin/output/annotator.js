@@ -1440,6 +1440,7 @@ Annotator = (function(_super) {
   };
 
   Annotator.prototype.setupAnnotation = function(annotation) {
+    console.log("plugin---", annotation);
     var e, normed, normedRanges, r, root, _i, _j, _len, _len1, _ref;
     root = this.wrapper[0];
     annotation.ranges || (annotation.ranges = this.selectedRanges);
@@ -1472,6 +1473,7 @@ Annotator = (function(_super) {
     annotation.quote = annotation.quote.join(' / ');
     $(annotation.highlights).data('annotation', annotation);
     $(annotation.highlights).attr('data-annotation-id', annotation.id);
+    $(annotation.highlights).attr('data-ann-id', annotation._id?annotation._id.$oid:null);
     return annotation;
   };
 
@@ -1503,10 +1505,13 @@ Annotator = (function(_super) {
     return this.isShareable=isShareable;
   };
 
-  Annotator.prototype.loadAnnotations = function(annotations) {
+  Annotator.prototype.loadAnnotations = function(annotations,isUpdate) {
     var clone, loader;
     if (annotations == null) {
       annotations = [];
+    }
+    if(isUpdate){   
+        this.editor.currentAnnotation=annotations[0];   
     }
     loader = (function(_this) {
       return function(annList) {
@@ -1600,7 +1605,7 @@ Annotator = (function(_super) {
 
   Annotator.prototype.showEditor = function(annotation, location, isAdderClick) {
     var position= {
-      right:-30,
+      right:80,
       top:(39+location.top+(!isAdderClick?140:0))
     }
     this.editor.element.css(position);
@@ -1971,6 +1976,7 @@ Annotator.Editor = (function(_super) {
   
   Editor.prototype.isShareable=null;
   Editor.prototype.textareaHeight=null;
+  Editor.prototype.currentAnnotation=null;
   Editor.prototype.const={
     characters :3000
   }
@@ -2081,6 +2087,10 @@ Annotator.Editor = (function(_super) {
     window.getSelection().removeAllRanges();
     this.element.removeClass('hide-note');
     var isTopAlign=(!this.annotation.color)?true:false;
+    if(this.annotation._id===undefined){    
+        var curAnn =this.currentAnnotation;   
+        Object.assign(this.annotation, curAnn);   
+    }
     this.annotation.color=this.annotation.lastColor=event.target.value;
     $('.annotator-color').removeClass('active');
     $(event.target).addClass('active');
@@ -2090,12 +2100,13 @@ Annotator.Editor = (function(_super) {
       this.element.css({top:topPosition});
     }
     this.publish('save', [this.annotation]);
+    // $('.annotator-outer.annotator-viewer').triggerHandler.apply($('.annotator-outer.annotator-viewer'), ['delete', [this.annotation]]);
   }
 
   Editor.prototype.show = function(event) {
     Annotator.Util.preventEventDefault(event);
     this.element.removeClass(this.classes.hide);
-    
+    $(this.annotation.highlights).removeClass('current-annotation');
     if(!this.annotation.text || !this.annotation.text.length) $('.annotator-edit-container').hide();
     this.annotation.color=this.annotation.color||'';
     this.annotation.shareable=(this.annotation.shareable===undefined)?false:this.annotation.shareable;
