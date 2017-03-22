@@ -26,6 +26,9 @@ Annotator.Editor = (function(_super) {
     focus: 'annotator-focus'
   };
   
+  Editor.prototype.isShareable=null;
+  Editor.prototype.textareaHeight=null;
+  Editor.prototype.currentAnnotation=null;
   Editor.prototype.const={
     characters :3000
   }
@@ -64,6 +67,7 @@ Annotator.Editor = (function(_super) {
   }
 
   Editor.prototype.onShareClick=function(event) {
+    var that=this;
     if ($(event.target).hasClass('on')) {
        $(event.target).removeClass('on');
        this.annotation.color=this.annotation.lastColor;
@@ -81,7 +85,7 @@ Annotator.Editor = (function(_super) {
        $(this.annotation.highlights).css('background', '#ccf5fd');
        $('.annotator-color-container').addClass('disabled-save');
     }
-    this.submit();
+    setTimeout(function(){ that.submit(); }, 800);    
   }
   
   Editor.prototype.onDeleteClick=function(event){  
@@ -91,6 +95,7 @@ Annotator.Editor = (function(_super) {
     panel2Sec.removeClass('overlay');
     panel3Sec.removeClass('overlay');
     panel4Sec.remove();
+    this.element.addClass('hide-note')
     return $('.annotator-outer.annotator-viewer').triggerHandler.apply($('.annotator-outer.annotator-viewer'), ['delete', [this.annotation]]);
   }
   Editor.prototype.onDeleteIconClick=function(event){  
@@ -110,6 +115,7 @@ Annotator.Editor = (function(_super) {
   }
   Editor.prototype.onEditClick=function(event){  
     this.element.addClass('show-edit-options');
+    this.element.find('textarea').css({'pointer-events':'all','opacity':'1'});
   }
   
   Editor.prototype.onNoteChange=function(event) {
@@ -118,41 +124,59 @@ Annotator.Editor = (function(_super) {
     var remainingCount = actualChar-inputCharLength;
     this.element.find('#letter-count').text(remainingCount);
     var selectors = this.element.find('.annotator-item textarea'); 
-    selectors.height(1);
-    var textareaHeight = selectors.prop('scrollHeight');
-    selectors.height(textareaHeight);
+    console.log("pageup",this.textareaHeight);
+    var temp = this.textareaHeight;
+    selectors.height(1); 
+    this.textareaHeight = selectors.prop('scrollHeight');
+    selectors.height(this.textareaHeight);
+    if(temp && temp!==this.textareaHeight){
+      var topPosition=(this.element.position().top-temp) + (this.textareaHeight/2) ;
+      this.element.css({top:topPosition});
+  }    
   }
 
   Editor.prototype.onColorChange=function(event) {
     window.getSelection().removeAllRanges();
     this.element.removeClass('hide-note');
     var isTopAlign=(!this.annotation.color)?true:false;
+    if(this.annotation._id===undefined && this.currentAnnotation !== null){     
+        var curAnn =this.currentAnnotation;   
+        Object.assign(this.annotation, curAnn);   
+    }
     this.annotation.color=this.annotation.lastColor=event.target.value;
     $('.annotator-color').removeClass('active');
     $(event.target).addClass('active');
     $(this.annotation.highlights).css('background', event.target.value);
-    this.element.find('.annotator-listing .characters-left').remove();
-    this.element.find('.annotator-listing').append(panel5);
     if (isTopAlign) {
       var topPosition=this.element.position().top + this.element.find('form').height()-this.element.find('.annotator-panel-1').height();
       this.element.css({top:topPosition});
     }
-    $('#annotator-field-0').removeAttr('style');
     this.publish('save', [this.annotation]);
+    if(isTopAlign)
+       $('.annotator-outer.annotator-viewer').triggerHandler.apply($('.annotator-outer.annotator-viewer'), ['delete', [this.annotation]]);
   }
 
   Editor.prototype.show = function(event) {
     Annotator.Util.preventEventDefault(event);
     this.element.removeClass(this.classes.hide);
+    $(this.annotation.highlights).removeClass('current-annotation');
     if(!this.annotation.text || !this.annotation.text.length) $('.annotator-edit-container').hide();
     this.annotation.color=this.annotation.color||'';
-    if (this.annotation.color) {
-      this.element.removeClass('hide-note');
-    } 
     this.annotation.shareable=(this.annotation.shareable===undefined)?false:this.annotation.shareable;
+    if (this.annotation.color||this.annotation.shareable) {
+      this.element.removeClass('hide-note');
+      var textareaScroll =this.element.find('textarea').prop('scrollHeight'),calPos,actualPos;
+      this.element.find('textarea').height(textareaScroll);
+      actualPos = this.element.position().top;
+      pos  = (textareaScroll/2) + actualPos;
+
+      this.element.css({top:pos});
+    } 
     if(this.annotation.shareable) {
       $('.annotator-share').addClass('on');
       $('.annotator-color-container').addClass('disabled-save');
+      if(!this.isShareable)
+        $('.annotator-panel-1').addClass('disabled-save');
     }
     else {
       $('.annotator-share').removeClass('on');
@@ -161,6 +185,9 @@ Annotator.Editor = (function(_super) {
     $('.annotator-color').removeClass('active');
     $('.annotator-color[value="'+this.annotation.color+'"]').addClass('active');
     this.element.find('.annotator-save').addClass(this.classes.focus);
+    this.element.find('.annotator-listing .characters-left').remove();
+    this.element.find('.annotator-listing').append(panel5);
+    $('#letter-count').text(3000-this.element.find('textarea').val().length);
     this.checkOrientation();
     if(this.annotation.text === undefined)
       this.element.find('textarea').css({'pointer-events':'all','opacity':'1'});
@@ -175,11 +202,15 @@ Annotator.Editor = (function(_super) {
     this.element.addClass(this.classes.hide);
     this.element.addClass('hide-note').removeClass('show-edit-options');
     $('.annotator-edit-container').show();
+    $('.annotator-panel-1').removeClass('disabled-save');
+    this.onCancelClick();
     this.element.find('textarea').removeAttr("style"); 
+    this.currentAnnotation =null;
     return this.publish('hide');
   };
 
   Editor.prototype.load = function(annotation, isShareable) {
+    this.isShareable=isShareable;
     if(!isShareable)
       this.element.find('.annotator-share-text, .annotator-share').remove();
     var field, _i, _len, _ref;

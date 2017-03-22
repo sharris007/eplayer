@@ -15,7 +15,7 @@ import Header from '../../../components/Header';
 import { pageDetails } from '../../../../const/Mocdata';// booksdata, tocData
 import './Book.scss';
 import { browserHistory } from 'react-router';
-import { getAnnCallService, postAnnCallService, deleteAnnCallService } from '../../../actions/annotation';
+import { getAnnCallService, postAnnCallService, putAnnCallService,deleteAnnCallService } from '../../../actions/annotation';
 import { getBookCallService, getPlaylistCallService} from '../../../actions/playlist';
 
 export class Book extends Component {
@@ -127,17 +127,20 @@ export class Book extends Component {
   }
 
   annotationCallBack = (eventType, data) => {
-  switch (eventType) {
-
-      case 'annotationCreated': {
-        return this.props.dispatch(postAnnCallService(data));
-      }
-      case 'annotationDeleted': {
-        return ((data._id)?this.props.dispatch(deleteAnnCallService(data)):'');
-      }
-      default : {
-        return eventType;
-      }
+    switch (eventType) {
+        case 'annotationCreated': {
+          return this.props.dispatch(postAnnCallService(data));
+        }
+        case 'annotationEditorSubmit':{
+          if(data.annotation._id)
+          return this.props.dispatch(putAnnCallService(data.annotation));
+        }
+        case 'annotationDeleted': {
+          return ((data._id)?this.props.dispatch(deleteAnnCallService(data)):'');
+        }
+        default : {
+          return eventType;
+        }
     }
   }
  

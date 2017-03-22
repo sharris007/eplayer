@@ -13,6 +13,12 @@ export default (state = { data: [], loading: false }, action) => {
         data: action.data,
         loading: action.loading };
     }
+    case 'PUT_ANNOTATION': {
+      return {
+        ...state,
+        data: action.data,
+        loading: action.loading };
+    }
     default :
       return state;
   }
