@@ -152,8 +152,8 @@ Annotator.Editor = (function(_super) {
       this.element.css({top:topPosition});
     }
     this.publish('save', [this.annotation]);
-    if(isTopAlign)
-       $('.annotator-outer.annotator-viewer').triggerHandler.apply($('.annotator-outer.annotator-viewer'), ['delete', [this.annotation]]);
+    // if(isTopAlign)
+    //    $('.annotator-outer.annotator-viewer').triggerHandler.apply($('.annotator-outer.annotator-viewer'), ['delete', [this.annotation]]);
   }
 
   Editor.prototype.show = function(event) {

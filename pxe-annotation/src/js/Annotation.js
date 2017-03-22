@@ -24,7 +24,7 @@ class Annotation extends Component {
   }
 
   componentWillReceiveProps(nextProps) {    
-    $('#' + nextProps.contentId).annotator().annotator('loadAnnotations',nextProps.annotationData,this.state.updated);
+    $('#' + nextProps.contentId).annotator().annotator('loadAnnotations', nextProps.annotationData, this.state.updated);
     this.setState({'updated':false});
   }  
 
