@@ -11,6 +11,7 @@ import crossRef from './CrossRef';
 import copyCharLimit from './CopyCharLimit';
 import HighlightText from './HighlightText';
 import replaceAllRelByAbs from './ConstructUrls';
+import printPage from './PrintPage';
 
 class PageViewer extends React.Component {
   
@@ -198,6 +199,7 @@ class PageViewer extends React.Component {
   };
 
   componentDidUpdate = () => {
+    printPage();
     copyCharLimit(this);
     //prints page no in the page rendered
     this.enablePageNo();
@@ -207,6 +209,7 @@ class PageViewer extends React.Component {
     if ( this.bookComBlock.innerHTML.length > 0 ) {
       this.bookComBlock.parentNode.style.height = '100%';
     }
+
     // const difference_ms = new Date()-this.startTimer;
     // console.log('time took in seconds',  Math.floor(difference_ms % 60));
   };

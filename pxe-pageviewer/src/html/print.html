@@ -1,0 +1,40 @@
+<html>
+<head>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"> </script>
+<script type="text/javascript">
+function initPrint(){
+const url = "https://content.stg-openclass.com/eps/pearson-reader/api/item/52a34c8a-b182-4ce5-8afc-7fab6752ded8/1/file/belk5_pr623/OPS/s9ml/chapter01/filep70004957770000000000000000008ea.xhtml#ec8673fe130c48549b0d943de1346760";
+
+$.ajax({
+						url: url,
+						async: false,
+						cache:false,
+						dataType: "text",
+						type: 'GET',
+						success : function(data){
+							var iframe = document.createElement('iframe');
+							iframe.id='printFrame';
+						    iframe.style.width = "100%";
+						    iframe.style.height = "100%";
+							iframe.scrolling= 'no';	
+						    iframe.style.border="0";
+						    window.document.body.appendChild(iframe);
+							var iframeObj=document.getElementById(iframe.id);
+							var iframeDoc=iframeObj.contentDocument;
+							iframeDoc.open();
+				iframeDoc.write(data);
+				iframeDoc.close();
+						},
+						error: function(xhr, status, err) {
+							alert('Not able to load content')
+						}
+					});
+}
+</script>
+</head>
+<body onload="initPrint()">
+<div>
+ 		<button type="button" onClick="window.print()">Print</button>
+  		</div>
+</body>
+</html>
