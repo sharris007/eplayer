@@ -15,6 +15,7 @@ class Annotation extends Component {
   }
 
   onDocumentClick(e) {
+    
     if ((e.keyCode === 27 ||!$(e.target).closest('.annotator-editor').length) && !$('.annotator-editor').hasClass('annotator-hide')) {
       $('#' + this.props.contentId).data('annotator').editor.hide();
     }
@@ -51,7 +52,12 @@ class Annotation extends Component {
     // annotation.data('annotator').on('annotationViewerTextField', this.annotationEvent.bind(null, 'annotationViewerTextField'));
   }
 
-  annotationEvent(eventType, data, viewer) {    
+  annotationEvent(eventType, data, viewer) { 
+
+    console.log("eventType--------",eventType);
+    console.log("data------",data);
+    console.log('viewer-----------',viewer);
+
     const customAttributes = this.props.annAttributes;
     if (data.annotation||data) {
       const annData             =   data.annotation||data;

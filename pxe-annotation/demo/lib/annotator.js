@@ -277,6 +277,7 @@ Annotator = (function(_super) {
         $(h).replaceWith(h.childNodes);
       }
     }
+    console.log("annotation-----Deleted",annotation)
     this.publish('annotationDeleted', [annotation]);
     return annotation;
   };

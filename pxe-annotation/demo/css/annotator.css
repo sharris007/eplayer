@@ -1056,3 +1056,12 @@
   color: #74797b;
   margin: 10px 19px;
 }
+
+.annotator-hl{
+	-webkit-animation: glow .5s infinite alternate;
+    pointer-events: none;
+}
+@-webkit-keyframes glow {
+to {
+        text-shadow: 0 0 10px green;
+    }

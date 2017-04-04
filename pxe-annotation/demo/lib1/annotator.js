@@ -2082,7 +2082,41 @@ Annotator.Editor = (function(_super) {
   }    
   }
 
+  Editor.prototype.getAnnotationById=function(id) {
+         $('.annotator-hl').each(function() {
+          if($(this).data("annotation").id == id) {
+            return $(this).data("annotation");
+          }
+        })
+    }
   Editor.prototype.onColorChange=function(event) {
+
+    var getHTMLContents = window.getSelection().getRangeAt(0).cloneContents();
+    var elementSelection = $(getHTMLContents).context.children;
+    var annArray =[];
+    if(elementSelection.length>0){
+        for (var i=0;i<=elementSelection.length;i++){
+          var hlElements = $(elementSelection[i]).find('.annotator-hl');
+          if(hlElements.length>0){
+            for( var j=0;j<=hlElements.length;j++){
+              var dataAnnId = $(hlElements[j]).attr('data-annotation-id');
+              if(dataAnnId !== undefined && $.inArray(dataAnnId,annArray)<0)
+                var dataAnn = this.getAnnotationById(dataAnnId);
+                $('.annotator-hl').each(function() {
+                  if($(this).data("annotation").id == dataAnnId) {
+                    console.log('dataAnn--------',$(this).data("annotation"))
+                    annArray.push($(this).data("annotation"));
+                  }
+                })
+              // annArray.push(dataAnn);
+
+            }
+            
+          }
+        }
+    }
+    console.log('annArray---------',annArray); 
+    debugger;
     window.getSelection().removeAllRanges();
     this.element.removeClass('hide-note');
     var isTopAlign=(!this.annotation.color)?true:false;
