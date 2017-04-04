@@ -11,7 +11,7 @@ import crossRef from './CrossRef';
 import copyCharLimit from './CopyCharLimit';
 import HighlightText from './HighlightText';
 import replaceAllRelByAbs from './ConstructUrls';
-import Popout from './printPage';
+import PrintPage from './printPage';
 
 class PageViewer extends React.Component {
   
@@ -191,6 +191,28 @@ class PageViewer extends React.Component {
       }
     }
   };
+
+  setPageTheme = () => {
+    const linkEle = 'link[title][rel*="stylesheet"]';
+    const getAllLinkTags = this.bookContainerRef.querySelectorAll(linkEle);
+    const bgTheme = this.props.src.bgColor;
+
+    if ( this.bookContainerRef.querySelectorAll('link[title="'+ bgTheme +'"]').length ) {
+      getAllLinkTags.forEach (function(link) {
+        link.setAttribute('disabled', 'disabled');
+      });
+      $('link[title="'+ bgTheme +'"]', this.bookContainerRef).removeAttr('disabled');
+    }
+    else {
+      getAllLinkTags.forEach (function(link) {
+        link.setAttribute('disabled', 'disabled');
+        if (!(link.title === 'night' ||  link.title === 'sepia')) {
+          $('link[title="'+ link.title +'"]', this.bookContainerRef).removeAttr('disabled');
+        }
+      });
+    }
+  }
+
   componentWillMount = () => {
     this.init(this.props);
   };
@@ -208,9 +230,7 @@ class PageViewer extends React.Component {
     this.loadMultimediaNscrollToFragment();
     crossRef(this);
     document.addEventListener('click', this.clearSearchHighlights);
-    if ( this.bookComBlock.innerHTML.length > 0 ) {
-      this.bookComBlock.parentNode.style.height = '100%';
-    }
+    this.setPageTheme();
 
     // const difference_ms = new Date()-this.startTimer;
     // console.log('time took in seconds',  Math.floor(difference_ms % 60));
@@ -228,27 +248,28 @@ class PageViewer extends React.Component {
     this.setState({popoutWin : true});
       
   }
+  popoutClosed = () => {
+    this.setState({popoutWin : false});
+  }
+
   render() {
     const zommLevel = this.props.src.pageZoom ? this.props.src.pageZoom + '%' : '100%';
-    const bgColor = this.props.src.bgColor ? this.props.src.bgColor : 'default';
-    const printPageUrl = this.state.currentPageUrl;
     return ( 
       <div id = "book-render-component" ref = {(el) => { this.bookComBlock = el; }} tabIndex = "0" onKeyUp = {this.arrowNavigation} >
         <button type="button" onClick={this.printFun}>Print</button>
         <div id={this.props.src.contentId}>
-          <div id = "book-container" className = {'book-container' + ' ' + bgColor} ref = {(el) => { this.bookContainerRef = el; }} style={{zoom : zommLevel}}>
+          <div id = "book-container" className = "book-container" ref = {(el) => { this.bookContainerRef = el; }} style={{zoom : zommLevel}}>
             {this.state.renderSrc ?<div dangerouslySetInnerHTML={{__html: this.state.renderSrc}}></div>:''} 
           </div>
         </div>
         {this.props.src.enableGoToPage ?this.getGoToElement():''} 
         <FooterNav data = {this.state}  onClickNextCallBack = {this.goToNext} onClickPrevCallBack = {this.goToPrev}/> 
         <div ref = {(el) => { this.drmBlockRef = el; }}> </div >
-{ this.state.popoutWin ?
-          <Popout title='Test' onClosing={this.popoutClosed} printUrl={this.state.currentPageUrl} baseUrl={this.props.src.baseUrl}>
-            <div id="printContainer">
-            <button type="button" id="printId">Print</button>
-            </div>
-          </Popout> : false }
+{this.state.popoutWin ?
+          <PrintPage title={this.state.currentPageUrl} url="../src/html/print.html" onClosing={this.popoutClosed} printUrl={this.state.currentPageUrl} 
+          baseUrl={this.props.src.baseUrl}>
+            <div id="printContainer"><button type="button" id="printId">Print</button><div id="watermark"><p>Not for Distribution</p></div></div>
+          </PrintPage> : false}
 
 
       </div>
