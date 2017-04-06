@@ -141,6 +141,25 @@ Annotator.Editor = (function(_super) {
   }
 
   Editor.prototype.onColorChange=function(event) {
+
+    var getHTMLContents = window.getSelection().getRangeAt(0).cloneContents();
+    var elementSelection = $(getHTMLContents).context.children;
+    var annArray =[];
+    debugger;
+    if(elementSelection.length>0){
+        for (var i=0;i<=elementSelection.length;i++){
+          var hlElements = $(elementSelection[i]).find('.annotator-hl');
+          if(hlElements.length>0){
+            for( var j=0;j<=hlElements.length;j++){
+              var dataAnnId = $(hlElements[j]).attr('data-annotation-id');
+              if(dataAnnId !== undefined && $.inArray(dataAnnId,annArray)<0)
+              annArray.push(dataAnnId);
+            }
+          }
+        }
+    }
+    console.log('annArray---------',annArray); 
+
     window.getSelection().removeAllRanges();
     this.element.removeClass('hide-note');
     var isTopAlign=(!this.annotation.color)?true:false;

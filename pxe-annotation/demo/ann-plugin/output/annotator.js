@@ -2117,6 +2117,29 @@ Annotator.Editor = (function(_super) {
   }
 
   Editor.prototype.onColorChange=function(event) {
+    
+    var getHTMLContents = window.getSelection().getRangeAt(0).cloneContents();
+    var elementSelection = $(getHTMLContents).context.children;
+    var annArray =[];
+    
+    if(elementSelection.length>0){
+        for (var i=0;i<=elementSelection.length;i++){
+          var hlElements = $(elementSelection[i]).find('.annotator-hl');
+          if(hlElements.length>0){
+            for( var j=0;j<=hlElements.length;j++){
+              var dataAnnId = $(hlElements[j]).attr('data-ann-id') || $(hlElements[j]).attr('data-annotation-id');
+              if(dataAnnId !== undefined && $.inArray(dataAnnId,annArray)<0){
+                annArray.push(dataAnnId);
+                // $('.annotator-outer.annotator-viewer').triggerHandler.apply($('.annotator-outer.annotator-viewer'), ['delete', [annArray]]);
+              }                
+            }
+          }
+        }
+    }
+    console.log('annArray---------',annArray); 
+    debugger;
+    // return $('.annotator-outer.annotator-viewer').triggerHandler.apply($('.annotator-outer.annotator-viewer'), ['delete', [this.annotation]]);
+
     window.getSelection().removeAllRanges();
     this.element.removeClass('hide-note');
     var isTopAlign=(!this.annotation.color)?true:false;
