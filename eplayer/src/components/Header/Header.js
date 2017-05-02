@@ -242,10 +242,8 @@ export class Header extends React.Component {
           iconElementRight={
             <div>
               <div className="gotopage-wrapper">
-                <input type="text" id="pageNum" placeholder="Go to page" title="Go to page - Enter a page number, like 34, xii, or A-15. Press enter to submit" onChange={ this.goToTextChange } onKeyDown = {(e) => this.goToPageOnKeyUp(e)}/>
-                 <button className="btn btn-link gotopage-button" onClick={this.goToPageClick}>
-                 <i className="fa fa-arrow-circle-right" aria-hidden="true"></i>
-                </button>
+                <input type="text" id="pageNum" placeholder="Go to" title="Go to page - Enter a page number, like 34, xii, or A-15. Press enter to submit" onChange={ this.goToTextChange } onKeyDown = {(e) => this.goToPageOnKeyUp(e)}/>
+                 <i className="fa fa-arrow-circle-right arrow-right-goto" aria-hidden="true" onClick={this.goToPageClick}></i>
               </div>
               <div className="bookmarkIcon" role="button" tabIndex="0">
                 <BookmarkIcon data={bookmarkIconData} />

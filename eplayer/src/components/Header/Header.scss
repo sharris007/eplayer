@@ -98,7 +98,6 @@ $padding-right: 30px;
     float:left;
     margin: 10px 15px;
     display: inline-block;
-    padding: 4px 0 4px 10px;
     border: 1px solid #fff;
     border-radius: 2px;
     padding: 1px 0 3px 10px;
@@ -106,44 +105,25 @@ $padding-right: 30px;
 }
 .gotopage-wrapper input {
     max-width: 105px;
-    width: auto;
     text-align: left;
     height: 23px;
     font-size: 14px;
-    vertical-align: baseline;
+    vertical-align: bottom;
     box-shadow: none;
     background-color: inherit;
     border: 0;
     color: #fff;
     width: 40px;
-    padding: 0;
-    margin: 0;
+    padding-top: 0px;
+    margin-top: 0px;
     outline: none !important;
-}
-.gotopage-wrapper .btn {
-    line-height: 20px;
-    margin-right: 2px;
-}
-.gotopage-wrapper .gotopage-button {
-    margin: 0;
-    padding: 0;
-    background: 0 0;
-    line-height: normal;
-    text-shadow: none;
-    border-radius: 0;
+     
 }
 
-.gotopage-wrapper .btn{
-  outline: none !important;
-  color:inherit;
-}
-#pageNum::-webkit-input-placeholder {
-  color:#fff;
-}
-.gotopage-wrapper .gotopage-button i.fa {
+.arrow-right-goto {
     font-size: 18px;
     margin: 0 8px;
     color: #fff;
-    padding-top:2px;
     outline: none !important;
+    cursor: pointer;
 }
