@@ -104,20 +104,16 @@ $padding-right: 30px;
     color: #999;
 }
 .gotopage-wrapper input {
-    max-width: 105px;
-    text-align: left;
+    text-align: center;
     height: 23px;
     font-size: 14px;
     vertical-align: bottom;
     box-shadow: none;
     background-color: inherit;
-    border: 0;
+    border: none;
     color: #fff;
     width: 40px;
-    padding-top: 0px;
-    margin-top: 0px;
-    outline: none !important;
-     
+    outline: none;
 }
 
 .arrow-right-goto {
