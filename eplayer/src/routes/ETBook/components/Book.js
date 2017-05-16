@@ -231,11 +231,14 @@ export class Book extends Component {
     if(viewerCallBack==false)
     this.setState({ drawerOpen: true });
   }
-  goToPageCallback = (pageId) => {
+  goToPageCallback = (pageId, searchText) => {
     const currentData = find(this.state.pageDetails.playListURL, list => list.id === pageId);
     const playpageDetails  = this.state.pageDetails ; 
     playpageDetails.currentPageURL =  currentData;
     playpageDetails.tocUpdated  = true;
+    if(searchText) {
+      playpageDetails.searchText = searchText;
+    }
     this.setState({
       pageDetails: playpageDetails,
       drawerOpen: false
@@ -296,11 +299,11 @@ export class Book extends Component {
   goToPage = (pageId) => {
     let bookObj = {};
     this.state.pageDetails.playListURL.forEach( (data) => { 
-      if(data.href && data.href.match(pageId.split("OPS")[1]) ) { 
+      if(data.href && data.href.match(pageId.split("OPS")[1].split('*')[0]) ) { 
         bookObj = data;
       } 
     });
-    this.goToPageCallback(bookObj.id)
+    this.goToPageCallback(bookObj.id, pageId.split("OPS")[1].split('*')[1])
   }
 
   listClick = () => {
