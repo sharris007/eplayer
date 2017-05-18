@@ -73,7 +73,7 @@ svg[class$="-24"] {
   text-align: right;
   padding-right: 25px;
   position: absolute;
-  top: 15px;
+  top: 75px;
 }
 
 @media print {
@@ -159,4 +159,7 @@ svg[class$="-24"] {
     font-size: 24px;
     margin-left: 25%;
     font-weight: bold;
+  }
+  #pxe-viewer .book-container {
+      margin-top: 66px;
   }
