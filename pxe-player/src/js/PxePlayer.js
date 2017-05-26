@@ -24,11 +24,13 @@ class PxePlayer extends React.Component {
     };
   }
   onPageChange = (type, data) => {
+  
     switch(type){
       case 'pagescroll':
         this.props.applnCallback(type, data);
         break;
       default:
+      if(data){
         const parameters = this.state.urlParams;
         parameters.id = data.id;
         parameters.uri = encodeURIComponent(data.href);
@@ -44,6 +46,8 @@ class PxePlayer extends React.Component {
             this.props.applnCallback(type, data);
           }
         });
+      }
+        
     }
     
   };
@@ -103,7 +107,6 @@ class PxePlayer extends React.Component {
       });
     }
   };
-
   annotationCallBack = (eventType, data) => {
     const receivedAnnotationData = data;
     receivedAnnotationData.user = this.state.urlParams.user;
@@ -159,11 +162,12 @@ class PxePlayer extends React.Component {
     const { bootstrapParams } = this.props;
     const { annotationData } = this.state;
     return (<div>
+      
       <PageViewer src={bootstrapParams.pageDetails} sendPageDetails={this.onPageChange} onBookLoaded={bload => this.onBookLoaded(bload)} applnCallback={this.props.applnCallback} />
       {this.state.popUpCollection.length > 0 ? <PopUpInfo popUpCollection={this.state.popUpCollection} bookId="book-container" /> : ''}
       <div id="divGlossary" ref={(dom) => { this.divGlossaryRef = dom; }} style={{ display: 'none' }} />
       <Annotation
-        annAttributes={this.state.annAttributes} shareableAnnotations={bootstrapParams.pageDetails.annotationShareable} annotationData={annotationData.rows} contentId="pxe-viewer"
+        annAttributes={this.state.annAttributes} shareableAnnotations={bootstrapParams.pageDetails.annotationShareable} annotationData={annotationData.rows} contentId={bootstrapParams.pageDetails.contentId}
         annotationEventHandler={this.annotationCallBack}
             />
     </div>);

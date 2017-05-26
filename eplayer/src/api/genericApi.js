@@ -2,6 +2,8 @@ import { resources , domain } from '../../const/Settings';
 const etextService = resources.links.etextServiceUrl;
 const pxeService   = resources.links.pxeServiceUrl;
 const envType      = domain.getEnvType();
+console.log("pxeService----",pxeService);
+console.log("pxeService----",envType);
 
 export const getTotalAnndata = data => fetch(pxeService[envType]+'/context/'+data.context+'/annotations',{
   method: 'GET',

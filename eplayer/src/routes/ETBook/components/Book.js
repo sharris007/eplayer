@@ -17,8 +17,10 @@ import { Annotation } from 'pxe-annotation';
 import { Wrapper } from 'pxe-wrapper';
 import { PopUpInfo } from '@pearson-incubator/popup-info';
 import RefreshIndicator from 'material-ui/RefreshIndicator';
-import {resources , domain ,typeConstants} from '../../../../const/Settings'
+import {resources , domain ,typeConstants} from '../../../../const/Settings';
+import MultiTaskPanel from '../../MultiTaskPanel/components/MultiTaskPanel.js';
 
+import Frame from 'react-frame';
 export class Book extends Component {
   constructor(props) {
       super(props);
@@ -37,7 +39,8 @@ export class Book extends Component {
         },
         annAttributes:customAttributes,
         goToTextVal:'',
-        isPanelOpen:false
+        isPanelOpen:false,
+        multipanelData:''
       };
       this.divGlossaryRef = '';
       this.wrapper = '';
@@ -53,6 +56,27 @@ export class Book extends Component {
     this.props.dispatch(getTotalBookmarkCallService(this.state.urlParams));
     this.props.dispatch(getBookCallService(this.state.urlParams.context));
     this.props.dispatch(getTotalAnnCallService(this.state.urlParams));
+  }
+  componentDidMount(){
+    const pageDetails={...this.state.pageDetails};
+    pageDetails.currentPageURL = {
+              'id':'afab597007b81dd25ee588e12856b3db25b309841-f1a0c0e3fc9c4f36a06ea462c6f9fd78',
+              'playOrder': 6,
+              'title': '1.1 The Process of Science',
+              'href': 'OPS/s9ml/chapter01/filep70004957770000000000000000006cf.xhtml#f1a0c0e3fc9c4f36a06ea462c6f9fd78' //'OPS/s9ml/appendixe/filep70004967280000000000000000051ac.xhtml'
+            };
+    const frameData = {
+        bootValues :{
+          pageDetails,
+          urlParams:this.state.urlParams
+        }
+    }
+     
+    
+  }
+  componentDidUpdate(){
+    
+
   }
   componentWillUnmount() {
     WidgetManager.navChanged(this.nodesToUnMount);
@@ -144,12 +168,32 @@ export class Book extends Component {
         if(data){
           this.setState({isPanelOpen:true},()=>{
               const pageDetails={...this.state.pageDetails};
-              pageDetails.currentPageURL=data;
-              this.props.dispatch({
-                type: 'CREATE_MULTIPANEL_BOOTSTRAP_PARAMS',
-                data: {pageDetails:pageDetails,urlParams:this.state.urlParams}
+              pageDetails.currentPageURL = data;
+              pageDetails.contentId ="pxe-multipanel";
+              pageDetails.enableNavigation=false;
+              pageDetails.applnCallback = function(){console.log('applnCallback');};
+              const frameData = {
+                  pageDetails,
+                  urlParams:this.state.urlParams
+              }
+              this.setState({
+                  multipanelData :frameData,
+
               });
-              browserHistory.replace(`/eplayer/MultiTaskPanel`);
+             
+             
+              // this.props.dispatch({
+              //   type: 'CREATE_MULTIPANEL_BOOTSTRAP_PARAMS',
+              //   data: {pageDetails:pageDetails,}
+              // });
+              $(".viewerContent").css({'width':'50%'});
+              $(".book-container").css({'float': 'left','overflow-x': 'hidden','overflow-y': 'scroll','height': '535px','width':'100%'});
+              
+              $("#pxe-viewer").css({'width': '82.5%','margin-left': '25px'});
+              $('.navigation').css({'width': '49%'});
+              $(".printBlock").css({'width': '85%'})
+              // document.getElementById("pxeFrame").contentWindow.postMessage(frameData, "*");
+              // browserHistory.replace(`/eplayer/MultiTaskPanel`);
               // window.open(`/eplayer/MultiTaskPanel`, 'panel');
               // window.open(`http://localhost:3000/eplayer/ETbook/1Q98UHDD1E1/page/${data.id}`,'panel');
           });
@@ -278,7 +322,6 @@ export class Book extends Component {
     console.log("....** listClick function...")
   }
   
-
   render() {
     const callbacks = {};
     const { annotationData, annDataloaded ,annotationTotalData ,playlistData, playlistReceived, bookMarkData ,tocData ,tocReceived} = this.props; // eslint-disable-line react/prop-types
@@ -322,10 +365,11 @@ export class Book extends Component {
             {!playlistReceived ? <RefreshIndicator size={50} left={650} top={200} status="loading" /> :''}
             {playlistReceived ? <div className="printBlock"><img className="printer-epl" src={"https://cdn1.iconfinder.com/data/icons/nuvola2/128x128/devices/print_printer.png"} onClick={this.printFun} /> </div>: '' }
             {playlistReceived ? <PxePlayer bootstrapParams={bootstrapParams}  applnCallback={this.onPageChange}/> : ''}
+            {this.state.multipanelData? 
+                <MultiTaskPanel bootValues={this.state.multipanelData}/>
+            :''}
           </div>
-           {this.state.isPanelOpen?<div>		
-            <iframe name="panel" width="500" height="600" ></iframe>
-          </div>:''}
+           
       </div>
     );
   }

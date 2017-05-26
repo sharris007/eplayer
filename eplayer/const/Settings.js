@@ -50,9 +50,9 @@ export const resources = {
 export const typeConstants = {
 
   GET_TOTALANNOTATION: 'GET_TOTALANNOTATION',
-  GET_ANNOTATION: 'GET_ANNOTATION',
-  POST_ANNOTATION: 'POST_ANNOTATION',
-  PUT_ANNOTATION: 'PUT_ANNOTATION',
+  GET_ANNOTATION     : 'GET_ANNOTATION',
+  POST_ANNOTATION    : 'POST_ANNOTATION',
+  PUT_ANNOTATION     : 'PUT_ANNOTATION',
   DELETE_LISTANNOTATION: 'DELETE_LISTANNOTATION',
   GET_PLAYLIST: 'GET_PLAYLIST',
   GET_TOC: 'GET_TOC',
@@ -77,7 +77,7 @@ export const domain = {
     const locationOrigin = this.getLocationOrigin();
 
     if (locationOrigin.indexOf('localhost') !== -1)
-          { return 'local'; }
+          { return 'qa'; }
     else if (locationOrigin.indexOf('pxe-sdk.dev-openclass.com') !== -1)
           { return 'qa'; }
     else if (locationOrigin.indexOf('pxe-sdk-qa.stg-openclass.com') !== -1)

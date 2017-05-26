@@ -236,7 +236,7 @@ class PageViewer extends React.Component {
   componentWillReceiveProps(newProps) {
     
     if (parseInt(this.props.src.currentPageURL.playOrder) !== parseInt(newProps.src.currentPageURL.playOrder)) {
-      const pageIndex=this.props.src.playListURL.findIndex(el =>{
+      const pageIndex=newProps.src.playListURL.findIndex(el =>{
         return parseInt(el.playOrder)===parseInt(newProps.src.currentPageURL.playOrder); 
       });
       this.getResponse(parseInt(pageIndex), true, 'propChanged', this.scrollWindowTop);
@@ -258,26 +258,26 @@ class PageViewer extends React.Component {
   }
 
   componentWillUpdate = (nextProps, nextState) => {
-    const pageBreakClass = $("#book-render-component").find(".pagebreak");
-    if(pageBreakClass.length>0){
-      const initPageNo = $(pageBreakClass[0]).attr('title');
-      this.props.sendPageDetails("pagescroll", initPageNo);
-    }
+    
     if(nextProps.src.currentPageURL.pageFragmentId){
       const scrollTopVal = $('#'+nextProps.src.currentPageURL.pageFragmentId)
       if(scrollTopVal.length > 0){
         const topValue = scrollTopVal.offset().top;
-        
+        const pageBreakClass = $("#book-render-component").find(".pagebreak");
         let pagenumberArr = {};
         pageBreakClass.each(function (i, s) {
             pagenumberArr[$(s).attr("title")] = $(s).offset().top-100;             
         });
-        this.props.sendPageDetails("pagescroll",scrollTopVal.attr("title")); 
         setTimeout(()=>{
           $('html, body').animate({
               scrollTop: pagenumberArr[scrollTopVal.attr("title")] 
-          }, 'slow');
-        },2000)
+          }, 2500);
+        },1500)
+
+        setTimeout(()=>{
+           nextProps.src.currentPageURL.pageFragmentId = '';
+        },5000)
+        
       }
     }
   }
@@ -295,6 +295,11 @@ class PageViewer extends React.Component {
     } 
     this.setPageTheme();
     audioWbWHighlight(this);
+    const pageBreakClass = $("#book-render-component").find(".pagebreak");
+    if(pageBreakClass.length>0){
+      const initPageNo = $(pageBreakClass[0]).attr('title');
+      this.props.sendPageDetails("pagescroll", initPageNo);
+    }
   };
 
   render() {
@@ -309,7 +314,7 @@ class PageViewer extends React.Component {
             {this.state.completeBookLoad ?<div dangerouslySetInnerHTML={{__html: this.state.renderSrc}}></div>:''} 
           </div>
         </div>
-        {this.state.completeBookLoad ? <FooterNav data = {this.state}  onClickNextCallBack = {this.goToNext} onClickPrevCallBack = {this.goToPrev}/> : ''}
+        {this.state.completeBookLoad && this.props.src.enableNavigation? <FooterNav data = {this.state}  onClickNextCallBack = {this.goToNext} onClickPrevCallBack = {this.goToPrev}/> : ''}
         <div ref = {(el) => { this.drmBlockRef = el; }}> </div >
         <LightBox lightBoxProps={this.state.lightBoxProps}/>
       </div>
