@@ -4742,6 +4742,8 @@ define("core/Viewer", ["./WebPDF", "./Config", "./ReaderApp", "./Cavans/uupaa-co
                     password: a.getPDFPassword()
                 };
                 c[e] = !0
+                /*@author:eT1 team 
+                commented to merge the new Reader+ SDK with the react app*/
                 /*if(window.location.protocol != "file:"){
                     var bookid = JSON.parse(localStorage.getItem('bookId'));
                     if(bookid == '56f24a41226b031530f1a836' || bookid == '57923dc2d26763694cfe8497' || bookid == '575960e0e76d21070f66f9bc'){
@@ -10708,6 +10710,8 @@ define("core/Viewer", ["./WebPDF", "./Config", "./ReaderApp", "./Cavans/uupaa-co
         this.asyncLoadPDFBookmark = function(c, d, e, f) {
             if ($.isFunction(e) && $.isFunction(f) || $.error("both 'doneHandler' and 'failedHandler' must be function."), 0 >= a) return console.error("Maximum number of retries exceeded for getBookmarkData request."), void f(null);
             var g;
+            /*@author:eT1 team 
+            commented to merge the new Reader+ SDK with the react app*/
             /*if(window.location.protocol != "file:"){
                 var bookid = JSON.parse(localStorage.getItem('bookId'));
                 if(bookid == '56f24a41226b031530f1a836' || bookid == '57923dc2d26763694cfe8497' || bookid == '575960e0e76d21070f66f9bc'){
@@ -16934,6 +16938,8 @@ define("core/Viewer", ["./WebPDF", "./Config", "./ReaderApp", "./Cavans/uupaa-co
         }, this.asyncLoadDocument = function(a, c, d, e, f) {
             if (!$.isFunction(e) || !$.isFunction(f)) return void $.error("both 'doneHandler' and 'failedHandler' must be function.");
             var g;
+            /*@author:eT1 team 
+            commented to merge the new Reader+ SDK with the react app*/
             /*if(window.location.protocol != "file:"){
                 var bookid = JSON.parse(localStorage.getItem('bookId'));
                 if(bookid == '56f24a41226b031530f1a836' || bookid == '57923dc2d26763694cfe8497' || bookid == '575960e0e76d21070f66f9bc'){
@@ -17473,6 +17479,8 @@ define("core/Viewer", ["./WebPDF", "./Config", "./ReaderApp", "./Cavans/uupaa-co
             var d = c ? "thumb" : b + "",
                 e = "?password=" + i.getPDFPassword();
                 var f;
+                /*@author:eT1 team 
+                commented to merge the new Reader+ SDK with the react app*/
                /* if(window.location.protocol != "file:"){
                     var bookid = JSON.parse(localStorage.getItem('bookId'));
                     if(bookid == '56f24a41226b031530f1a836' || bookid == '57923dc2d26763694cfe8497' || bookid == '575960e0e76d21070f66f9bc'){
@@ -17568,6 +17576,8 @@ define("core/Viewer", ["./WebPDF", "./Config", "./ReaderApp", "./Cavans/uupaa-co
 }), define("core/ImageLazyLoad", ["core/WebPDF"], function(a, b, c) {
     var d = a("core/WebPDF");
     return d.ImgLazyLoad = function(a, b, c, e, f) {
+        /*@author:eT1 team 
+        commented to merge the new Reader+ SDK with the react app*/
         /*if(window.location.protocol != "file:"){
             if(a.indexOf("pages") > -1){
                 e(c);      

@@ -381,8 +381,8 @@ function initViewer(config) {
   var openFileUrl = config.PDFassetURL;
   var zip = config.zip;
   var encpwd = config.encpwd;
-  var pdfBookCallback = config.callbackOnPageChange;
-  var assertUrl = config.assertUrl;
+  var pdfBookCallback = config.callbackOnPageChange;       //callback function from react app added by eT1 team
+  var assertUrl = config.assertUrl;                       //Added by eT1 team for fetching Assert Url from config 
   if(config.requestheaderParams) {
   assetid = config.requestheaderParams.assetid || "";
   deviceid = config.requestheaderParams.deviceid || "";
@@ -404,6 +404,9 @@ function initViewer(config) {
   }
   //initWebPDFMini()
   // open the sample file
+
+  /*author:eT1 team
+  using assertUrl Passed from react app as part of the config*/
    if(assertUrl === '')
   { assertUrl = openFile(baseUrl,openFileUrl, config.headerParams);}
   if (assertUrl == null) return;
@@ -412,7 +415,8 @@ function initViewer(config) {
                 WebPDF.ViewerInstance.openFile(assertUrl);
                
             }
-  seajs.use(['webpdf.mini.js'], function (init) {
+  //end
+  seajs.use(['webpdf.mini.js'], function (init) {  //changed path of webpdf.mini.js by et1 team
     var options = {
         language: language,
         url: assertUrl,
@@ -435,12 +439,12 @@ function initViewer(config) {
         var pdfImageLoad = document.querySelector("#docViewer_ViewContainer_BG_" + currentPageIndex).className;
         if(pdfImageLoad.indexOf("fwr-hidden") > 1) {
         createPDFEvent('wrpageChanged');
-         pdfBookCallback('pageChanged');
+         pdfBookCallback('pageChanged');  //added by eT1 team to capture the webPDF events inside the react app
         }
     });
     WebPDF.ViewerInstance.on(WebPDF.EventList.PAGE_SHOW_COMPLETE, function (event, data) {
        createPDFEvent('wrpageLoaded');
-       pdfBookCallback('pageLoaded');
+       pdfBookCallback('pageLoaded');  //added by eT1 team to capture the webPDF events inside the react app
     });
     tocObj = initBookmark(compBaseURL,compBaseOptions);
     toolBar = initToolBar();
@@ -527,6 +531,10 @@ function openFile(baseUrl,fileUrl,headerParams,callback) {
             }
 
             url = baseUrl + "asserts\/" + curID;
+
+            /*author:eT1 team
+            To open the assert url in the initViewer() instead of openFile()*/
+
            /* if(typeof(WebPDF) != 'undefined' && WebPDF.ViewerInstance != null) {
               // open current file
                 WebPDF.ViewerInstance.openFile(url);
@@ -534,6 +542,8 @@ function openFile(baseUrl,fileUrl,headerParams,callback) {
                     callback();
                 }
             }*/
+
+            //end
 
         },
         error: function() {
@@ -696,11 +706,13 @@ function getAssetURLForPDFDownload(config,cb){
       var _this = this;
       _this.removeExistingHighlightElement = function() {
         $('.pdfHighlight').remove();
-      }
+      } 
+      /*author:eT1 team
+      To remove highlight element based on its id*/
       _this.removeHighlightElement = function(id){
         $('#'+id).remove();
       }
-
+      //end
       _this.triggerEvent = function(eventName, eventData) {
        var eventCallback = eventMap[eventName];
         if (eventCallback != null) {
@@ -791,7 +803,7 @@ function getAssetURLForPDFDownload(config,cb){
               try {
                 page = childDiv[i].getAttribute("page-index");
                 WebPDF.ViewerInstance.highlightText((page -1), pdfRectArray);                
-               _this.saveHighlight(page, highlightHashes, hId, highlightColor);
+               _this.saveHighlight(page, highlightHashes, hId, highlightColor); //Added by eT1 team to make highlight color generic
               }catch(e){
                 console.log("Error Saving Highlight");
               }
@@ -876,7 +888,7 @@ function getAssetURLForPDFDownload(config,cb){
       /*
        This method is used create Highlight Element on the Page.
       */
-      _this.saveHighlight = function(pageIndex, highlightHash, id, highlightColor) { 
+      _this.saveHighlight = function(pageIndex, highlightHash, id, highlightColor) {  //Added by eT1 team to make highlight color generic
         var highlightElements = document.querySelectorAll('.fwr-search-text-highlight');
         var parentElement = document.createElement('div');
         parentElement.setAttribute('id', id);
@@ -891,7 +903,7 @@ function getAssetURLForPDFDownload(config,cb){
           childElement.style.top = highlightElements[i].style.top;
           childElement.style.width = highlightElements[i].style.width;
           childElement.style.height = highlightElements[i].style.height;
-          childElement.style.backgroundColor = highlightColor ;
+          childElement.style.backgroundColor = highlightColor ;           //Added by eT1 team to make highlight color generic
           childElement.onclick = function() {
           _this.triggerEvent("highlightClicked", id);
           }
@@ -1018,11 +1030,13 @@ function getAssetURLForPDFDownload(config,cb){
       });
       return uuid;
      }
+     /*author:eT1 team
+     exporting openFile() to use in react app*/
       _this.openFileUrl = function(baseUrl,fileUrl,headerParams,callback){
         var assertUrl = openFile(baseUrl,fileUrl,headerParams,callback);
         return assertUrl;
       }
-
+      //end
       return {
 
         getScrollLocation: function(highlightHash) {
@@ -1034,10 +1048,13 @@ function getAssetURLForPDFDownload(config,cb){
         restoreHighlights: function(highlights) {
           var currPage = _this.restoreHighlights(highlights);
         },
+        /*author:eT1 team
+        exporting removeHighlightElement(id) to use in react app*/
         removeHighlightElement: function(id)
         {
           _this.removeHighlightElement(id);
         },
+        //end
         /*Get the total Number of Pages in the PDF*/    
          getPageCount: function() {
           var pageCount = _this.getPageCount();
@@ -1141,10 +1158,13 @@ function getAssetURLForPDFDownload(config,cb){
         setCurrentZoomLevel: function(level) {
           _this.setCurrentZoomLevel(level);
         },
+        /*author:eT1 team
+         exporting openFile() to use in react app*/
         openFileUrl : function(baseUrl,fileUrl,headerParams,callback){
           var assertUrl = _this.openFileUrl(baseUrl,fileUrl,headerParams,callback);
           return assertUrl;
         }
+        //end
       };
     }
     return pdfWrapper;
