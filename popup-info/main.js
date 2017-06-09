@@ -19,12 +19,21 @@ const translations = {
   'nl' : nlJson
 };
 
-export default class PopUpInfoComponent {
+export default class PopUpInfoComponent extends React.Component {
   constructor(props) {
+    super(props)
     addLocaleData(frLocaleData);
     addLocaleData(itLocaleData);
     addLocaleData(nlLocaleData);
     this.init(props);
+  }
+
+  componentDidMount() {
+    
+  }
+
+  render() {
+    return null
   }
 
   init=(config)=> {

@@ -12,6 +12,7 @@ import {PopupCallBacks} from './PopupCallBacks';
 class ComponentOwner extends React.Component {
   constructor(props) {
     super(props); 
+    console.log("............")
     this.state = {
       isBookLoaded: false,
       bookHTML: '',
@@ -75,4 +76,4 @@ ComponentOwner.PropTypes = {
   bookUrl: PropTypes.string.isRequired
 }
 
-export default injectIntl(ComponentOwner); // Inject this.props.intl into the component context
+export default ComponentOwner; // Inject this.props.intl into the component context

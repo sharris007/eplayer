@@ -1,7 +1,7 @@
-import  {  Component, PropTypes } from 'react';
+import  React, {  Component, PropTypes } from 'react';
 import renderHTML from 'react-render-html';
 
-class BookViewer extends Component {
+class BookViewer extends React.Component {
   constructor(props) {
     super(props);   
     this.state = {
@@ -9,17 +9,21 @@ class BookViewer extends Component {
     };
   }
 
+  componentWillMount() {
+    console.log("componentWillMount.............")
+  }
+
   componentDidMount() {
     this.setState({bookHTML : this.props.bookHTML }, () => {
-      this.props.onBookLoad();
+      if(this.props.onBookLoad) {
+        this.props.onBookLoad();
+      }
     });
     
   }
 
   render() {
-    return (<div>{
-      renderHTML(this.state.bookHTML)
-    }</div>);
+    return (this.props.onBookLoad ? <div> {renderHTML(this.state.bookHTML)} </div> : <div> <div> <a onClick={(e) => { console.log("iiiiiiiiiiiiiizxzzzzzzzzzzzzzzzzzzzzzzzzziiiiiiii", e) }} className = 'keyword'> dd </a> </div> </div>  );
   }
   
 }
