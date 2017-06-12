@@ -21,7 +21,7 @@ describe(' : PopUpInfoComponent-Spec', function () {
   	//console.log("ComponentOwner.prototype", ComponentOwner.prototype.componentDidMount.calledOnce)
     //expect(ComponentOwner.prototype.componentDidMount.calledOnce).to.equal(true);
  
- /* spy(ComponentOwner.prototype, 'componentDidMount');
+/*  spy(ComponentOwner.prototype, 'componentDidMount');
     const wrapper = mount(<ComponentOwner bookUrl = "https://content.stg-openclass.com/eps/pearson-reader/api/item/651da29d-c41d-415e-b8a4-3eafed0057db/1/file/LutgensAtm13-071415-MJ-DW/OPS/s9ml/chapter02/filep7000496728000000000000000000cae.xhtml" />);
     console.log(wrapper.state())
     expect(ComponentOwner.prototype.componentDidMount.calledOnce).to.equal(true);*/
@@ -46,7 +46,7 @@ describe(' : PopUpInfoComponent-Spec', function () {
       console.log("TestUtils.findRenderedDOMComponentWithTag(Testcomponent, 'div')", TestUtils.findRenderedDOMComponentWithTag(this.Testcomponent, 'div'))
     }, 2000)*/
     
-    setTimeout(()=>{
+    //setTimeout(()=>{
       //console.clear();
 
       /*let popOverCollection = {};let popUpCollection = [];
@@ -69,7 +69,7 @@ describe(' : PopUpInfoComponent-Spec', function () {
       popUpCollection.push({'popOverCollection' : popOverCollection, 'item' : dom})
       let popUp = new PopUpInfo({'popUpCollection' : popUpCollection, 'bookId' : 'bookDiv'});
       popUp.framePopOver(0, dom)*/
-    }, 2000)
+    //}, 2000)
     
     console.log("PopUpInfo", PopUpInfo)
   })

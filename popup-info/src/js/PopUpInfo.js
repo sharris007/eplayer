@@ -27,7 +27,8 @@ class PopUpInfo extends Component {
 
   componentDidMount() { }
 
-  framePopOver = (index, event) => {
+  framePopOver(index, event) {
+    alert("Workss")
     event.preventDefault();
     if (event.target.getAttribute('class').indexOf('annotator-hl') > -1) {
       return false;

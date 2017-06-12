@@ -23,7 +23,7 @@ class BookViewer extends React.Component {
   }
 
   render() {
-    return (this.props.onBookLoad ? <div> {renderHTML(this.state.bookHTML)} </div> : <div> <div> <a onClick={(e) => { console.log("iiiiiiiiiiiiiizxzzzzzzzzzzzzzzzzzzzzzzzzziiiiiiii", e) }} className = 'keyword'> dd </a> </div> </div>  );
+    return (this.props.onBookLoad ?<div>{renderHTML(this.state.bookHTML)}</div>: <div><div><a  className='keyword'>dd</a></div></div>);
   }
   
 }

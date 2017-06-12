@@ -24,7 +24,7 @@ class Root extends React.Component {
   render() {
     return (
       <div id= "demo-content">
-        <label> Hiii </label>
+        
       </div>
     );
   }
