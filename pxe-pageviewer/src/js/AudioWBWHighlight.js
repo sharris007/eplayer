@@ -67,8 +67,11 @@ const initAudio = (thisObj, jsonAttr, currentEle, audio) => {
           audio.addEventListener('timeupdate', function() {
             audioJsonData.forEach(function(element) {
               $('#'+element.id).removeClass('audioHighlight');
-              if ( audio.currentTime >= element.start && audio.currentTime <= element.end ) {
+              if ( audio.currentTime >= element.start && audio.currentTime <= element.end ) { 
                 $('#'+element.id).addClass('audioHighlight');
+                if ( ($('#'+element.id).offset().top-$(window).scrollTop() ) >= ($(window).height() - 65) ) {
+                  window.scrollBy(0, 180);
+                }
               }
             });
           });
@@ -84,11 +87,11 @@ const initAudio = (thisObj, jsonAttr, currentEle, audio) => {
         astPlayBtn.removeClass('ast-icon-pause-button').addClass('ast-icon-play-button');
       });
       $(document).on('keydown', function(e) {
-          if(e.which == 32) {
-            e.preventDefault();
-            audioPause(audio);
-            astPlayBtn.removeClass('ast-icon-pause-button').addClass('ast-icon-play-button');
-          }    
+        if (e.which === 32) {
+          e.preventDefault();
+          audioPause(audio);
+          astPlayBtn.removeClass('ast-icon-pause-button').addClass('ast-icon-play-button');
+        }    
       });
     });
 };
