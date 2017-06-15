@@ -37,10 +37,10 @@ export default class BookshelfPage extends React.Component {
     // if (sessionStorage.getItem('piToken') === null) {
     //   browserHistory.push(`/eplayer/login`);
     // }
-    const cookies = new Cookies();
+    this.cookies = new Cookies();
     piSession.getToken((result, userToken) => {
       if (result === piSession.Success) {
-        cookies.set('secureToken', userToken, { path: '/' });
+        this.cookies.set('secureToken', userToken, { path: '/' });
       }
     });
   }
@@ -90,15 +90,18 @@ then set content, bookinfo, bookmarks. */
     if (this.props.location.query.eT1StandaloneBkshf === 'Y' || this.props.location.query.eT1StandaloneBkshf === 'y') {
       urn = `https://sms.bookshelf.cert1.ebookplus.pearsoncmg.com/ebook/ipad/getuserbookshelf?siteid=11444&hsid=a37e42b90f86d8cb700fb8b61555bb22&key=${sessionid}`; // eslint-disable-line
     }
-    this.props.fetch(urn, piToken);
+    const piToken1 = this.cookies.get('secureToken');
+    this.props.fetch(urn, piToken1);
     // console.log(urn);
   }
 
 /* Created function for handle single book click.*/
-  handleBookClick = (bookId, iseT1) => {
+  handleBookClick = (bookId, iseT1, isCourse) => {
     if (iseT1) {
        /* BrowserHistory used for navigating the next page from current page. */
       browserHistory.push(`/eplayer/pdfbook/${bookId}`);
+    } else if (isCourse) {
+      browserHistory.push(`/eplayer/Course/${bookId}`);
     } else {
       browserHistory.push(`/eplayer/ETbook/${bookId}`);
     }
@@ -129,7 +132,12 @@ then set content, bookinfo, bookmarks. */
       if (this.props.location.query.eT1StandaloneBkshf === 'Y' || this.props.location.query.eT1StandaloneBkshf === 'y') { // eslint-disable-line
         booksArray = books.data[0].entries;
       } else {
-        booksArray = books.data.entries;
+        // bookshelf multiple calls
+        // debugger;
+        const eT2bookShelfEntries = books[0].data.entries || [];
+        const registrarBookShelfEntries = books[1].data.userCourseSectionEntries || [];
+        // const compositeBookShelfEntries = books[2].data.userCourseSectionEntries || [];
+        booksArray = eT2bookShelfEntries.concat(registrarBookShelfEntries);// , compositeBookShelfEntries);
       }
       booksArray.forEach((bookData) => {
         const bookRef = bookData;
@@ -140,10 +148,10 @@ then set content, bookinfo, bookmarks. */
         /* Created an object which contains all book properties. which we are passing in bookself component. */
 
         const book = {
-          id: bookRef.bookId,
+          id: bookRef.bookId || bookRef.section.courseId,
           author: bookRef.creator || '',
-          image: bookRef.thumbnailImageUrl ? bookRef.thumbnailImageUrl : '',
-          title: bookRef.title || '',
+          image: bookRef.thumbnailImageUrl || bookRef.section.avatarUrl || '',
+          title: bookRef.title || bookRef.section.sectionTitle || '',
           description: bookRef.description || '',
           tocId: '',
           updfUrl: bookRef.uPdfUrl,
@@ -154,7 +162,8 @@ then set content, bookinfo, bookmarks. */
           userInfoLastModifiedDate: bookRef.userInfoLastModifiedDate,
           userBookLastModifiedDate: bookRef.userBookLastModifiedDate,
           userBookScenarioLastModifiedDate: bookRef.userBookScenarioLastModifiedDate,
-          roleTypeID: bookRef.roleTypeID
+          roleTypeID: bookRef.roleTypeID,
+          isCourse: !!((bookRef.section && bookRef.section.courseId))
         };
         booksdata.push(book);
       });

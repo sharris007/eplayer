@@ -1,7 +1,9 @@
 import contentful from 'contentful';  // eslint-disable-line import/no-extraneous-dependencies
 import axios from 'axios';
 
+import { domain, resources } from '../../../const/Settings';
 
+const envType = domain.getEnvType();
 export const clients = {
 
   search: axios.create({
@@ -60,6 +62,13 @@ export const clients = {
       'Content-Type': 'application/json'
     }
   }),*/
+  getBookShelfMutiple: axios.create({
+    baseURL: resources.links.bookShelfMultiple[envType],
+    timeout: 20000,
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  }),
 
   getBookShelf: axios.create({
     baseURL: 'https://etext-qa-stg.pearson.com/api/nextext-api/v1/api/nextext',

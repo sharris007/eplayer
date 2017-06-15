@@ -1,5 +1,5 @@
 import { clients } from '../../../components/common/client'; /* Importing the client file for framing the complete url, since baseurls are stored in client file. */
-
+import axios from 'axios';
 
 /* Created a Action creater for Bookshelf, that will check with  type defined in Action Constant
    and called the respective Action Creator and then pass to respective reducer. Also in we have defined Headers and
@@ -7,11 +7,32 @@ import { clients } from '../../../components/common/client'; /* Importing the cl
 
 export const fetch = (urn, piToken) => {
   if (piToken !== 'dummypiToken') {
+    // return {
+    //   type: 'BOOKS',
+    //   payload: clients.getBookShelf.get(`${urn}`, {
+    //     headers: { 'Content-Type': 'application/json',
+    //       'X-Authorization': piToken } })
+    // };
     return {
       type: 'BOOKS',
-      payload: clients.getBookShelf.get(`${urn}`, {
-        headers: { 'Content-Type': 'application/json',
-          'X-Authorization': piToken } })
+      payload: axios.all([
+        clients.getBookShelfMutiple.get('/courseboot/eT2bookShelf',
+          {
+            headers: { 'Content-Type': 'application/json',
+              'X-Authorization': piToken }
+          }),
+        clients.getBookShelfMutiple.get('/courseboot/registrarBookShelf',
+          {
+            headers: { 'Content-Type': 'application/json',
+              'X-Authorization': piToken }
+          })
+          /* ,
+        clients.getBookShelfMutiple.get('/courseboot/eT1bookShelf',
+          {
+            headers: { 'Content-Type': 'application/json',
+              'X-Authorization': piToken }
+          })*/
+      ])
     };
   }
 

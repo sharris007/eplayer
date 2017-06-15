@@ -73,7 +73,7 @@ export class Book extends Component {
       }
       this.props.dispatch(getTotalBookmarkCallService(this.state.urlParams));
        if(window.location.pathname.indexOf('/eplayer/Course/')>-1){
-          bookDetailsData.courseId = this.props.params.courseId;
+          bookDetailsData.courseId = this.props.params.bookId;
         this.props.dispatch(getCourseCallService(bookDetailsData));
        }else{
         this.props.dispatch(getBookCallService(bookDetailsData));
