@@ -24,6 +24,7 @@ export class Book extends Component {
   constructor(props) {
       super(props);
       let redirectCourseUrl   = window.location.href;
+      const identityId = sessionStorage.getItem('identityId');
       redirectCourseUrl       = decodeURIComponent(redirectCourseUrl).replace(/\s/g, "+").replace(/%20/g, "+");
       piSession.getToken(function(result, userToken){
         if(result === 'unknown' || result === 'notoken' ){
@@ -34,6 +35,7 @@ export class Book extends Component {
             }
           }
       }); 
+      
       this.state = {
         classname: 'headerBar',
         viewerContent: true,
@@ -44,7 +46,7 @@ export class Book extends Component {
         popUpCollection:'',
         urlParams:{
           context :this.props.params.bookId,
-          user:'epluser'
+          user:identityId
         },
         annAttributes:customAttributes,
         goToTextVal:'',
@@ -280,11 +282,12 @@ export class Book extends Component {
   } 
 
  goToPageClick = (getPageNumber) => {
+  const identityId = sessionStorage.getItem('identityId');
   if(getPageNumber){
       const bookId = this.props.params.bookId;
       const goToPageObj = {
           context : bookId,
-          user    :'epluser',
+          user    : identityId,
           pagenumber:getPageNumber,
           baseurl: this.state.pageDetails.baseUrl
         }
