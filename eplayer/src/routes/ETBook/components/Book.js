@@ -35,7 +35,7 @@ export class Book extends Component {
       this.state = {
         classname: 'headerBar',
         viewerContent: true,
-        drawerOpen: true,
+        drawerOpen: false,
         currentPageDetails: '',
         pageDetails, 
         currentPageTitle:'',
@@ -295,8 +295,13 @@ export class Book extends Component {
 
   viewerContentCallBack = (viewerCallBack) => {
     this.setState({ viewerContent: viewerCallBack });
-    if(viewerCallBack==false)
-    this.setState({ drawerOpen: true });
+    if(viewerCallBack===false){
+      this.setState({ drawerOpen: true });
+    }
+    else{
+      this.setState({ drawerOpen: false });
+    }
+    
   }
   goToPageCallback = (pageId, annId,searchText) => {
     let id = pageId;
@@ -322,8 +327,7 @@ export class Book extends Component {
       currentPageDetails :currentData,
       currentPageTitle   :currentData.title, 
       urlParams:parameters,
-      pageDetails: playpageDetails,
-      drawerOpen: false
+      pageDetails: playpageDetails
     },()=>{
       if(window.location.pathname.indexOf('/eplayer/Course/')>-1){
         browserHistory.replace(`/eplayer/Course/${this.props.params.bookId}/page/${id}`);
@@ -332,7 +336,7 @@ export class Book extends Component {
       }
       this.props.dispatch(getBookmarkCallService(this.state.urlParams));
     }),
-    this.viewerContentCallBack(true);
+    this.setState({ drawerOpen: false });
     if($('span[data-ann-id='+annId+']')[0] && (annId || annId != '')) {
           $('html, body').animate({
                 scrollTop: $('span[data-ann-id='+annId+']')[0].offsetTop
