@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <title>Etext CDN</title>
+	<script type="text/javascript">
+		function getCookie(name) {
+		  var value = "; " + document.cookie;
+		  var parts = value.split("; " + name + "=");
+		  if (parts.length == 2) return parts.pop().split(";").shift();
+		}
+		var epsToken = 'etext-cdn-token';
+		var eps = getCookie(epsToken);
+		var encodedCokkie = eps.replace (/(^")|("$)/g, '');
+		document.cookie = epsToken+'='+encodedCokkie;
+	</script>
+</head> 
+<body></body>
+</html>
