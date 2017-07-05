@@ -1,4 +1,4 @@
-import  {  Component, PropTypes } from 'react';
+import  React, {  Component, PropTypes } from 'react';
 import renderHTML from 'react-render-html';
 
 class BookViewer extends Component {

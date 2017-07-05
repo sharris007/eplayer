@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PopUpInfo Snapshot:-  PopUpInfo renders (Snapshot) 1`] = `
+<div>
+  <div
+    className="mm-popup"
+    onClick={[Function]}
+    style={Object {}}
+  />
+</div>
+`;
