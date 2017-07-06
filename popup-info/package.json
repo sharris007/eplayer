@@ -19,8 +19,16 @@
   },
   "jest": {
     "collectCoverage":true,
-    "coverageDirectory" : "<rootDir>/__tests__",
-    "setupFiles" : ["<rootDir>/setupFile.js"]
+    "coverageDirectory" : "<rootDir>",
+    "setupFiles" : ["<rootDir>/setupFile.js"],
+    "coverageThreshold": {
+      "global": {
+        "branches": 50,
+        "functions": 50,
+        "lines": 50,
+        "statements": 50
+      }
+    }
   },
   "author": "Saravanakumar",
   "license": "MIT",

@@ -34,7 +34,7 @@ describe('PopUpInfo Component:- ', () => {
   let bookComponent;
   beforeEach(() => {
     onBookLoad = jest.fn();
-    bookComponent = mount(<BookViewer bookHTML = '<span> <a href="#" class = "keyWord"> ggggg </a> </span>' onBookLoad = {onBookLoad} />, {attachTo: document.getElementById('root')});
+    bookComponent = mount(<BookViewer bookHTML = '<span> <a href="#" class = "keyWord"> vvvvvvvv </a> </span>' onBookLoad = {onBookLoad} />, {attachTo: document.getElementById('root')});
   });
 
   const popUpComponent = shallow(<PopUpInfo popUpCollection = {[]} bookId = 'dummyId'/>, {attachTo: document.getElementById('root')});
@@ -44,9 +44,9 @@ describe('PopUpInfo Component:- ', () => {
     //popUpComponent.unmount();
   });
 
-  it('fetching keyWord class ', ()=>{
+ /* it('fetching keyWord class ', ()=>{
   	console.log(bookComponent.find('.keyWord').html())
   	//console.log(bookComponent.find('.keyWord').html())
-  });
+  });*/
 
 });

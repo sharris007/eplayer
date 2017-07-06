@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import renderHTML from 'react-render-html';
 import Popup from 'react-popup';
-import '../scss/PopUp.scss';
+//import '../scss/PopUp.scss';
 
 
 class PopUpInfo extends Component {
