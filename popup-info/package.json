@@ -17,6 +17,11 @@
     "verify": "node ./npm_scripts/verify.js",
     "jest": "jest"
   },
+  "jest": {
+    "collectCoverage":true,
+    "coverageDirectory" : "<rootDir>/__tests__",
+    "setupFiles" : ["<rootDir>/setupFile.js"]
+  },
   "author": "Saravanakumar",
   "license": "MIT",
   "repository": {},
@@ -48,7 +53,7 @@
     "expect": "~1.18.0",
     "expect-jsx": "~2.5.1",
     "file-loader": "~0.8.5",
-    "jsdom": "~8.5.0",
+    "jsdom": "^8.5.0",
     "json-loader": "~0.5.4",
     "lodash": "^4.17.2",
     "material-ui": "^0.16.3",
