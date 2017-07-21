@@ -131,6 +131,7 @@
     "postcss-loader": "^0.13.0",
     "prop-types": "^15.5.10",
     "pxe-annotation": "*",
+    "et12-bookself" : "*",
     "pxe-player": "*",
     "pxe-wrapper": "*",
     "raw-loader": "^0.5.1",
