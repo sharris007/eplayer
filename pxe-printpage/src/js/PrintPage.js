@@ -1,62 +1,33 @@
-/* global $ */
-import React        from 'react';
+import React from 'react';
 import ReactDOM     from 'react-dom';
-import '../scss/printpage.scss';
+import $ from 'jquery';
+// import '../scss/printpage.scss';
 
 class PrintPage extends React.Component {
 
   constructor(props) {
     super(props);
+    this.state = { res: '' };
   }
 
-  componentDidMount = () => {
-    const getHeadTag = window.document.getElementsByTagName('head');
-    $(getHeadTag).append('<style>@media print{thead{display:table-header-group;}tfoot{display:table-footer-group;}tbody{display:table-row-group;}#watermark {display:block;color: #d0d0d0; font-size: 65pt;-webkit-transform: rotate(-45deg);-moz-transform: rotate(-45deg);transform: rotate(-45deg);position: fixed;width: 100%;height: 100%;xmargin: 0;z-index: 100;opacity: 0.6;left: 35%;top:30%;text-align: center;}#divHeader {display:block;color: green;font-size: 15pt; position: fixed;xmargin: 0;z-index: 100;left: 0%;top:0%;}#divFooter {display:block;color: green;font-size: 15pt; position: fixed; xmargin: 0;z-index: 100;left: 0%;top:97%;} iframe-table{border:none !important;}} @media screen{thead{display:none;}tfoot{display:none;}tbody{display:table-row-group;}#watermark {display:none;color: #d0d0d0;font-size: 90pt;-webkit-transform: rotate(-45deg); -moz-transform: rotate(-45deg);transform: rotate(-45deg);position: fixed;width: 100%;height: 100%;margin: 0;z-index: 100; opacity: 0.6;left: 6%;top:5%;text-align: center;}#divHeader {display:block;color: green;font-size: 15pt; position: fixed;xmargin: 0;z-index: 100;left: 0%;top:3%;}#divFooter {display:block;color: green;font-size: 15pt; position: fixed; xmargin: 0;z-index: 100;left: 0%;top:3%;}.iframe-table{border:none !important;}} </style>');
-
-    const onloadHandler = () => {
-      const url = window.location.href;
-      const getUrl = url.substring(url.indexOf('?')+1);
-      // String.prototype.replaceAll = function(target, replacement) { // eslint-disable-line
-      //   return this.split(target).join(replacement);
-      // };
-   
-      const getPrintBtn = function() {
-        const getPrintBtnEle = window.document.getElementById('printBtn');
-        return getPrintBtnEle;  
-      };
-
-      const beforePrint = function() {
-        const printBtn = getPrintBtn();
-        $(printBtn).hide();    
-      };
-          
-      const afterPrint = function() {
-        const printBtn = getPrintBtn();
-        $(printBtn).show();
-      };
-
-      if (window.matchMedia) {
-        const mediaQueryList = window.matchMedia('print');
-        mediaQueryList.addListener(function(mql) {
-          if (mql.matches) {
-            beforePrint();
-          } else {
-            afterPrint();
-          }
-        });
-      }
+  getPrintResponce = () => {
+    const getUrl = 'https://content.stg-openclass.com/eps/pearson-reader/api/item/e1a0159e-72d1-4272-9568-edd44814321a/1/file/appling_jh_01-15-16_post-/OPS/s9ml/chapter03/filep7000496582000000000000000001049.xhtml';
+    const getPageResponce = new Request(getUrl, {
+      headers: new Headers({
+        'Content-Type': 'text/plain'
+      })
+    });
+    fetch(getPageResponce, {
+      method: 'get'
+    }).then((response) => {
+      return response.text();
+    }).then((data) => {
+      this.setState({res : data});
       
-      const getPageResponce = new Request(getUrl, {
-        headers: new Headers({
-          'Content-Type': 'text/plain'
-        })
-      });
-
-      fetch(getPageResponce, {
-        method: 'get'
-      }).then((response) => {
-        return response.text();
-      }).then((data) => {
+      if (this.state.res) {
+        console.log('Done');
+        let data = this.state.res;
+      //console.log("TTTTTTT", data);
         const iframe = document.createElement('iframe');
         iframe.id='printFrame';
         iframe.style.width = '100%';
@@ -78,6 +49,8 @@ class PrintPage extends React.Component {
         setTimeout(function() {
           iframeObj.style.height = iframeObj.contentWindow.document.body.scrollHeight + 30+ 'px';
           //$(iframe).contents().find('body').append('<div id="watermark"><p>Not for Distribution</p></div>');
+          
+
           $(iframe).contents().find('body').find('[data-offlinesupport="no"]').each(function() {
             const fallback = $(this).find('.fallback');
             if (fallback.children().length > 0) {
@@ -89,14 +62,21 @@ class PrintPage extends React.Component {
           });
         }, 2000);
         window.document.getElementById('printBtn').addEventListener('click', function() {
+          console.log('Print Button Click');
           window.print();
         });
-      }).catch(() => {
-           //console.log(err);
-      });
-    };
-    window.onload = onloadHandler;
-    window.document.readyState === 'complete' && onloadHandler();
+      }
+
+    });
+    
+
+  }
+
+  componentDidMount = () => {
+    const getHeadTag = window.document.getElementsByTagName('head');
+    $(getHeadTag).append('<style>@media print{thead{display:table-header-group;}tfoot{display:table-footer-group;}tbody{display:table-row-group;}#watermark {display:block;color: #d0d0d0; font-size: 65pt;-webkit-transform: rotate(-45deg);-moz-transform: rotate(-45deg);transform: rotate(-45deg);position: fixed;width: 100%;height: 100%;xmargin: 0;z-index: 100;opacity: 0.6;left: 35%;top:30%;text-align: center;}#divHeader {display:block;color: green;font-size: 15pt; position: fixed;xmargin: 0;z-index: 100;left: 0%;top:0%;}#divFooter {display:block;color: green;font-size: 15pt; position: fixed; xmargin: 0;z-index: 100;left: 0%;top:97%;} iframe-table{border:none !important;}} @media screen{thead{display:none;}tfoot{display:none;}tbody{display:table-row-group;}#watermark {display:none;color: #d0d0d0;font-size: 90pt;-webkit-transform: rotate(-45deg); -moz-transform: rotate(-45deg);transform: rotate(-45deg);position: fixed;width: 100%;height: 100%;margin: 0;z-index: 100; opacity: 0.6;left: 6%;top:5%;text-align: center;}#divHeader {display:block;color: green;font-size: 15pt; position: fixed;xmargin: 0;z-index: 100;left: 0%;top:3%;}#divFooter {display:block;color: green;font-size: 15pt; position: fixed; xmargin: 0;z-index: 100;left: 0%;top:3%;}.iframe-table{border:none !important;}} </style>');
+    this.getPrintResponce();
+
   }
 
   render() {
@@ -111,3 +91,4 @@ class PrintPage extends React.Component {
 }
 
 export default PrintPage;
+
