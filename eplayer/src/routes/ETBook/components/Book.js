@@ -4,10 +4,11 @@ import { connect } from 'react-redux';
 import find from 'lodash/find';
 import WidgetManager from '../../../components/widget-integration/widgetManager';
 import Header from '../../../components/Header';
-import { pageDetails , customAttributes } from '../../../../const/Mockdata'; 
+import { pageDetails , customAttributes, pageLoadData } from '../../../../const/Mockdata'; 
 import './Book.scss';
 import { browserHistory } from 'react-router';
 import { getTotalAnnCallService, getAnnCallService, postAnnCallService, putAnnCallService,deleteAnnCallService, getTotalAnnotationData, deleteAnnotationData, annStructureChange } from '../../../actions/annotation';
+import { loadPageEvent } from '../../../api/loadunloadApi';
 import { getBookCallService, getPlaylistCallService, getCourseCallService} from '../../../actions/playlist';
 import { getGotoPageCall } from '../../../actions/gotopage';
 
@@ -46,7 +47,8 @@ export class Book extends Component {
         },
         annAttributes:customAttributes,
         goToTextVal:'',
-        isPanelOpen:false
+        isPanelOpen:false,
+        pageLoadData
       };
       this.divGlossaryRef = '';
       this.wrapper = '';
@@ -114,6 +116,8 @@ export class Book extends Component {
      pageDetails.bgColor = 'White';
    }
    this.setState({pageDetails : pageDetails});
+   const getSecureToken = localStorage.getItem('secureToken');
+   loadPageEvent(getSecureToken, pageLoadData);
  }
   parseDom = () => {
     WidgetManager.loadComponents(this.nodesToUnMount, this.context);
