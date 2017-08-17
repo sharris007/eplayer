@@ -16,6 +16,11 @@ class BookViewer extends Component {
     
   }
 
+  shouldComponentUpdate(nextProps, nextState) { 
+    console.log(nextState, this.state);
+    return nextState.bookHTML !== this.state.bookHTML;    
+  }
+
   render() {
     return (<div>{
       renderHTML(this.state.bookHTML)

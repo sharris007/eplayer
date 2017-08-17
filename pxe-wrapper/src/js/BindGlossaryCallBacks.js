@@ -15,7 +15,7 @@ export class BindGlossaryCallBacks {
     }
 
     bindGlossaryCallBacks(props) {
-      console.clear();
+      
       const bookDiv = document.getElementById(props.bookDiv);
       this.glossaryDoms = [];
       this.glossaryUrlCollection = [];

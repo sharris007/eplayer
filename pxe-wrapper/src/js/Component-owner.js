@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import { injectIntl } from 'react-intl';
 import renderHTML from 'react-render-html';
-
+import Perf from 'react-addons-perf';
 import Wrapper from './Wrapper';
 import PopupApi from '../api/PopupApi';
 import BookViewer from '../../demo/BookViewer';
@@ -33,18 +33,30 @@ class ComponentOwner extends React.Component {
     });
   }
 
+  componentWillMount() {
+    window.performance.mark('ComponentOwner')
+  }
+
 
   componentDidMount() {
+    console.log('"Time taken for PopUp ComponentOwner component : "', window.performance.now('Application'));
     if (this.props.isFromComponent) {
       let base = {}; 
       base = document.createElement('base');
       base.href = this.props.bookUrl;
-      document.getElementsByTagName('head')[0].appendChild(base);
+      document.getElementsByTagName('head')[0].appendChild(base);      
     }
+  }
+
+  componentDidUpdate() {
+    Perf.stop();
+    Perf.printInclusive();
+    Perf.printWasted();
   }
 
   onBookLoad() {
     const that = this;
+    Perf.start();
     window.renderPopUp = function(popUpCollection) {
       that.setState({
         'popUpCollection':popUpCollection
