@@ -8,6 +8,8 @@ import frLocaleData from 'react-intl/locale-data/fr';
 
 import ComponentOwner from './src/js/component-owner';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import { LearningContextProvider } from '@pearson-incubator/vega-viewer';
+import axios from 'axios';
 //import injectTapEventPlugin from 'react-tap-event-plugin';
 
 // Needed for onTouchTap
@@ -21,13 +23,27 @@ export default class PxePlayerComponent {
   }
 
   init=config=>{
+    const pxeClient = axios.create({
+      baseURL: config.pageDetails.baseUrl,
+      timeout: 5000,
+      headers: {}
+    });
+    const productData = { product: 'PXE', uuid: '' };
     const locale = config.pageDetails.locale ? config.pageDetails.locale : 'en';
     const App = () => (
-      <IntlProvider locale={locale}>
-        <MuiThemeProvider>
-          <ComponentOwner bootstrapParams={config} applnCallback={config.applnCallback} />
-        </MuiThemeProvider>
-      </IntlProvider>
+      <LearningContextProvider
+        contextId="ddddd"
+        contentType={productData.product.toUpperCase()}
+        componentFactory={{ getComponent: function getComponent(pageData) { console.log('Unhandled component!', pageData); return null; } }}
+        clients={{page:pxeClient}}
+        metadata={{ environment: 'LOCAL' }}
+      >
+        <IntlProvider locale={locale}>
+          <MuiThemeProvider>
+            <ComponentOwner bootstrapParams={config} applnCallback={config.applnCallback} />
+          </MuiThemeProvider>
+        </IntlProvider>
+      </LearningContextProvider>
      );
     ReactDOM.render(
        <App/>, document.getElementById(config.pageDetails.elementId)

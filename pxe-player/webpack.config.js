@@ -2,7 +2,7 @@
 //
 // Change "component-name" in this file to your real component name!
 // DO NOT CHANGE "[name]", which denotes the entry property names that webpack automatically inserts for you!
-
+var path = require('path');
 module.exports = {
   entry: {
     dev: ['webpack/hot/dev-server', './main.js', './demo/demo.js'],
@@ -29,11 +29,23 @@ module.exports = {
       },
       {
         test: /\.(js|jsx)$/,
+        exclude: /node_modules/,
         loader: 'babel',
         query: {
           cacheDirectory: true,
           presets: ['es2015', 'react', 'stage-0'],
-          plugins: ['transform-object-assign']
+          plugins: ['transform-object-assign', 'transform-runtime', 'transform-decorators-legacy']
+        }
+      }, {
+        test: /\.(js|jsx)$/,
+        include: [
+          path.join(__dirname, './node_modules/@pearson-incubator')
+        ],
+        loader: 'babel',
+        query: {
+          cacheDirectory: true,
+          presets: ['es2015', 'react', 'stage-0'],
+          plugins: ['transform-object-assign', 'transform-runtime', 'transform-decorators-legacy']
         }
       },
       {
