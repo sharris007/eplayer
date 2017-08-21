@@ -284,7 +284,9 @@ export class Book extends Component {
           });
 
           //this.setState({pageLoad : true}, function(){
-          if( this.props.bookdetailsdata.userCourseSectionDetail.section.sectionId ) {
+            console.log("pageProps", this.props);
+            console.log("userCourseSectionDetail," , this.props.bookdetailsdata);
+          if( this.props.bookdetailsdata.userCourseSectionDetail !== undefined ) {
             let getnextPageId = '';
             if( !this.state.pageLoad ) {
                 getnextPageId = this.getNxtPageId(data.id);
@@ -298,9 +300,6 @@ export class Book extends Component {
             }
           }  
           
-            console.log("pageProps", this.props);
-            console.log("CURRENTPAGEID", this.state.currentPageId);
-            console.log("dataid", data.id);
         }
         break;
       }
