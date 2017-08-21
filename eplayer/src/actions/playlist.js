@@ -15,6 +15,12 @@ export const getTocCompleteDetails = json => ({
   tocReceived: true
 });
 
+export const getBookDetails = json => ({
+  type: typeConstants.BOOK_DETAILS,
+  data: json,
+  bookDetailsRecived: true
+});
+
 function getTocUrlOnResp(resp) {
   let tocUrl;
   if (resp) {
@@ -30,12 +36,15 @@ function getTocUrlOnResp(resp) {
 export const getBookCallService = data => dispatch => 
   PlaylistApi.doGetPiUserDetails(data).then(response => response.json())
   .then((response)=>{
+
       data.userName  = response.UserName;
       PlaylistApi.doGetBookDetails(data)
         .then(response => response.json())
         .then((response) => {
+          console.log("response,,", response);
+          dispatch(getBookDetails(response));
         const bookId = response.bookDetail.bookId;
-
+    
      const tocUrl = getTocUrlOnResp(response.bookDetail.metadata.toc);
      const bookDetails = response.bookDetail.metadata;
      const piToken = data.piToken;
@@ -43,6 +52,7 @@ export const getBookCallService = data => dispatch =>
      PlaylistApi.doGetTocDetails(bookId, tocUrl, piToken).then(response => response.json())
       .then((response) => {
         // response.bookConfig = bookDetails;
+
         const tocResponse = response.content;
         tocResponse.mainTitle = bookDetails.title;
         tocResponse.author = bookDetails.creator;
@@ -91,6 +101,8 @@ export const getCourseCallService = data => dispatch => PlaylistApi.doGetCourseD
       // const tocUrl      = getTocUrlOnResp(response.bookDetail.metadata.toc);
       // const bookDetails = response.bookDetail.metadata;
       // const piToken     = data.piToken;
+      console.log("response,,", response);
+          dispatch(getBookDetails(response));
      const baseUrl      = response.userCourseSectionDetail.baseUrl;
      const tocUrl       = getTocUrlOnResp(response.userCourseSectionDetail.toc);
      const bookDetails  = response.userCourseSectionDetail;
@@ -106,6 +118,7 @@ export const getCourseCallService = data => dispatch => PlaylistApi.doGetCourseD
         // response.bookConfig = bookDetails;
         const tocResponse = response.content;
         tocResponse.mainTitle = bookDetails.section.sectionTitle;
+        tocResponse.sectionId = bookDetails.section.sectionId;
         tocResponse.author = bookDetails.authorName;
         tocResponse.thumbnail = bookDetails.section.avatarUrl;
 
