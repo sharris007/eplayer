@@ -33,8 +33,7 @@ module.exports = {
         loader: 'babel',
         query: {
           cacheDirectory: true,
-          presets: ['es2015', 'react', 'stage-0'],
-          plugins: ['transform-object-assign', 'transform-runtime', 'transform-decorators-legacy']
+          presets: ['es2015', 'react', 'stage-0']
         }
       }, {
         test: /\.(js|jsx)$/,
@@ -44,8 +43,7 @@ module.exports = {
         loader: 'babel',
         query: {
           cacheDirectory: true,
-          presets: ['es2015', 'react', 'stage-0'],
-          plugins: ['transform-object-assign', 'transform-runtime', 'transform-decorators-legacy']
+          presets: ['es2015', 'react', 'stage-0']
         }
       },
       {
