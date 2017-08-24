@@ -13,12 +13,14 @@ import { getGotoPageCall } from '../../../actions/gotopage';
 import { loadPageEvent, unLoadPageEvent } from '../../../api/loadunloadApi';
 
 import { getBookmarkCallService ,postBookmarkCallService ,deleteBookmarkCallService,getTotalBookmarkCallService } from '../../../actions/bookmark';
-import { PxePlayer } from 'pxe-player';
+import { VegaViewPager } from '@pearson-incubator/vega-viewer';
+import { Navigation } from '@pearson-incubator/aquila-js-core';
 import { Annotation } from 'pxe-annotation';
 import { Wrapper } from 'pxe-wrapper';
 import { PopUpInfo } from '@pearson-incubator/popup-info';
 import RefreshIndicator from 'material-ui/RefreshIndicator';
-import {resources , domain ,typeConstants} from '../../../../const/Settings'
+import {resources , domain ,typeConstants, clients} from '../../../../const/Settings';
+import { LearningContextProvider } from '@pearson-incubator/vega-viewer';
 export class Book extends Component {
   constructor(props) {
       super(props);
@@ -563,36 +565,58 @@ export class Book extends Component {
     //End of Wrapper PxePlayer
     return (
       <div>
-        <Header  locale='en-US'
-          classname={this.state.classname}
-          pageTitle = {this.state.currentPageTitle}
-          bookData={this.props.book}
-          bookCallbacks={callbacks}
-          store={this.context.store}
-          hideDrawer={this.hideDrawer}
-          drawerOpen={this.state.drawerOpen}
-          viewerContentCallBack={this.viewerContentCallBack}
-          getPreference = {this.getPreference}
-          updatePreference = {this.updatePreference}
-          indexId = { {'indexId' : this.bookIndexId, 'searchUrl' : this.searchUrl} }
-          goToPage = {(pageId) => this.goToPage(pageId)}
-          listClick = {() => this.listClick()}
-          goToPageClick = {this.goToPageClick}
-          currentPageID = {currentBookId}
-        />
-           
+        <LearningContextProvider
+          contextId="ddddd"
+          contentType={resources.constants.product.toUpperCase()}
+          componentFactory={{ getComponent: function getComponent(pageData) { console.log('Unhandled component!', pageData); return null; } }}
+          clients={{page:clients.pxeClient(this.state.pageDetails.baseUrl)}}
+          metadata={{ environment: 'LOCAL' }}
+        >
+          <div>
+          <Header  locale='en-US'
+            classname={this.state.classname}
+            pageTitle = {this.state.currentPageTitle}
+            bookData={this.props.book}
+            bookCallbacks={callbacks}
+            store={this.context.store}
+            hideDrawer={this.hideDrawer}
+            drawerOpen={this.state.drawerOpen}
+            viewerContentCallBack={this.viewerContentCallBack}
+            getPreference = {this.getPreference}
+            updatePreference = {this.updatePreference}
+            indexId = { {'indexId' : this.bookIndexId, 'searchUrl' : this.searchUrl} }
+            goToPage = {(pageId) => this.goToPage(pageId)}
+            listClick = {() => this.listClick()}
+            goToPageClick = {this.goToPageClick}
+            currentPageID = {currentBookId}
+          />
           <div className={this.state.viewerContent ? 'viewerContent' : 'fixedviewerContent viewerContent'}>
             {!playlistReceived ? <RefreshIndicator size={50} left={650} top={200} status="loading" /> :''}
-            {playlistReceived ? <PxePlayer bootstrapParams={bootstrapParams}  applnCallback={this.onPageChange}/> : ''}
+            {playlistReceived ?  <div>
+                                  <VegaViewPager
+                                    contentType="PXE"
+                                    pagePlayList={bootstrapParams.pageDetails.playListURL}
+                                    currentPageId={bootstrapParams.pageDetails.currentPageURL.id}
+                                    onPageRequest={()=>{}}
+                                    onPageLoad={()=>{}}
+                                    key={bootstrapParams.pageDetails.currentPageURL.id}
+                                  />
+                                  <Navigation
+                                    onPageRequest={()=>{}}
+                                    pagePlayList={bootstrapParams.pageDetails.playListURL}
+                                    currentPageId={bootstrapParams.pageDetails.currentPageURL.id}
+                                  />
+                                </div>: ''}
           </div>
            {this.state.isPanelOpen?<div>		
             <iframe name="panel" width="500" height="600" ></iframe>
           </div>:''}
+          </div>
+        </LearningContextProvider>
       </div>
     );
   }
 }
-
 
 Book.propTypes = {
   fetchTocAndViewer      : React.PropTypes.func,

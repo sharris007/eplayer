@@ -1,120 +1,123 @@
+import axios from 'axios';
+
 export const resources = {
   constants: {
-    versions       : 'EPLAYER',
-    builds         : '2.0',
+    versions: 'EPLAYER',
+    builds: '2.0',
     TextSearchLimit: 100,
-    PiTokenRefreshTimeout:1800,
-    secureApi      : true
+    PiTokenRefreshTimeout: 1800,
+    secureApi: true,
+    product: 'PXE'
   },
   links: {
-    legalNotice    : 'https://media.pearsoncmg.com/cmg/NexText/about/legalnotice/index.html',
-    privacyPolicy  : 'https://register.pearsoncmg.com/w3c/privacy.htm',
-    support        : 'https://media.pearsoncmg.com/cmg/NexText/about/support/index.html',
-    permissions    : 'https://media.pearsoncmg.com/cmg/NexText/about/permissions/index.html',
+    legalNotice: 'https://media.pearsoncmg.com/cmg/NexText/about/legalnotice/index.html',
+    privacyPolicy: 'https://register.pearsoncmg.com/w3c/privacy.htm',
+    support: 'https://media.pearsoncmg.com/cmg/NexText/about/support/index.html',
+    permissions: 'https://media.pearsoncmg.com/cmg/NexText/about/permissions/index.html',
     etextServiceUrl: {
-      local        : 'https://etext-qa-stg.pearson.com/api/nextext-api/api',
-      dev          : 'https://etext-qa-stg.pearson.com/api/nextext-api/api',
-      qa           : 'https://etext-qa-stg.pearson.com/api/nextext-api/api',
-      stage        : 'https://etext-stg.pearson.com/api/nextext-api/api',
-      prod         : 'https://etext.pearson.com/api/nextext-api/api'
+      local: 'https://etext-qa-stg.pearson.com/api/nextext-api/api',
+      dev: 'https://etext-qa-stg.pearson.com/api/nextext-api/api',
+      qa: 'https://etext-qa-stg.pearson.com/api/nextext-api/api',
+      stage: 'https://etext-stg.pearson.com/api/nextext-api/api',
+      prod: 'https://etext.pearson.com/api/nextext-api/api'
     },
     eTSecureServiceUrl: {
-      local        : 'https://etext-qa-stg.pearson.com/api/nextext-api/v1/api',
-      dev          : 'https://etext-qa-stg.pearson.com/api/nextext-api/v1/api',
-      qa           : 'https://etext-qa-stg.pearson.com/api/nextext-api/v1/api',
-      stage        : 'https://etext-stg.pearson.com/api/nextext-api/v1/api',
-      prod         : 'https://etext.pearson.com/api/nextext-api/v1/api'
+      local: 'https://etext-qa-stg.pearson.com/api/nextext-api/v1/api',
+      dev: 'https://etext-qa-stg.pearson.com/api/nextext-api/v1/api',
+      qa: 'https://etext-qa-stg.pearson.com/api/nextext-api/v1/api',
+      stage: 'https://etext-stg.pearson.com/api/nextext-api/v1/api',
+      prod: 'https://etext.pearson.com/api/nextext-api/v1/api'
     },
     courseServiceUrl: {
-      local        : 'https://stpaperapiqa.stg-prsn.com/etext/v2/courseboot',
-      dev          : 'https://stpaperapi.dev-prsn.com/etext/v2/courseboot',
-      qa           : 'https://stpaperapiqa.stg-prsn.com/etext/v2/courseboot',
-      stage        : 'https://stpaperapi.stg-prsn.com/etext/v2/courseboot',
-      prod         : 'https://stpaperapi.prsn.com/etext/v2/courseboot'
+      local: 'https://stpaperapiqa.stg-prsn.com/etext/v2/courseboot',
+      dev: 'https://stpaperapi.dev-prsn.com/etext/v2/courseboot',
+      qa: 'https://stpaperapiqa.stg-prsn.com/etext/v2/courseboot',
+      stage: 'https://stpaperapi.stg-prsn.com/etext/v2/courseboot',
+      prod: 'https://stpaperapi.prsn.com/etext/v2/courseboot'
     },
     etextSearchUrl: {
-      local        : 'https://etext-qa-stg.pearson.com/search/pxereader-cm/api/2.1/cm',
-      dev          : 'https://etext-qa-stg.pearson.com/search/pxereader-cm/api/2.1/cm',
-      qa           : 'https://etext-qa-stg.pearson.com/search/pxereader-cm/api/2.1/cm',
-      stage        : 'https://content-service.stg-prsn.com/csg/api/cm',
-      prod         : 'https://content-service.prd-prsn.com/csg/api/cm'
+      local: 'https://etext-qa-stg.pearson.com/search/pxereader-cm/api/2.1/cm',
+      dev: 'https://etext-qa-stg.pearson.com/search/pxereader-cm/api/2.1/cm',
+      qa: 'https://etext-qa-stg.pearson.com/search/pxereader-cm/api/2.1/cm',
+      stage: 'https://content-service.stg-prsn.com/csg/api/cm',
+      prod: 'https://content-service.prd-prsn.com/csg/api/cm'
     },
     pxeServiceUrl: {
-      local        : 'https://pxe-services-dev.pearson.com/services-api/api/3.1',
-      dev          : 'https://pxe-services-dev.pearson.com/services-api/api/3.1',
-      qa           : 'https://pxe-services-qa-stg.pearson.com/services-api/api/3.1',
-      stage        : 'https://pxe-services-stg.pearson.com/services-api/api/3.1',
-      prod         : 'https://pxe-services.pearson.com/services-api/api/3.1'
+      local: 'https://pxe-services-dev.pearson.com/services-api/api/3.1',
+      dev: 'https://pxe-services-dev.pearson.com/services-api/api/3.1',
+      qa: 'https://pxe-services-qa-stg.pearson.com/services-api/api/3.1',
+      stage: 'https://pxe-services-stg.pearson.com/services-api/api/3.1',
+      prod: 'https://pxe-services.pearson.com/services-api/api/3.1'
     },
     csgIngestUrl: {
-      local        : 'https://dragonfly-qa.stg-openclass.com/pxereader-cm/latest/api/cm',
-      qa           : 'https://dragonfly-qa.stg-openclass.com/pxereader-cm/latest/api/cm',
-      stage        : 'https://dragonfly.stg-openclass.com/pxereader-cm/latest/api/cm',
-      prod         : 'https://dragonfly.openclass.com/pxereader-cm/latest/api/cm'
+      local: 'https://dragonfly-qa.stg-openclass.com/pxereader-cm/latest/api/cm',
+      qa: 'https://dragonfly-qa.stg-openclass.com/pxereader-cm/latest/api/cm',
+      stage: 'https://dragonfly.stg-openclass.com/pxereader-cm/latest/api/cm',
+      prod: 'https://dragonfly.openclass.com/pxereader-cm/latest/api/cm'
     },
     piEnvScripts: {
-      local        : 'https://tst-piapi.dev-openclass.com/v1/piapi-test/login/js/session.js',
-      dev          : 'https://tst-piapi.dev-openclass.com/v1/piapi-test/login/js/session.js',
-      qa           : 'https://tst-piapi.dev-openclass.com/v1/piapi-test/login/js/session.js',
-      stage        : 'https://pi-int.pearsoned.com/v1/piapi-int/login/js/session.js',
-      prod         : 'https://pi.pearsoned.com/v1/piapi/login/js/session.js'
+      local: 'https://tst-piapi.dev-openclass.com/v1/piapi-test/login/js/session.js',
+      dev: 'https://tst-piapi.dev-openclass.com/v1/piapi-test/login/js/session.js',
+      qa: 'https://tst-piapi.dev-openclass.com/v1/piapi-test/login/js/session.js',
+      stage: 'https://pi-int.pearsoned.com/v1/piapi-int/login/js/session.js',
+      prod: 'https://pi.pearsoned.com/v1/piapi/login/js/session.js'
     },
-    clientId :{
-      local        :"vGZ2o5WhK7XTy9ovNwtj1aBZhnOAASYb",
-      dev          :"vGZ2o5WhK7XTy9ovNwtj1aBZhnOAASYb",
-      qa           :"vGZ2o5WhK7XTy9ovNwtj1aBZhnOAASYb",
-      stage        :"vGZ2o5WhK7XTy9ovNwtj1aBZhnOAASYb",
-      prod         :"AT8R4irZrJRPstMMUdb8XaqOvbRJpqs4",
+    clientId: {
+      local: 'vGZ2o5WhK7XTy9ovNwtj1aBZhnOAASYb',
+      dev: 'vGZ2o5WhK7XTy9ovNwtj1aBZhnOAASYb',
+      qa: 'vGZ2o5WhK7XTy9ovNwtj1aBZhnOAASYb',
+      stage: 'vGZ2o5WhK7XTy9ovNwtj1aBZhnOAASYb',
+      prod: 'AT8R4irZrJRPstMMUdb8XaqOvbRJpqs4'
     },
-    consoleUrl :{
-      local        :"https://console-qa.pearsoned.com",
-      dev          :"https://console-qa.pearsoned.com",
-      qa           :"https://console-qa.pearsoned.com",
-      stage        :"https://console-stg.pearson.com",
-      prod         :"https://console.pearson.com",
+    consoleUrl: {
+      local: 'https://console-qa.pearsoned.com',
+      dev: 'https://console-qa.pearsoned.com',
+      qa: 'https://console-qa.pearsoned.com',
+      stage: 'https://console-stg.pearson.com',
+      prod: 'https://console.pearson.com'
     },
-    piUserProfileApi:{
-      local        :"https://pi-tst.pearsoned.com/v1/piapi-test",
-      dev          :"https://pi-tst.pearsoned.com/v1/piapi-test",
-      qa           :"https://pi-tst.pearsoned.com/v1/piapi-test",
-      stage        :"https://int-piapi-internal.stg-openclass.com",
-      prod         :"https://piapi-internal.openclass.com",
+    piUserProfileApi: {
+      local: 'https://pi-tst.pearsoned.com/v1/piapi-test',
+      dev: 'https://pi-tst.pearsoned.com/v1/piapi-test',
+      qa: 'https://pi-tst.pearsoned.com/v1/piapi-test',
+      stage: 'https://int-piapi-internal.stg-openclass.com',
+      prod: 'https://piapi-internal.openclass.com'
     },
-    authDomainUrl :{
-      local        :"https://etext-qa-stg.pearson.com",
-      dev          :"https://etext-qa-stg.pearson.com",
-      qa           :"https://etext-qa-stg.pearson.com",
-      stage        :"https://etext-stg.pearson.com",
-      prod         :"https://etext.pearson.com",
+    authDomainUrl: {
+      local: 'https://etext-qa-stg.pearson.com',
+      dev: 'https://etext-qa-stg.pearson.com',
+      qa: 'https://etext-qa-stg.pearson.com',
+      stage: 'https://etext-stg.pearson.com',
+      prod: 'https://etext.pearson.com'
     },
-    messagingUrl : {
-      local        :"https://messaging-publishing.dev-prsn.com",
-      dev          :"https://messaging-publishing.dev-prsn.com",
-      qa           :"https://messaging-publishing-int.dev-prsn.com",
-      stage        :"https://messaging-publishing.stg-prsn.com ",
-      prod         :"https://messaging-publishing.prd-prsn.com",
+    messagingUrl: {
+      local: 'https://messaging-publishing.dev-prsn.com',
+      dev: 'https://messaging-publishing.dev-prsn.com',
+      qa: 'https://messaging-publishing-int.dev-prsn.com',
+      stage: 'https://messaging-publishing.stg-prsn.com ',
+      prod: 'https://messaging-publishing.prd-prsn.com'
     }
   }
 };
 
 export const typeConstants = {
 
-  GET_TOTALANNOTATION    : 'GET_TOTALANNOTATION',
-  GET_ANNOTATION         : 'GET_ANNOTATION',
-  POST_ANNOTATION        : 'POST_ANNOTATION',
-  PUT_ANNOTATION         : 'PUT_ANNOTATION',
-  DELETE_LISTANNOTATION  : 'DELETE_LISTANNOTATION',
-  GET_PLAYLIST           : 'GET_PLAYLIST',
-  GET_TOC                : 'GET_TOC',
-  GET_BOOKMARK           : 'GET_BOOKMARK',
-  POST_BOOKMARK          : 'POST_BOOKMARK',
-  DELETE_BOOKMARK        : 'DELETE_BOOKMARK',
-  GET_TOTALBOOKMARK      : 'GET_TOTALBOOKMARK',
-  GET_GOTOPAGE           : 'GET_GOTOPAGE',
-  ANNOTATION_CREATED     : 'ANNOTATION_CREATED',
-  ANNOTATION_UPDATED     : 'ANNOTATION_UPDATED',
-  ANNOTATION_DELETED     : 'ANNOTATION_DELETED',
-  BOOK_DETAILS           : 'BOOK_DETAILS'
+  GET_TOTALANNOTATION: 'GET_TOTALANNOTATION',
+  GET_ANNOTATION: 'GET_ANNOTATION',
+  POST_ANNOTATION: 'POST_ANNOTATION',
+  PUT_ANNOTATION: 'PUT_ANNOTATION',
+  DELETE_LISTANNOTATION: 'DELETE_LISTANNOTATION',
+  GET_PLAYLIST: 'GET_PLAYLIST',
+  GET_TOC: 'GET_TOC',
+  GET_BOOKMARK: 'GET_BOOKMARK',
+  POST_BOOKMARK: 'POST_BOOKMARK',
+  DELETE_BOOKMARK: 'DELETE_BOOKMARK',
+  GET_TOTALBOOKMARK: 'GET_TOTALBOOKMARK',
+  GET_GOTOPAGE: 'GET_GOTOPAGE',
+  ANNOTATION_CREATED: 'ANNOTATION_CREATED',
+  ANNOTATION_UPDATED: 'ANNOTATION_UPDATED',
+  ANNOTATION_DELETED: 'ANNOTATION_DELETED',
+  BOOK_DETAILS: 'BOOK_DETAILS'
 };
 
 export const domain = {
@@ -139,4 +142,12 @@ export const domain = {
           { return 'prod'; }
     return 'qa';
   }
+};
+// clients
+export const clients = {
+  pxeClient: baseUrl => axios.create({
+    baseURL: baseUrl,
+    timeout: 5000,
+    headers: {}
+  })
 };

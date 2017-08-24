@@ -51,15 +51,15 @@ injectTapEventPlugin();
 const initialState = window.___INITIAL_STATE__; // eslint-disable-line no-underscore-dangle
 const store = createStore(initialState);
 const routes = require('./routes/index').default(store);
-/*Subscribed store to listen to state chages and storing them in local storage*/
+/* Subscribed store to listen to state chages and storing them in local storage*/
 store.subscribe(() => {
-  throttle( saveState({
-    login : store.getState().login,
-    bookshelf : store.getState().bookshelf,
-    book : store.getState().book
-  }) , 1000)
- 
-} );
+  throttle(saveState({
+    login: store.getState().login,
+    bookshelf: store.getState().bookshelf,
+    book: store.getState().book
+  }), 1000);
+
+});
 // ========================================================
 // Render Setup
 // ========================================================
