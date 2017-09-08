@@ -99,6 +99,8 @@
     "@pearson-incubator/search": "^0.1.24",
     "@pearson-incubator/toc": "^0.1.39",
     "@pearson-incubator/viewer": "^0.1.32",
+    "@pearson-incubator/vega-viewer":"^0.0.20",
+    "@pearson-incubator/vega-core": "^0.0.30",
     "axios": "^0.15.3",
     "babel-loader": "^6.2.5",
     "babel-plugin-transform-decorators-legacy": "^1.3.4",

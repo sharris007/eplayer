@@ -139,20 +139,21 @@ export default class BookshelfPage extends React.Component {
   }
   /* Created function for handle single book click.*/
   handleBookClick = (bookId, type) => {
-    if ( type === 'et1') {
-       /* BrowserHistory used for navigating the next page from current page. */
-       const bookObj = _.find(this.props.bookshelf.books.data.entries, bookData => bookData.bookId == bookId);
-       if(!bookObj.expired) {
-
-      browserHistory.push(`/eplayer/pdfbook?bookid=${bookId}&invoketype=standalone`);
-    }
-
-    }  else if( type === 'et2'){
-      browserHistory.push(`/eplayer/ETbook/${bookId}`);
-    }
-    else if( type === 'course') {
-      browserHistory.push(`/eplayer/Course/${bookId}`);
-    }
+    switch(type){
+      case 'et1': 
+        const bookObj = _.find(this.props.bookshelf.books.data.entries, bookData => bookData.bookId == bookId);
+        if(!bookObj.expired) {
+     	  browserHistory.push(`/eplayer/pdfbook?bookid=${bookId}&invoketype=standalone`);
+        }
+        break;
+      case 'et2': 
+        browserHistory.push(`/eplayer/ETbook/${bookId}`);
+        break;
+       
+      case 'course': 
+        browserHistory.push(`/eplayer/Course/${bookId}`);
+        break;
+      }
   }
   /* Method used for loading the data. Any change in store data it will reload the view. */
   render() {
