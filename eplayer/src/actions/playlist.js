@@ -1,8 +1,6 @@
 /* global $ */
 import PlaylistApi from '../api/playlistApi';
 import { resources , domain , typeConstants } from '../../const/Settings';
-import { browserHistory } from 'react-router';
-
 // GET Book Details
 export const getPlaylistCompleteDetails = json => ({
   type: typeConstants.GET_PLAYLIST,
@@ -64,7 +62,6 @@ export const getBookPlayListCallService = data => dispatch =>
 export const getBookTocCallService  = data => dispatch => 
   PlaylistApi.doGetTocDetails(bookId, tocUrl, piToken).then(response => response.json())
       .then((response) => {
-        // response.bookConfig = bookDetails;
         const tocResponse = response.content;
         tocResponse.mainTitle = bookDetails.title;
         tocResponse.author = bookDetails.creator;
@@ -110,8 +107,9 @@ export const getCourseCallService = data => dispatch => PlaylistApi.doGetCourseD
     piToken      = data.piToken;
     bookId       = bookDetails.section.sectionId;
     const bookDetailsSection = bookDetails.section;
-    if(bookDetails.authgrouptype=='student'){
-      redirectToZeppelin(bookDetails);
+    const passportDetails = response.passportPermissionDetail
+    if(bookDetails.authgrouptype=='student' && !passportDetails.access){
+      redirectToZeppelin(bookDetails,passportDetails);
       return false;
     }
     else if(bookDetails.authgrouptype=='instructor'){
@@ -133,12 +131,13 @@ function redirectToIDCDashboard(prodType,courseId){
   window.location = redirectIdcURL;
 } 
 
-function redirectToZeppelin(bookDetails){
+function redirectToZeppelin(bookDetails,passportDetails){
+
     let userAccess = {
           userType      : bookDetails.authgrouptype,
           institutionId : bookDetails.section.extras.organizationId,
-          productId     : 'x-urn:revel:6576bbbe-aa37-4d65-9e81-f3fb21fe53b6',
-          appAccess     : 'true',
+          productId     : passportDetails.productId,
+          appAccess     : passportDetails.access,
           launchUrl     : bookDetails.section.extras.metadata.launchUrl
     }
     
