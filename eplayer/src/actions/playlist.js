@@ -1,6 +1,7 @@
 /* global $ */
 import PlaylistApi from '../api/playlistApi';
-import { typeConstants } from '../../const/Settings';
+import { resources , domain , typeConstants } from '../../const/Settings';
+import { browserHistory } from 'react-router';
 
 // GET Book Details
 export const getPlaylistCompleteDetails = json => ({
@@ -52,43 +53,7 @@ export const getBookPlayListCallService = data => dispatch =>
      bookDetails = response.bookDetail.metadata;
      piToken = data.piToken;
 
-     /*PlaylistApi.doGetTocDetails(bookId, tocUrl, piToken).then(response => response.json())
-      .then((response) => {
-        // response.bookConfig = bookDetails;
-        const tocResponse = response.content;
-        tocResponse.mainTitle = bookDetails.title;
-        tocResponse.author = bookDetails.creator;
-        tocResponse.thumbnail = bookDetails.thumbnailImageUrl;
-
-
-        tocResponse.list = [];
-        const tocItems = tocResponse.items;
-        let subItems = [];
-        const listData = tocItems.map((itemObj) => {
-          if (itemObj.items) {
-            subItems = itemObj.items.map(n => ({
-              urn: n.id,
-              href: n.href,
-              id: n.id,
-              playorder: n.playorder,
-              title: n.title
-            }));
-          }
-          return {
-            id: itemObj.id,
-            urn: itemObj.id,
-            title: itemObj.title,
-            coPage: itemObj.coPage,
-            playOrder: itemObj.playOrder,
-            children: subItems
-          };
-        });
-        tocResponse.list = listData;
-        delete tocResponse.items;
-        const tocFinalModifiedData = { content: tocResponse, bookDetails };
-        dispatch(getTocCompleteDetails(tocFinalModifiedData));
-      });*/
-
+    
     PlaylistApi.doGetPlaylistDetails(bookId, tocUrl, piToken).then(response => response.json())
       .then(response => dispatch(getPlaylistCompleteDetails(response)));
    }
@@ -138,17 +103,22 @@ export const getBookTocCallService  = data => dispatch =>
 export const getCourseCallService = data => dispatch => PlaylistApi.doGetCourseDetails(data)
    .then(response => response.json())
    .then((response) => {
-      // const tocUrl      = getTocUrlOnResp(response.bookDetail.metadata.toc);
-      // const bookDetails = response.bookDetail.metadata;
-      // const piToken     = data.piToken;
-      dispatch(getBookDetails(response));
-     const baseUrl      = response.userCourseSectionDetail.baseUrl;
-     tocUrl       = getTocUrlOnResp(response.userCourseSectionDetail.toc);
-     bookDetails  = response.userCourseSectionDetail;
-     piToken      = data.piToken;
-     bookId       = bookDetails.section.sectionId;
-     /**/
-
+    dispatch(getBookDetails(response));
+    const baseUrl      = response.userCourseSectionDetail.baseUrl;
+    tocUrl       = getTocUrlOnResp(response.userCourseSectionDetail.toc);
+    bookDetails  = response.userCourseSectionDetail;
+    piToken      = data.piToken;
+    bookId       = bookDetails.section.sectionId;
+    const bookDetailsSection = bookDetails.section;
+    if(bookDetails.authgrouptype=='student'){
+      redirectToZeppelin(bookDetails);
+      return false;
+    }
+    else if(bookDetails.authgrouptype=='instructor'){
+      const prodType='PXE', courseId=bookId;
+      redirectToIDCDashboard(prodType,courseId);
+      return false;
+    }
      PlaylistApi.doGetPlaylistDetails(bookId, tocUrl, piToken).then(response => response.json())
       .then(response => {
         const securl      = baseUrl.replace(/^http:\/\//i, 'https://');
@@ -157,3 +127,31 @@ export const getCourseCallService = data => dispatch => PlaylistApi.doGetCourseD
       });
    }
 );
+
+function redirectToIDCDashboard(prodType,courseId){
+  const redirectIdcURL = resources.links.idcUrl[domain.getEnvType()]+'/idc?product_type='+prodType+'&courseId='+courseId;
+  window.location = redirectIdcURL;
+} 
+
+function redirectToZeppelin(bookDetails){
+    let userAccess = {
+          userType      : bookDetails.authgrouptype,
+          institutionId : bookDetails.section.extras.organizationId,
+          productId     : 'x-urn:revel:6576bbbe-aa37-4d65-9e81-f3fb21fe53b6',
+          appAccess     : 'true',
+          launchUrl     : bookDetails.section.extras.metadata.launchUrl
+    }
+    
+    const productId     = userAccess.productId ,
+          institutionId = userAccess.institutionId ,
+          courseAccess  = userAccess.appAccess,
+          failureUrl    = encodeURIComponent(resources.links.consoleUrl[domain.getEnvType()]),
+          cancelUrl     = encodeURIComponent(resources.links.consoleUrl[domain.getEnvType()]),
+          successUrl    = encodeURIComponent(userAccess.launchUrl),
+          zeppelinAccessBassUrl  = resources.links.zeppelinUrl[domain.getEnvType()],
+          zeppelinRelativeurl =productId+'?institutionId='+institutionId+
+          '&failureUrl='+failureUrl+'&cancelUrl='+cancelUrl+'&successUrl='+successUrl;
+    const zeppelinRedirect  = zeppelinAccessBassUrl+'/'+zeppelinRelativeurl;
+    window.location = zeppelinRedirect;
+    
+}

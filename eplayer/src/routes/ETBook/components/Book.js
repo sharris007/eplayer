@@ -25,7 +25,7 @@
   import { resources, domain, typeConstants } from '../../../../const/Settings';
   import Search from '../../../components/search/containers/searchContainer';
   import Utils from '../../../components/utils';
-
+   
   export class Book extends Component {
     constructor(props) {
       super(props);
@@ -767,11 +767,13 @@
         metadata = { { environment: 'LOCAL' } }>
         <div>
           <div>
-             <div
+             
+              { playlistReceived ?
+                <div
                 className={`${this.state.classname} ${this.state.headerExists ? 'nav-up' : ''}`}
                 ref={(headerDiv) => { this.headerDOM = headerDiv; }}
-              >
-            <HeaderComponent
+                >
+                <HeaderComponent
                   bookshelfClick={this.handleBookshelfClick}
                   drawerClick={this.handleDrawer}
                   bookmarkIconData={bookmarkIconData}
@@ -783,8 +785,9 @@
                   getPreference={this.getPreference}
                   updatePreference={this.updatePreference}
                   locale='en-US'
-                />
-              </div>
+                /></div> : <div></div>
+              }
+              
               {
               this.props.book.tocReceived &&
                 <Drawer
@@ -824,7 +827,7 @@
           pagePlayList = { bootstrapParams.pageDetails.playListURL }
           currentPageId = { bootstrapParams.pageDetails.currentPageURL.id }
           /> 
-          </div> : <div></div>
+          </div> : <div><RefreshIndicator size={50} left={650} top={200} status="loading" /></div>
         }
         </div> 
         </LearningContextProvider>
