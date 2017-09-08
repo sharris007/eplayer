@@ -107,8 +107,9 @@ export const getCourseCallService = data => dispatch => PlaylistApi.doGetCourseD
     piToken      = data.piToken;
     bookId       = bookDetails.section.sectionId;
     const bookDetailsSection = bookDetails.section;
-    const passportDetails = response.passportPermissionDetail
-    if(bookDetails.authgrouptype=='student' && !passportDetails.access){
+    const passportDetails = response.passportPermissionDetail;
+
+    if(bookDetails.authgrouptype=='student' && passportDetails && !passportDetails.access){
       redirectToZeppelin(bookDetails,passportDetails);
       return false;
     }
