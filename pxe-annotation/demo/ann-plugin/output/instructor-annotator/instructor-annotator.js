@@ -9,14 +9,11 @@ var locale_data = {
 	"yellow":"Yellow",
 	"share":"Share",
 	"print":"Print",
-	"add_note":"Add a note...",
+	"write_note":"Write a note.",
 	"confirm":"Confirm",
 	"addtitle":"Add a title",
 	"charleft":"characters left",
-	"close":"Close",
-	"mainIdeas" : "Main ideas",
-	"questions" : "Questions",
-	"observations" : "Observations"
+	"close":"Close"
   },
   "fr" : {
 	"delete":"Supprimer",
@@ -2754,7 +2751,7 @@ Annotator = (function(_super) {
     this.editor = new Annotator.Editor();
     this.editor.hide().on('hide', this.onEditorHide).on('save', this.onEditorSubmit).addField({
       type: 'textarea',
-      label: locale_data[language]['add_note'],
+      label: locale_data[language]['write_note'],
       load: function(field, annotation) {
         return $(field).find('textarea').val(annotation.text || '');
       },
@@ -3023,51 +3020,52 @@ Annotator = (function(_super) {
       }
     }
   };
-  
   Annotator.prototype.highlightRange = function(normedRange, cssClass) {
-   var hl, node, white, _i, _len, _ref, _results, handle;
-   if (cssClass == null) {
-    cssClass = 'annotator-hl';
-   }
-   if(normedRange.note && normedRange.note.length)
-    cssClass+=" highlight-note";
-   white = /^\s*$/;
-   var annBgColor = '', noteIconBgColor = '', noteText = '';
-   if(normedRange.color == '#FFD232') { //Yellow
-      annBgColor = noteIconBgColor = 'rgba(248,230,0,0.5)';
-      noteText = 'Q';
-   } else if (normedRange.color == '#55DF49') { //Green
-      annBgColor = noteIconBgColor = 'rgba(143,218,60,0.4)';
-      noteText = 'M';
-   } else if (normedRange.color == '#FC92CF') { //Pink
-      annBgColor = noteIconBgColor = 'rgba(254,132,201,0.5)';
-      noteText = 'O';
-   } else if (normedRange.color == '#ccf5fd') { //Share(Blue)
-      annBgColor = noteIconBgColor = '#ccf5fd';
-      noteText = 'S';
-   } else {
-      annBgColor = noteIconBgColor = normedRange.color;
-   }
-   hl = $("<span class='" + cssClass + "' style=background:" + annBgColor + "></span>");
-   handle=$("<span class='annotator-handle' style=background-color:" + noteIconBgColor + ">" + noteText +"</span>");
-   _ref = normedRange.textNodes();
-   _results = [];
-   for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-     node = _ref[_i];
-     if (!white.test(node.nodeValue)) {
-       _results.push($(node).wrapAll(hl).parent().prepend(handle).show()[0]);
-       if($(node).closest('.pxereaderSearchHighlight').length > 0) {
-         $(node).parent().find('.annotator-handle').text(noteText).css('background-color', normedRange.color);
-       }
-       handle='';
-     }
-   }
-   window.getSelection().removeAllRanges();
-   window.getSelection().addRange(normedRange.toRange());
-   this.alignMathMlNote();
-   this.alignNotes();
-   return _results;
- };
+    var hl, node, white, _i, _len, _ref, _results, handle;
+    if (cssClass == null) {
+      cssClass = 'annotator-hl';
+    }
+    if(normedRange.note && normedRange.note.length)
+      cssClass+=" highlight-note";
+    white = /^\s*$/;
+    var annBgColor = '';
+    var noteIconBgColor = '';
+    if(normedRange.color == '#FFD232') { //Yellow
+        annBgColor = 'rgba(248,230,0,0.5)';
+        noteIconBgColor = '#FFD232';
+    } else if (normedRange.color == '#55DF49') { //Green
+        annBgColor = 'rgba(143,218,60,0.4)';
+        noteIconBgColor = '#55DF49';
+    } else if (normedRange.color == '#FC92CF') { //Pink
+        annBgColor = 'rgba(254,132,201,0.5)';
+        noteIconBgColor = '#FC92CF';
+    } else if (normedRange.color == '#ccf5fd') { //Share(Blue)
+        annBgColor = '#ccf5fd';
+        noteIconBgColor = '#00a4e0';
+    } else {
+        annBgColor = normedRange.color;
+        noteIconBgColor = normedRange.color;
+    }
+    hl = $("<span class='" + cssClass + "' style=background:" + annBgColor + "></span>");
+    handle=$("<span class='annotator-handle' style=background-color:" + noteIconBgColor + "></span>");
+    _ref = normedRange.textNodes();
+    _results = [];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      node = _ref[_i];
+      if (!white.test(node.nodeValue)) {
+        _results.push($(node).wrapAll(hl).parent().prepend(handle).show()[0]);
+        if($(node).closest('.pxereaderSearchHighlight').length > 0) {
+          $(node).parent().find('.annotator-handle').css('background-color', normedRange.color);
+        }
+        handle='';
+      }
+    }
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(normedRange.toRange());
+    this.alignMathMlNote();
+    this.alignNotes();
+    return _results;
+  };
 
   Annotator.prototype.highlightRanges = function(normedRanges, cssClass) {
     var highlights, r, _i, _len;
@@ -3117,16 +3115,9 @@ Annotator = (function(_super) {
     var iscolorPanel = $(selctionOverlap.startContainer).hasClass('annotator-color-container');
     if (iscolorPanel && isAdderClick == false && $('.annotator-editor .annotator-panel-2 .annotator-listing').css('display') == 'none')
       isAdderClick = true;
-    if(annId) {
-      var position= {
-        top: ((height+(!isAdderClick?140:0) + 100)) 
-      }
-    } else {
-      var position= {
-        top:(height+(!isAdderClick?140:0) + 120) // 120 staic is for align the panel-1 triangle to for inital popup
-      }
+    var position= {
+      top:(height+(!isAdderClick?140:0))
     }
-    
     this.editor.element.css(position);
     this.editor.load(annotation,this.isShareable);
     this.publish('annotationEditorShown', [this.editor, annotation]);
@@ -3578,11 +3569,7 @@ Annotator.Editor = (function(_super) {
     '.annotator-edit-container click':'onEditClick',
     '.annotator-listing textarea keyup':'onNoteChange',
     '.annotator-delete-container click':'onDeleteIconClick',
-    '.annotator-confirm-cancel click':'onCancelClick',
-    '.annotator-color-select-container click': 'onAnnotatorColorChange',
-    '.annotator-edit-Note-Panel-1-rect click' : 'onEditRectClick',
-    '.annotator-edit-Note-Panel-1-circle click' : 'onEditColorChange',
-    '#noteContainer click' : 'onNoteContainerClick'
+    '.annotator-confirm-cancel click':'onCancelClick'
   };
 
   Editor.prototype.classes = {
@@ -3597,89 +3584,11 @@ Annotator.Editor = (function(_super) {
     characters :3000
   }
   var language = window.annotationLocale;
-  var panel1 = '<div class="annotator-panel-1 annotator-panel-triangle"> \
-                  <div class="annotator-color-container">\
-                    <div> \
-                      <div class = "annotator-color-select-container" title = "Main ideas" value="#55DF49"> \
-                        <div class = "annotator-select-outer-circle positionAbs"> \
-                          <div class = "annotator-select-inner-circle hide" value="#55DF49"></div> \
-                        </div> \
-                        <div class = "annotator-select-rect positionRel annotator-Rect-Pos annotator-pane1-font annotator-pane1-rect-background-green">' +locale_data[language]['mainIdeas']+'</div> \
-                      </div> \
-                      <div class = "annotator-color-select-container" title = "Questions" value="#FFD232"> \
-                        <div class = "annotator-select-outer-circle positionAbs"> \
-                          <div class = "annotator-select-inner-circle hide" value="#FFD232"></div> \
-                        </div> \
-                        <div class = "annotator-select-rect positionRel annotator-Rect-Pos annotator-pane1-font annotator-pane1-rect-background-sepia">' +locale_data[language]['questions']+'</div> \
-                      </div> \
-                      <div class = "annotator-color-select-container" title = "Observations" value="#FC92CF"> \
-                        <div class = "annotator-select-outer-circle positionAbs"> \
-                          <div class = "annotator-select-inner-circle hide" value="#FC92CF"></div> \
-                        </div> \
-                        <div class = "annotator-select-rect positionRel annotator-Rect-Pos annotator-pane1-font annotator-pane1-rect-background-pink">' +locale_data[language]['observations']+'</div> \
-                      </div> \
-                    </div> \
-                  </div> \
-                  <div class = "annotator-select-container"> \
-                    <div> \
-                      <!-- div class="annotator-delete-container" title="' + locale_data[language]['delete'] + '"></div --> \
-                      <!-- div class="annotator-edit-container" title="' + locale_data[language]['edit'] + '"></div --> \
-                    </div> \
-                  </div> \
-                  <div class = "edit-Note-Panel-1">  <!-- Edit Note Panel-->\
-                    <div> <!-- Edit Note circle-->\
-                      <div class = "edit-note-circle"> \
-                        <div class= "annotator-edit-Note-Panel-1-circle annotator-edit-Note-Panel-1-circle-green" value="#55DF49"> \
-                        </div> \
-                        <div class= "annotator-edit-Note-Panel-1-circle annotator-edit-Note-Panel-1-circle-sepia" value="#FFD232"> \
-                        </div > \
-                        <div class= "annotator-edit-Note-Panel-1-circle annotator-edit-Note-Panel-1-circle-pink" value="#FC92CF"> \
-                        </div > \
-                      </div> \
-                      <div class = "edit-note-rect"> <!-- Edit Note Rectangle-->\
-                        <div> \
-                          <div class = "annotator-select-rect hide annotator-pane1-font annotator-pane1-rect-background-green annotator-edit-Note-Panel-1-rect" value="#55DF49">' +locale_data[language]['mainIdeas']+'</div> \
-                        </div> \
-                                \
-                        <div> \
-                          <div class = "annotator-select-rect hide annotator-pane1-font annotator-pane1-rect-background-sepia annotator-edit-Note-Panel-1-rect" value="#FFD232">' +locale_data[language]['questions']+'</div> \
-                        </div> \
-                                \
-                        <div> \
-                          <div class = "annotator-select-rect hide annotator-pane1-font annotator-pane1-rect-background-pink annotator-edit-Note-Panel-1-rect" value="#FC92CF">' +locale_data[language]['observations']+'</div> \
-                        </div> \
-                      </div> \
-                              \
-                    </div> \
-                  </div> \
-                </div>'
+  var panel1 = '<div class="annotator-panel-1 annotator-panel-triangle"><div class="annotator-color-container"><input type="button" class="annotator-color annotator-yellow" title="' + locale_data[language]['yellow'] + '" value="#FFD232"/><input type="button" class="annotator-color annotator-green" title="' + locale_data[language]['green'] + '" value="#55DF49"/><input type="button" class="annotator-color annotator-pink" title="' + locale_data[language]['pink'] + '" value="#FC92CF"/></div><div class="annotator-delete-container" title="' + locale_data[language]['delete'] + '"></div><div class="annotator-edit-container" title="' + locale_data[language]['edit'] + '"></div></div>'
 
   var panel2 ='<div class="annotator-panel-2"><ul class="annotator-listing"></ul></div>';
 
-  var panel3 ='<div class="annotator-panel-3"> \
-                <div class="annotator-controls"> \
-                  <div class="annotator-delete-container" title="' + locale_data[language]['delete'] + '"> \
-                  </div> \
-                  <div class="ann-cancel-delete-confirm-section hide"> \
-                    <div class="ann-confirm-section"> \
-                      <label class="annotator-confirm">' + locale_data[language]['confirm'] + '?</label> \
-                    </div> \
-                    <div class = "ann-canceldelete-section"> \
-                      <a class="annotator-confirm-delete" title="' + locale_data[language]['delete'] + '">' + locale_data[language]['delete'] + '</a> \
-                      <a class="annotator-confirm-cancel" title="' + locale_data[language]['cancel'] + '">' + locale_data[language]['cancel'] + '</a> \
-                    </div> \
-                  </div> \
-                  <!--div class="ann-share-section"> \
-                    <label class="annotator-share-text">' + locale_data[language]['share'] + '</label> \
-                      <div class="annotator-share" title="' + locale_data[language]['share'] + '"> \
-                      </div> \
-                  </div --> \
-                  <div class="ann-cancelsave-section"> \
-                    <!-- a class="annotator-cancel" title="' + locale_data[language]['cancel'] + '">' + locale_data[language]['cancel'] + '</a > \
-                    <a class="annotator-save annotator-focus" title="' + locale_data[language]['save'] + '">' + locale_data[language]['save'] + '</a --> \
-                  </div> \
-                </div> \
-              </div>'; 
+  var panel3 ='<div class="annotator-panel-3"><div class="annotator-controls"><div class="ann-share-section"><label class="annotator-share-text">' + locale_data[language]['share'] + '</label><div class="annotator-share" title="' + locale_data[language]['share'] + '"></div></div><div class="ann-cancelsave-section"><a class="annotator-cancel" title="' + locale_data[language]['cancel'] + '">' + locale_data[language]['cancel'] + '</a><a class="annotator-save annotator-focus" title="' + locale_data[language]['save'] + '">' + locale_data[language]['save'] + '</a></div></div></div>';
 
   var panel4 ='<div class="annotator-panel-4 annotator-panel-triangle"><div class="ann-confirm-section"><label class="annotator-confirm">' + locale_data[language]['confirm'] + '?</label></div><div class="ann-canceldelete-section"><a class="annotator-confirm-delete" title="' + locale_data[language]['delete'] + '">' + locale_data[language]['delete'] + '</a><a class="annotator-confirm-cancel" title="' + locale_data[language]['cancel'] + '">' + locale_data[language]['cancel'] + '</a></div></div></div>';
 
@@ -3709,65 +3618,6 @@ Annotator.Editor = (function(_super) {
     this.fields = [];
     this.annotation = {};
   }
-
-  Editor.prototype.onAnnotatorColorChange = function(e) {
-    var title = '';
-    var dom;
-    if(e.target.parentElement.getAttribute('title')) {
-      title = e.target.parentElement.getAttribute('title')
-      dom = e.target.parentElement;
-    } else if(e.target.getAttribute('title')) {
-      title = e.target.getAttribute('title')
-      dom = e.target;
-    }
-    $('.annotator-select-inner-circle').hide()
-    $(dom).find('.annotator-select-inner-circle').show();
-
-    $('.ann-cancel-delete-confirm-section').hide();
-    $('.annotator-delete-container').show()
-
-    this.onColorChange(dom);
-  }
-
-  Editor.prototype.onNoteContainerClick= function(e) { 
-    $("#noteContainer").hide();
-    var annotator_editor = $('.annotator-editor')
-    annotator_editor.css({ top : annotator_editor.position().top + 110});
-    $('.annotator-panel-2').find('textarea').show().css({"pointer-events": "all", "opacity": "1"});
-    $('.annotator-panel-2').find('textarea').focus();
-    $(".annotator-panel-triangle").addClass("annotator-panel-triangle1").removeClass("annotator-panel-triangle");
-  }
-
-  Editor.prototype.onEditColorChange= function(e) { 
-    e.preventDefault();
-    var editNoteCircleDom = $(".edit-note-circle");
-    var value = $(e.target).attr('value');
-    editNoteCircleDom.find('.annotator-edit-Note-Panel-1-circle').css({"border": "0px","height": "18px", "width": "18px"});
-    editNoteCircleDom.find(("[value=" + "'" + value + "']")).css({ "border": "solid 1px #19a6a4","height": "20px", "width": "20px"});
-
-    $('.annotator-edit-Note-Panel-1-rect').hide();
-    $('.edit-note-rect').find(("[value=" + "'" + value + "']")).show();
-    this.onColorChange(e.target);
-  }
-
-  Editor.prototype.onEditRectClick = function(e) { 
-    var editNoteCircleDom = $(".edit-note-circle");
-    var value = $(e.target).attr('value');
-    editNoteCircleDom.show();
-    editNoteCircleDom.find('.annotator-edit-Note-Panel-1-circle').css({"border": "0px","height": "18px", "width": "18px"}); // reset to default circle
-    editNoteCircleDom.find(("[value=" + "'" + value + "']")).css({ "border": "solid 1px #19a6a4","height": "20px", "width": "20px"}) // highlight the selected circle
-    $(".edit-note-rect").css({"padding" : "0px","margin-top": "-43px","margin-left": "99px"});
-    
-    if(value === "#55DF49") { // Green
-
-    } else if(value ==="#FFD232") { // Sepia
-
-    } else { // pink
-
-    }
-    //$(e.target).attr('value')
-  }
-  
   Editor.prototype.unShareAnnotation=function() {
      this.annotation.color=this.annotation.lastColor;
      if(this.annotation.color == '#FFD232') { //Yellow
@@ -3813,10 +3663,8 @@ Annotator.Editor = (function(_super) {
     this.element.addClass('hide-note')
     return $('.annotator-outer.annotator-viewer').triggerHandler.apply($('.annotator-outer.annotator-viewer'), ['delete', [this.annotation]]);
   }
-  Editor.prototype.onDeleteIconClick=function(event) { 
-    $(event.target).hide(); 
-    $('.ann-cancel-delete-confirm-section').removeClass('hide').css({"display": "block"});
-    /*var panel1Sec =  this.element.find('.annotator-panel-1'), panel2Sec =  this.element.find('.annotator-panel-2'), panel3Sec =  this.element.find('.annotator-panel-3'), panel4Sec = this.element.find('.annotator-panel-4');
+  Editor.prototype.onDeleteIconClick=function(event) {  
+    var panel1Sec =  this.element.find('.annotator-panel-1'), panel2Sec =  this.element.find('.annotator-panel-2'), panel3Sec =  this.element.find('.annotator-panel-3'), panel4Sec = this.element.find('.annotator-panel-4');
     if($(panel2Sec).find('textarea').val().trim()) {
         panel1Sec.addClass('hide-popup').after(panel4);
         panel4Sec.addClass('annotator-panel-triangle');
@@ -3826,7 +3674,7 @@ Annotator.Editor = (function(_super) {
     }
     else {
         this.onDeleteClick(event);
-    }*/
+    }
   }
   Editor.prototype.onCancelClick=function(event) {  
     var panel1Sec =  this.element.find('.annotator-panel-1'), panel2Sec =  this.element.find('.annotator-panel-2'), panel3Sec =  this.element.find('.annotator-panel-3'), panel4Sec = this.element.find('.annotator-panel-4') ;
@@ -3834,11 +3682,8 @@ Annotator.Editor = (function(_super) {
     panel2Sec.removeClass('overlay');
     panel3Sec.removeClass('overlay');
     panel4Sec.remove();
-    $(".ann-cancel-delete-confirm-section").hide();
-    $(".annotator-delete-container").show();
     $(panel2Sec).find('textarea').removeAttr('readonly');
   }
-
   Editor.prototype.onEditClick=function(event) {  
     this.element.addClass('show-edit-options');
     $(this.element).find('textarea').show();
@@ -3868,47 +3713,49 @@ Annotator.Editor = (function(_super) {
     }    
   }
 
-  Editor.prototype.onColorChange=function(target) {
-   window.getSelection().removeAllRanges();
-   this.element.removeClass('hide-note');
-   var checkoverlap = $('.annotator-editor').hasClass('overlapingpopup');
-   var isTopAlign=(!this.annotation.color)?true:false;
-   if(window.currAnn) {
-    ($('#noteContainer').css('display') == 'block') ? $('.annotator-edit-container').show() : $('.annotator-edit-container').hide();
-    $('.annotator-outer.annotator-viewer').triggerHandler.apply($('.annotator-outer.annotator-viewer'), ['delete', [window.currAnn]]);
-   }
-   if (this.annotation._id===undefined && this.currentAnnotation !== null) {     
-    var curAnn =this.currentAnnotation;   
-    Object.assign(this.annotation, curAnn);   
-   }
-   var colorCode = target.getAttribute('value');
-   this.annotation.color=this.annotation.lastColor=colorCode;
-   /*$('.annotator-color').removeClass('active');
-   $(event.target).addClass('active');*/
-   if($(this.annotation.highlights).closest('.pxereaderSearchHighlight').length>0) {
-    $(this.annotation.highlights).unwrap('.pxereaderSearchHighlight');
-    $(this.annotation.highlights).parents().removeClass('pxereaderSearchHighlight');
-    $(this.annotation.highlights).find('.annotator-handle').css('background-color', 'inherit');
-   }
-   var annBgColor = '', noteIconBgColor = '', noteText = '';
-   if(colorCode == '#FFD232') { //Yellow
-      annBgColor = noteIconBgColor = 'rgba(248, 230, 0, 0.5)';
-      noteText = 'Q';
-   } else if (colorCode == '#55DF49') { //Green
-      annBgColor = noteIconBgColor = 'rgba(143, 218, 60, 0.4)';
-      noteText = 'M';
-   } else if (colorCode == '#FC92CF') { //Pink
-      annBgColor = noteIconBgColor = 'rgba(254, 132, 201, 0.5)';
-      noteText = 'O';
-   } else if (colorCode == '#ccf5fd') { //Share(Blue)
-      annBgColor = noteIconBgColor = '#ccf5fd';
-      noteText = 'S';
-   } else { 
-      annBgColor = noteIconBgColor = colorCode;
-   }
-   $(this.annotation.highlights).css('background', annBgColor);
-   $(this.annotation.highlights).find('.annotator-handle').text(noteText).css('background-color', noteIconBgColor);  if (isTopAlign) {
-      var topPosition=this.element.position().top + this.element.find('form').height()-this.element.find('.annotator-panel-1').height()-20;
+  Editor.prototype.onColorChange=function(event) {
+    window.getSelection().removeAllRanges();
+    this.element.removeClass('hide-note');
+    var checkoverlap = $('.annotator-editor').hasClass('overlapingpopup');
+    var isTopAlign=(!this.annotation.color)?true:false;
+    if(window.currAnn) {
+       ($('#noteContainer').css('display') == 'block') ? $('.annotator-edit-container').show() : $('.annotator-edit-container').hide();
+       $('.annotator-outer.annotator-viewer').triggerHandler.apply($('.annotator-outer.annotator-viewer'), ['delete', [window.currAnn]]);
+    }
+    if (this.annotation._id===undefined && this.currentAnnotation !== null) {     
+      var curAnn =this.currentAnnotation;   
+      Object.assign(this.annotation, curAnn);   
+    }
+    this.annotation.color=this.annotation.lastColor=event.target.value;
+    $('.annotator-color').removeClass('active');
+    $(event.target).addClass('active');
+    if($(this.annotation.highlights).closest('.pxereaderSearchHighlight').length>0) {
+       $(this.annotation.highlights).unwrap('.pxereaderSearchHighlight');
+       $(this.annotation.highlights).parents().removeClass('pxereaderSearchHighlight');
+       $(this.annotation.highlights).find('.annotator-handle').css('background-color', 'inherit');
+    }
+    var annBgColor = '';
+    var noteIconBgColor = '';
+    if(event.target.value == '#FFD232') { //Yellow
+        annBgColor = 'rgba(248, 230, 0, 0.5)';
+        noteIconBgColor = '#FFD232';
+    } else if (event.target.value == '#55DF49') { //Green
+        annBgColor = 'rgba(143, 218, 60, 0.4)';
+        noteIconBgColor = '#55DF49';
+    } else if (event.target.value == '#FC92CF') { //Pink
+        annBgColor = 'rgba(254, 132, 201, 0.5)';
+        noteIconBgColor = '#FC92CF';
+    } else if (event.target.value == '#ccf5fd') { //Share(Blue)
+        annBgColor = '#ccf5fd';
+        noteIconBgColor = '#00a4e0';
+    } else { 
+        annBgColor = event.target.value;
+        noteIconBgColor = event.target.value;
+    }
+    $(this.annotation.highlights).css('background', annBgColor);
+    $(this.annotation.highlights).find('.annotator-handle').css('background-color', noteIconBgColor);
+    if (isTopAlign) {
+      var topPosition=this.element.position().top + this.element.find('form').height()-this.element.find('.annotator-panel-1').height();
       this.element.css({top:topPosition});
     }
     if (this.annotation.shareable) {
@@ -3920,7 +3767,6 @@ Annotator.Editor = (function(_super) {
       $('#annotator-field-0').css({'display':'inline-block', 'pointer-events': 'all','opacity': '1'});
       $('.annotator-edit-container').hide();
     }
-    setTimeout(function() { $('#annotator-field-0').focus(); })  // To enable focus on textarea
     // this.publish('save', [this.annotation]);
     // if(isTopAlign)
     //    $('.annotator-outer.annotator-viewer').triggerHandler.apply($('.annotator-outer.annotator-viewer'), ['delete', [this.annotation]]);
@@ -3954,30 +3800,10 @@ Annotator.Editor = (function(_super) {
     }
     else {
       $('.annotator-share').removeClass('on');
-      /* $('.annotator-color-container').removeClass('disabled-save'); */
+      $('.annotator-color-container').removeClass('disabled-save'); 
     }
-    /*$('.annotator-color').removeClass('active');
-    $('.annotator-color[value="'+this.annotation.color+'"]').addClass('active');*/
-    $('.annotator-select-inner-circle').hide(); // To hide all inner checkboxes
-    if(this.annotation.color) { // For Edit container
-      $('.annotator-color-select-container').hide(); 
-      $('.edit-Note-Panel-1').show();
-      $('.annotator-panel-1').css({height: "62px", position : "initial"});
-      $('.annotator-editor').css({ top :$('.annotator-editor').position().top - 90 });
-
-      $(".edit-Note-Panel-1 .annotator-select-rect").hide();
-      $(".edit-Note-Panel-1 .edit-note-circle").hide();
-      $('.edit-Note-Panel-1').find("[value=" + this.annotation.color + "]").show();
-      $(".edit-note-rect").css({ "padding": "20px", "margin-top": "0px", "margin-left": "0px"});
-
-      $('.ann-cancel-delete-confirm-section').hide();
-      $('.annotator-delete-container').show()
-      console.log("this.annotation.color : ", this.annotation.color)
-    } else { // Initial annotation
-      $('.edit-Note-Panel-1').hide();
-      $('.annotator-color-select-container').show();
-      $('.annotator-panel-1').css({height: "130px", position : "relative"});
-    }
+    $('.annotator-color').removeClass('active');
+    $('.annotator-color[value="'+this.annotation.color+'"]').addClass('active');
     this.element.find('.annotator-save').addClass(this.classes.focus);
     this.element.find('.annotator-listing .characters-left').remove();
     this.element.find('.annotator-listing').append(panel5);
@@ -3990,7 +3816,7 @@ Annotator.Editor = (function(_super) {
     }
     this.element.find(":input:first").focus();
     this.setupDraggables();
-    if(this.element.find('textarea').val().length > 0 || this.annotation.color) {
+    if(this.element.find('textarea').val().length > 0) {
       $(this.element).find('#noteContainer').html(linkifyStr(this.element.find('textarea').val()));
       $(this.element.find('textarea')).hide();
       $(this.element).find('#noteContainer').show();
@@ -3998,46 +3824,43 @@ Annotator.Editor = (function(_super) {
       $(this.element.find('textarea')).show();
       $(this.element).find('#noteContainer').hide();
     }
-    $(".annotator-panel-triangle1").addClass("annotator-panel-triangle").removeClass("annotator-panel-triangle1");
     return this.publish('show');
   };
 
   Editor.prototype.hide = function(event) {
-   var annBgColor = '', noteIconBgColor = '', noteText = '';
-   if(this.annotation.color == '#FFD232') { //Yellow
-       annBgColor = noteIconBgColor = 'rgba(248, 230, 0, 0.5)';
-       noteText = 'Q';
-   } else if (this.annotation.color == '#55DF49') { //Green
-       annBgColor = noteIconBgColor = 'rgba(143, 218, 60, 0.4)';
-       noteText = 'M';
-   } else if (this.annotation.color == '#FC92CF') { //Pink
-       annBgColor = noteIconBgColor = 'rgba(254, 132, 201, 0.5)';
-       noteText = 'O'
-   } else if (this.annotation.color == '#ccf5fd') { //Share(Blue)
-       annBgColor = noteIconBgColor = '#ccf5fd';
-       noteText = 'S';
-   } else {
-       annBgColor = noteIconBgColor = this.annotation.color;
-   }
-   var text = $('.annotator-panel-2').find('textarea').val();
-   this.annotation.text = text ? text : " ";
-   var noteVal = $.trim(this.annotation.text);
-   $(this.annotation.highlights).css('background', annBgColor)['addClass']('highlight-note');
-   $(this.annotation.highlights).find('.annotator-handle').text(noteText).css('background-color', noteIconBgColor);
-   Annotator.Util.preventEventDefault(event);
-   this.element.addClass(this.classes.hide);
-   this.element.addClass('hide-note').removeClass('show-edit-options');
-   $('.annotator-edit-container').show();
-   $('.annotator-panel-1').removeClass('disabled-save');
-   this.onCancelClick();
-   this.element.find('textarea').removeAttr('style');
-   this.element.find('input').removeAttr('style'); 
-   this.currentAnnotation = this.textareaHeight = null;
-   if(this.annotation.color && this.annotation.color.length)
-     this.publish('save', [this.annotation]);
-   return this.publish('hide');
- };
-
+    var annBgColor = '';
+    var noteIconBgColor = '';
+    if(this.annotation.color == '#FFD232') { //Yellow
+        annBgColor = 'rgba(248, 230, 0, 0.5)';
+        noteIconBgColor = '#FFD232';
+    } else if (this.annotation.color == '#55DF49') { //Green
+        annBgColor = 'rgba(143, 218, 60, 0.4)';
+        noteIconBgColor = '#55DF49';
+    } else if (this.annotation.color == '#FC92CF') { //Pink
+        annBgColor = 'rgba(254, 132, 201, 0.5)';
+        noteIconBgColor = '#FC92CF';
+    } else if (this.annotation.color == '#ccf5fd') { //Share(Blue)
+        annBgColor = '#ccf5fd';
+        noteIconBgColor = '#00a4e0';
+    } else {
+        annBgColor = this.annotation.color;
+        noteIconBgColor = this.annotation.color;
+    }
+    $(this.annotation.highlights).css('background', annBgColor);
+    $(this.annotation.highlights).find('.annotator-handle').css('background-color', noteIconBgColor);
+    Annotator.Util.preventEventDefault(event);
+    this.element.addClass(this.classes.hide);
+    this.element.addClass('hide-note').removeClass('show-edit-options');
+    $('.annotator-edit-container').show();
+    $('.annotator-panel-1').removeClass('disabled-save');
+    this.onCancelClick();
+    this.element.find('textarea').removeAttr('style');
+    this.element.find('input').removeAttr('style'); 
+    this.currentAnnotation = this.textareaHeight = null;
+    if(this.annotation.color && this.annotation.color.length)
+      this.publish('save', [this.annotation]);
+    return this.publish('hide');
+  };
   Editor.prototype.hasClass=function(element, className) {
     do {
       if (element.classList && element.classList.contains(className)) {
@@ -4054,7 +3877,7 @@ Annotator.Editor = (function(_super) {
     else      
       $('.annotator-share-text, .annotator-share').show();
     if (!$('.annotator-item input').length) {
-     $('.annotator-item').prepend('<input placeholder="' + locale_data[language]['addtitle'] + '." id = "mathTitle"/><div class="noteContainer" id = "noteContainer" ></div>');
+     $('.annotator-item').prepend('<input placeholder="' + locale_data[language]['addtitle'] + '." id = "mathTitle"/><div class="noteContainer" id = "noteContainer"></div>');
     }
     $('.annotator-item input').val(annotation.quote);
     if(this.hasClass(annotation.highlights[0], 'MathJax')){
