@@ -33,6 +33,9 @@ export class Book extends Component {
             }
           }
       }); 
+      this.scriptLoadStarted = false;
+      this.jsScriptLoaded =false;
+      this.CssScriptLoaded =false;
       this.state = {
         classname: 'headerBar',
         viewerContent: true,
@@ -58,7 +61,8 @@ export class Book extends Component {
         sectionId : '',
         piToken : localStorage.getItem('secureToken'),
         pageLoad : false,
-        currentPageId : ''
+        currentPageId : '',
+        jscssLoaded : false
       };
       this.divGlossaryRef = '';
       this.wrapper = '';
@@ -138,6 +142,7 @@ export class Book extends Component {
     WidgetManager.loadComponents(this.nodesToUnMount, this.context);
   };
   componentWillReceiveProps(nextProps){
+    console.log(nextProps);
     const playlistData = nextProps.playlistData;
     const pageParameters = this.state.pageDetails;
     if(nextProps.playlistReceived){
@@ -537,12 +542,59 @@ export class Book extends Component {
   listClick = () => {
     console.log("....** listClick function...")
   }
+
+  frameScriptAndCSS =(bookdetailsdata) => {
+    if(this.scriptLoadStarted === false && bookdetailsdata && bookdetailsdata.roles) {
+      this.scriptLoadStarted = true;
+      let scriptUrl =''; let cssUrl = ''; 
+      if(bookdetailsdata.roles[0] !== "Educator") {
+        scriptUrl = 'http://localhost:4040/demo/ann-plugin/output/instructor-annotator/instructor-annotator.js';
+        cssUrl = 'http://localhost:4040/demo/ann-plugin/output/instructor-annotator/instructor-annotator.css';
+        this.loadAnnotationScript(scriptUrl, cssUrl);
+      }
+      else if(bookdetailsdata.roles[1] === "Student"){
+        scriptUrl = 'http://localhost:4040/demo/ann-plugin/output/annotator.js';
+        cssUrl = 'http://localhost:4040/demo/ann-plugin/output/annotator.css';
+        this.loadAnnotationScript(scriptUrl, cssUrl);    
+      }    
+    }  
+  }
+
+  loadAnnotationScript =(JsScript, CSS)=> {
+    let that = this;
+    var script = document.createElement('script');
+    script.onload = function() {
+      that.jsScriptLoaded =true;
+      if (that.jsScriptLoaded  && that.CssScriptLoaded){
+        that.setState({jscssLoaded: true});
+      }
+    }
+    script.setAttribute('src', JsScript);
+    script.setAttribute('type', 'text/javascript');
+    document.getElementsByTagName('body')[0].appendChild(script);
+
+    var link = document.createElement("link");
+    link.onload = function() {
+      that.CssScriptLoaded =true;
+      if (that.jsScriptLoaded  && that.CssScriptLoaded){
+        that.setState({jscssLoaded: true});
+      }
+    }
+    
+    link.href = CSS;
+    link.type = "text/css";
+    link.rel = "stylesheet";
+    document.getElementsByTagName("head")[0].appendChild(link);
+  }
   
 
   render() {
     const callbacks = {};
     const { annotationData, annDataloaded ,annotationTotalData ,playlistData, playlistReceived, bookMarkData ,tocData ,tocReceived, bookdetailsdata} = this.props; // eslint-disable-line react/prop-types
     // const annData  = annotationData.rows;
+    if(playlistReceived) {
+      this.frameScriptAndCSS(bookdetailsdata);
+    }
     this.props.book.annTotalData  = annotationTotalData;
     this.props.book.toc           = tocData;
     this.props.book.tocReceived   = tocReceived;
@@ -557,7 +609,8 @@ export class Book extends Component {
     //For Segregating to Wrapper component PxePlayer		
     const bootstrapParams={		
       pageDetails:{...this.state.pageDetails},		
-      urlParams:{...this.state.urlParams}		
+      urlParams:{...this.state.urlParams}		,
+      ...bookdetailsdata
     }		
     const currentBookId = this.props.params.pageId;
     //End of Wrapper PxePlayer
@@ -583,7 +636,7 @@ export class Book extends Component {
            
           <div className={this.state.viewerContent ? 'viewerContent' : 'fixedviewerContent viewerContent'}>
             {!playlistReceived ? <RefreshIndicator size={50} left={650} top={200} status="loading" /> :''}
-            {playlistReceived ? <PxePlayer bootstrapParams={bootstrapParams}  applnCallback={this.onPageChange}/> : ''}
+            {playlistReceived && this.state.jscssLoaded ? <PxePlayer bootstrapParams={bootstrapParams}  applnCallback={this.onPageChange} /> : ''}
           </div>
            {this.state.isPanelOpen?<div>		
             <iframe name="panel" width="500" height="600" ></iframe>
