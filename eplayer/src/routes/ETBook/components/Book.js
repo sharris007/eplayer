@@ -18,6 +18,7 @@
   import find from 'lodash/find';
   import WidgetManager from '../../../components/widget-integration/widgetManager';
   import { HeaderComponent, Drawer} from '@pearson-incubator/vega-core';
+  import { PreferencesComponent } from '@pearson-incubator/preferences';
   import { pageDetails, customAttributes, pageLoadData, pageUnLoadData } from '../../../../const/Mockdata';
   import './Book.scss';
   import { browserHistory } from 'react-router';
@@ -96,7 +97,7 @@
         const userId = piSession.userId();
         this.state.urlParams.user = userId;
       }
-
+      this.closeHeaderIcons = this.closeHeaderIcons.bind(this);      
     }
     componentWillMount = () => {
       let isSessionLoaded = false;
@@ -694,6 +695,17 @@
         this.props.preferences.data :
         this.defaultPreference
     );
+    closeHeaderIcons = (e) => {
+      const eleSearch = $(e.target).closest('.searchIconBtn');
+      const elePref = $(e.target).closest('.prefIconBtn');
+      if(eleSearch.length === 0 && elePref.length === 0){
+        this.setState({searchOpen: false, prefOpen: false});
+      }
+    }
+    onPageClick = () => {
+      console.log('page clicked');
+      this.searchClick('closesearch');
+    }
     render() {
       const callbacks = {};
       let annJsPath,annCssPath,productData;
@@ -769,12 +781,12 @@
       if (playlistReceived && bookdetailsdata) {
         const userType = ( bookdetailsdata.roles === undefined ) ? bookdetailsdata.userCourseSectionDetail.authgrouptype : bookdetailsdata.roles[0];
         if (userType.toLowerCase() === 'educator' || userType.toLowerCase() === 'instructor') {
-           annJsPath = 'eplayer/annotation-lib/instructor-annotator/instructor-annotator.js';
-           annCssPath = 'eplayer/annotation-lib/instructor-annotator/instructor-annotator.css';
+           annJsPath = 'annotation-lib/instructor-annotator/instructor-annotator.js';
+           annCssPath = 'annotation-lib/instructor-annotator/instructor-annotator.css';
         }
         else {
-          annJsPath = 'eplayer/annotation-lib/annotator.js';
-          annCssPath = 'eplayer/annotation-lib/annotator.css';
+          annJsPath = 'annotation-lib/annotator.js';
+          annCssPath = 'annotation-lib/annotator.css';
         }
         productData = {
         product: 'PXE',
@@ -797,21 +809,21 @@
           }
         },
         pxeOptions:{
-          script: `${window.location.origin}/eplayer/pxe_scripts/bundle.js`,
-          style: `${window.location.origin}/eplayer/pxe_scripts/style.css`,
+          script: `${window.location.origin}/pxe_scripts/bundle.js`,
+          style: `${window.location.origin}/pxe_scripts/style.css`,
           scriptsToReplace: [
             {
               old: 'https://revel-content.openclass.com/content/amc/amc-bootstrap.js',
-              new: `${window.location.origin}/eplayer/bxix_scripts/brix.js`
+              new: `${window.location.origin}/bxix_scripts/brix.js`
             }
           ],
-          scriptsToAdd:[`${window.location.origin}/eplayer/annotation-lib/jquery.min.js`,
+          scriptsToAdd:[`${window.location.origin}/annotation-lib/jquery.min.js`,
           `${window.location.origin}/${annJsPath}`],
           stylesToAdd:[`${window.location.origin}/${annCssPath}`]
         },
         metaData: {
           brixClient: 'https://grid-static-dev.pearson.com/11-thinclient/0.0.0/js/brixClient-3.6.1-exp.5129.0.js',
-          brixCss: `${window.location.origin}/eplayer/bxix_scripts/brix.css`,
+          brixCss: `${window.location.origin}/bxix_scripts/brix.css`,
           environment: 'LOCAL', 
           pxeUserPreference:{
             bgColor:bootstrapParams.pageDetails.bgColor, 
@@ -823,8 +835,26 @@
       };
       }
       const locale = bootstrapParams.pageDetails.locale ? bootstrapParams.pageDetails.locale : 'en';
+      const headerTitleData = {
+        params: this.props.params,
+        classname: this.state.classname,
+        chapterTitle: this.state.currentPageTitle,
+        pageTitle: this.state.currentPageTitle,
+        isChapterOpener: this.state.isChapterOpener
+      };
+     
+      const hideIcons = {
+        backNav: false,
+        hamburger: false,
+        bookmark: false,
+        pref: false,
+        search: false,
+        audio: false,
+        moreIcon: true
+      };
+
       return ( 
-        <div>
+        <div onClick={this.closeHeaderIcons}>
         { playlistReceived && 
         <LearningContextProvider 
         contextId = "ddddd"
@@ -841,19 +871,19 @@
                 className={`${this.state.classname} ${this.state.headerExists ? 'nav-up' : ''}`}
                 ref={(headerDiv) => { this.headerDOM = headerDiv; }}
               >
-            <HeaderComponent
-                  bookshelfClick={this.handleBookshelfClick}
-                  drawerClick={this.handleDrawer}
-                  bookmarkIconData={bookmarkIconData}
-                  handlePreferenceClick={this.handlePreferenceClick}
-                  handleDrawerkeyselect={this.handleDrawerkeyselect}
-                  handleBookshelfKeySelect={this.handleBookshelfKeySelect}
-                  searchClick={this.searchClick}
-                  headerTitle={this.state.currentPageTitle}
-                  getPreference={this.getPreference}
-                  updatePreference={this.updatePreference}
-                  locale='en-US'
-                />
+              <HeaderComponent
+              bookshelfClick={this.handleBookshelfClick}
+              drawerClick={this.handleDrawer}
+              bookmarkIconData={bookmarkIconData}
+              handlePreferenceClick={this.handlePreferenceClick}
+              handleDrawerkeyselect={this.handleDrawerkeyselect}
+              searchClick={this.searchClick}
+              locale={locale}
+              headerTitleData={headerTitleData}
+              hideIcons={hideIcons}
+              prefOpen={this.state.prefOpen}
+              searchOpen={this.state.searchOpen}
+              />
               </div>
               {
               this.props.book.tocReceived &&
@@ -876,6 +906,18 @@
               <div className="searchContainer">
                 {this.state.searchOpen ? <Search locale={this.props.locale} store={this.context.store} goToPage = {(pageId) => this.goToPage(pageId)} indexId = { {'indexId' : this.bookIndexId, 'searchUrl' : this.searchUrl} } searchKeySelect={this.searchKeySelect} listClick={this.searchClick} isET1="Y" /> : <div className="empty" />}
               </div>
+              <div className="preferences-container" >
+                {this.state.prefOpen ?
+                  <div className="content">
+                    <PreferencesComponent
+                      fetch={this.getPreference}
+                      preferenceUpdate={this.updatePreference}
+                      disableBackgroundColor={false}
+                      locale={locale}
+                    />
+                  </div> :
+                  <div className="empty" />}
+              </div>
           </div>
         { playlistReceived ?
           <div>
@@ -887,6 +929,7 @@
             () => {}  
           }
           onPageLoad = { this.onPageLoad }
+          onPageClick ={ this.onPageClick }
           applnCallback = { this.onPageChange } 
           annSearchId = { bootstrapParams.pageDetails.annId }
           key = { bootstrapParams.pageDetails.currentPageURL.id }
@@ -938,7 +981,7 @@
         bookMarkData: state.bookmarkReducer.bookmarksData,
         gotoPageObj: state.gotopageReducer.gotoPageObj,
         isGoToPageRecived: state.gotopageReducer.isGoToPageRecived,
-        bookdetailsdata: state.playlistReducer.bookdetailsdata,
+        bookdetailsdata: state.playlistReducer.bookdetailsdata
       }
     }; // eslint-disable-line max-len
     Book = connect(mapStateToProps)(Book); // eslint-disable-line no-class-assign
