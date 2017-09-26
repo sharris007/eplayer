@@ -100,6 +100,7 @@
     }
     componentWillMount = () => {
       let isSessionLoaded = false;
+      let self = this;
       const IntervalCheck = setInterval(() => {
         // deeper code
         if (!isSessionLoaded) {
@@ -110,6 +111,8 @@
             piSession.getToken(function(result, userToken) {
               if (result === piSession['Success']) {
                 localStorage.setItem('secureToken', userToken);
+                const piUserId = piSession.userId();
+                self.state.urlParams.user = piUserId;
                 clearInterval(IntervalCheck);
               }
             });
@@ -120,8 +123,6 @@
             piToken: getSecureToken,
             bookId: this.props.params.bookId
           }
-          const piUserId = piSession.userId();
-          this.state.urlParams.user = piUserId;
           if (window.location.pathname.indexOf('/eplayer/Course/') > -1) {
             bookDetailsData.courseId = this.props.params.bookId;
             this.props.dispatch(getCourseCallService(bookDetailsData));
@@ -300,20 +301,20 @@
           }
         case typeConstants.ANNOTATION_CREATED:
           {
-            const annList = annStructureChange([data]);
+            const annList = annStructureChange([data.data]);
             this.props.dispatch(getTotalAnnotationData(annList));
             break;
           }
         case typeConstants.ANNOTATION_UPDATED:
           {
-            const annList = annStructureChange([data]);
+            const annList = annStructureChange([data.data]);
             this.props.dispatch(deleteAnnotationData(data));
             this.props.dispatch(getTotalAnnotationData(annList));
             break;
           }
         case typeConstants.ANNOTATION_DELETED:
           {
-            this.props.dispatch(deleteAnnotationData(data));
+            this.props.dispatch(deleteAnnotationData(data.data));
             break;
           }
         case 'pagescroll':
@@ -493,11 +494,14 @@
           this.props.dispatch(getBookmarkCallService(this.state.urlParams));
         }),
         this.viewerContentCallBack(true);
-      if (annId && $('span[data-ann-id=' + annId + ']') && $('span[data-ann-id=' + annId + ']')[0]) {
-        $('html, body').animate({
-          scrollTop: $('span[data-ann-id=' + annId + ']')[0].offsetTop
-        });
-      }
+        if (annId) {
+          let annElement = $('#contentIframe').contents().find('span[data-ann-id=' + annId + ']');
+          if (annElement && annElement[0]) {
+            $('html, body').animate({
+                scrollTop: annElement[0].offsetTop
+            });
+          }
+        }
     };
     printFun = () => {
       const url = this.state.pageDetails.baseUrl + this.state.pageDetails.currentPageURL.href;
@@ -764,7 +768,7 @@
       });
       if (playlistReceived && bookdetailsdata) {
         const userType = ( bookdetailsdata.roles === undefined ) ? bookdetailsdata.userCourseSectionDetail.authgrouptype : bookdetailsdata.roles[0];
-        if (userType === ('Educator' || 'Instructor')) {
+        if (userType.toLowerCase() === 'educator' || userType.toLowerCase() === 'instructor') {
            annJsPath = 'eplayer/annotation-lib/instructor-annotator/instructor-annotator.js';
            annCssPath = 'eplayer/annotation-lib/instructor-annotator/instructor-annotator.css';
         }
@@ -884,6 +888,7 @@
           }
           onPageLoad = { this.onPageLoad }
           applnCallback = { this.onPageChange } 
+          annSearchId = { bootstrapParams.pageDetails.annId }
           key = { bootstrapParams.pageDetails.currentPageURL.id }
           /> 
           <Navigation
