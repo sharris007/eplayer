@@ -17,6 +17,8 @@ import { loadState } from '../../../localStorage';
 import Popup from 'react-popup';
 import { PopUpInfo } from '../../../components/GlossaryPopup/PopUpInfo';
 import {convertHexToRgba} from '../../../components/Utility/Util';
+import { LearningContextProvider } from '@pearson-incubator/vega-viewer';
+import { VegaViewPager } from '@pearson-incubator/vega-viewer';
 
 /* Defining the variables for sessionStorage. */
 let title;
@@ -47,6 +49,7 @@ export class PdfBookReader extends Component {
       },
       isET1: 'Y',
       highlightList: [],
+      currentPageRegions: [],
       assertUrlList: [],
       totalPagesToHit: '',
       executed: false,
@@ -122,19 +125,9 @@ export class PdfBookReader extends Component {
     if(isNaN(pageIndexToLoad)){
      this.goToPage(pageIndexToLoad); 
     }
-    const config = {
-    // host: "https://foxit-sandbox.gls.pearson-intl.com/foxit-webpdf-web/pc/",
-      host: eT1Contants.FOXIT_HOST_URL,
-    // PDFassetURL: this.props.bookshelf.uPdf,
-    // PDFassetURL: "http://view.cert1.ebookplus.pearsoncmg.com/ebookassets/ebookCM31206032/ipadpdfs/"+pdfPath,
-      PDFassetURL: `${serverDetails}/ebookassets`
-                + `/ebook${this.props.book.bookinfo.book.globalbookid}${this.props.book.bookinfo.book.pdfCoverArt}`,
-      encpwd: null,
-      zip: false,
-      callbackOnPageChange: this.pdfBookCallback,
-      assertUrl: ''
-    };
-     __pdfInstance.createPDFViewer(config);
+    const PDFassetURL = `${serverDetails}/ebookassets`
+                + `/ebook${this.props.book.bookinfo.book.globalbookid}${this.props.book.bookinfo.book.pdfCoverArt}`;
+    this.props.loadcurrentPage(this.props.location.query.bookid,currentPageIndex,PDFassetURL,'CoverPage');
     this.setState({ currPageIndex: currentPageIndex });
     localStorage.setItem("currentPageOrder",currentPageIndex);
     localStorage.setItem('isReloaded',true);
@@ -153,7 +146,7 @@ export class PdfBookReader extends Component {
     if (assertUrlListObj !== undefined) {
       assertUrl = assertUrlListObj.assertUrl;
     }
-    const config = {
+    /*const config = {
     // host: "https://foxit-sandbox.gls.pearson-intl.com/foxit-webpdf-web/pc/",
       host: eT1Contants.FOXIT_HOST_URL,
     // PDFassetURL: this.props.bookshelf.uPdf,
@@ -164,16 +157,19 @@ export class PdfBookReader extends Component {
       zip: false,
       callbackOnPageChange: this.pdfBookCallback,
       assertUrl
-    };
+    };*/
+    const PDFassetURL = `${serverDetails}/ebookassets`
+                + `/ebook${this.props.book.bookinfo.book.globalbookid}/ipadpdfs/${pdfPath}`;
     if(this.props.book.bookFeatures.hashighlightingtoolbutton)
     {
-      __pdfInstance.registerEvent('textSelected', this.createHighlight.bind(this));
-      __pdfInstance.registerEvent('highlightClicked', this.handleHighlightClick.bind(this));
+      // __pdfInstance.registerEvent('textSelected', this.createHighlight.bind(this));
+      // __pdfInstance.registerEvent('highlightClicked', this.handleHighlightClick.bind(this));
     }
-    __pdfInstance.registerEvent('regionClicked', this.handleRegionClick.bind(this));
+    /*__pdfInstance.registerEvent('regionClicked', this.handleRegionClick.bind(this));
     __pdfInstance.registerEvent('RegionHovered', this.handleTransparentRegionHover.bind(this));
-    __pdfInstance.registerEvent('RegionUnhovered', this.handleTransparentRegionUnhover.bind(this));
-    __pdfInstance.createPDFViewer(config);
+    __pdfInstance.registerEvent('RegionUnhovered', this.handleTransparentRegionUnhover.bind(this));*/
+    this.props.loadcurrentPage(this.props.location.query.bookid,currentPageIndex,PDFassetURL,'BookPage');
+    //__pdfInstance.createPDFViewer(config);
     this.setState({ currPageIndex: currentPageIndex });
     localStorage.setItem("currentPageOrder",currentPageIndex);
     const data = this.state.data;
@@ -212,11 +208,12 @@ export class PdfBookReader extends Component {
      // this.setState({currPageIndex : currentPageIndex});
     if (pdfEvent === 'pageChanged') {
       localStorage.setItem('currentPageOrder', this.state.currPageIndex);
-      __pdfInstance.setCurrentZoomLevel(this.state.currZoomLevel);
+      // __pdfInstance.setCurrentZoomLevel(this.state.currZoomLevel);
       this.props.fetchRegionsInfo(this.props.location.query.bookid,this.props.book.bookinfo.book.bookeditionid,this.state.currPageIndex,ssoKey,this.props.book.bookinfo.book.roleTypeID,serverDetails,this.props.currentbook.scenario,this.props.currentbook.platform).then(() => {
         if(this.props.book.regions.length > 0 )
         {
-          __pdfInstance.displayRegions(this.props.book.regions,this.props.book.bookFeatures);
+          // __pdfInstance.displayRegions(this.props.book.regions,this.props.book.bookFeatures);
+          this.setState({currentPageRegions : this.props.book.regions});
           var regionsData = [];
           var glossaryEntryIDsToFetch = '';
           for(var arr=0;arr < this.props.book.regions.length ; arr++)
@@ -260,7 +257,7 @@ export class PdfBookReader extends Component {
     }
     if (pdfEvent === 'pageLoaded') {
           // this.loadAssetUrl();
-      setTimeout(this.displayHighlight, 1000);
+     this.displayHighlight();
       /*if (this.state.executed === false) {
         const totalPagesToHit = this.getPageOrdersToGetAssertUrl(this.state.currPageIndex);
         this.props.loadAssertUrl(totalPagesToHit, this.openFile, this.storeAssertUrl, pages);
@@ -338,11 +335,12 @@ export class PdfBookReader extends Component {
         this.setState({ drawerOpen: false });
         return; 
       }
-      __pdfInstance.removeExistingHighlightCornerImages();
-      this.setState({ drawerOpen: false });
-      this.setState({ pageLoaded: false });
+      // __pdfInstance.removeExistingHighlightCornerImages();
+      this.setState({ drawerOpen: false,pageLoaded: false,regionData: null,
+        popUpCollection: [],highlightList: [],currentPageRegions: []});
+      /*this.setState({ pageLoaded: false });
       this.setState({ regionData: null});
-      this.setState({ popUpCollection: []});
+      this.setState({ popUpCollection: []});*/
       const totalPagesToHit = this.getPageOrdersToGetPageDetails(pageIndexToLoad);
       this.setState({ totalPagesToHit });
       if (totalPagesToHit !== undefined || totalPagesToHit !== '' || totalPagesToHit !== null) {
@@ -545,11 +543,13 @@ export class PdfBookReader extends Component {
     }else{
       currZoomLevel = level;
     }
-    __pdfInstance.setCurrentZoomLevel(currZoomLevel);
+    this.setState({currZoomLevel : currZoomLevel});
+    // __pdfInstance.setCurrentZoomLevel(currZoomLevel);
     this.displayHighlight();
     if(this.props.book.regions.length > 0 )
     {
-      __pdfInstance.displayRegions(this.props.book.regions,this.props.book.bookFeatures);
+      // __pdfInstance.displayRegions(this.props.book.regions,this.props.book.bookFeatures);
+      this.setState({currentPageRegions : this.props.book.regions});
     }
     var glossaryDataUpdated = [];
     for(var i=0;i<this.props.book.glossaryInfoList.length;i++)
@@ -574,7 +574,6 @@ export class PdfBookReader extends Component {
     {
       new PopUpInfo({'popUpCollection' : glossaryDataUpdated, 'bookId' : 'docViewer_ViewContainer_PageContainer_0'});
     }
-    this.setState({currZoomLevel : currZoomLevel});
   }
 /*Method for removing hotspot content on clicking the close button*/
   onHotspotClose() {
@@ -974,7 +973,7 @@ handleRegionClick(hotspotID) {
     }    
   }
  /* Method for creating highLight for selected area by user. */
-  createHighlight(highlightData) {
+  createHighlight(highlightData, highlightData1) {
     const highLightcordinates = {
       left: highlightData[0].offsetLeft,
       top: highlightData[0].offsetTop,
@@ -983,7 +982,7 @@ handleRegionClick(hotspotID) {
     };
     const currentHighlight = {};
     const highlightList = this.state.highlightList;
-    const highlightData1 = __pdfInstance.createHighlight();
+    // const highlightData1 = __pdfInstance.createHighlight();
     const curHighlightCords = highlightData1.serializedHighlight;
     const curHighlightCordsStr = curHighlightCords.replace('@0.000000', '');
     const curHighlightCordsList = JSON.parse(curHighlightCordsStr);
@@ -1109,13 +1108,11 @@ handleRegionClick(hotspotID) {
         }
       }
     });
-    __pdfInstance.restoreHighlights(highlightList, this.deleteHighlight);
-    __pdfInstance.reRenderHighlightCornerImages(highlightList);
     this.setState({ highlightList });
   }
   /* Method for delete Highlight via passing the id of selected area. */
   deleteHighlight = (id) => {
-    __pdfInstance.removeHighlightElement(id);
+    // __pdfInstance.removeHighlightElement(id);
     this.props.removeHighlightUsingReaderApi(id).then(() => {
       this.displayHighlight();
     });
@@ -1129,12 +1126,10 @@ handleRegionClick(hotspotID) {
     }
   }
 
-  onPageClick = () => {
-    __pdfInstance.enableSelectTool();
-  }
 /* Method for render the component and any change in store data, reload the changes. */
   render() {
     const callbacks = {};
+    const viewerCallBacks = {};
     const { messages } = languages.translations[this.props.locale];
     callbacks.addBookmarkHandler = this.addBookmarkHandler;
     callbacks.removeBookmarkHandler = this.removeBookmarkHandler;
@@ -1144,6 +1139,11 @@ handleRegionClick(hotspotID) {
     callbacks.isCurrentPageBookmarked = this.isCurrentPageBookmarked;
     callbacks.goToPage = this.goToPage;
     callbacks.goToPageCallback = this.goToPage;
+    viewerCallBacks.createHighlight = this.createHighlight.bind(this);
+    viewerCallBacks.handleHighlightClick = this.handleHighlightClick.bind(this);
+    viewerCallBacks.handleRegionClick = this.handleRegionClick.bind(this);
+    viewerCallBacks.handleTransparentRegionHover = this.handleTransparentRegionHover.bind(this);
+    viewerCallBacks.handleTransparentRegionUnhover = this.handleTransparentRegionUnhover.bind(this)
     // const drawerOpen = true;
     let viewerClassName;
     if (this.state.pageLoaded !== true) {
@@ -1170,6 +1170,15 @@ handleRegionClick(hotspotID) {
     {
       this.props.book.tocReceived = false;
     }
+    var pdfBookScripts = {
+      scriptsToAdd: [`${window.location.origin}/eplayer/pdf/pdfannotator.js`,
+                     `${window.location.origin}/eplayer/pdf/webpdf.tools.mini.js`,
+                     `${window.location.origin}/eplayer/pdf/pdfWrapper.js`,
+                     `${window.location.origin}/eplayer/pdf/webpdf.mini.js`,
+                     `${window.location.origin}/eplayer/pdf/seajs.js`
+                    ]
+    };
+    var providers = {};
     /* Here we are passing data, pages, goToPageCallback,
        getPrevNextPage method and isET1 flag in ViewerComponent
        which is defined in @pearson-incubator/viewer . */
@@ -1214,18 +1223,23 @@ handleRegionClick(hotspotID) {
         </div>
         <div>
         {this.state.regionData ? <div id="hotspot" className='hotspotContent'>{this.renderHotspot(this.state.regionData)}</div> : null }
-          <div id="main">
-            <div id="mainContainer" className="pdf-fwr-pc-main">
-              <div id="right" className="pdf-fwr-pc-right">
-                <div id="toolbar" className="pdf-fwr-toolbar" />
-                <div id="frame" className={viewerClassName} onClick={this.onPageClick}>
-                  <div id="docViewer" className="docViewer" >
-                    {this.state.popUpCollection.length ? <PopUpInfo bookId='docViewer_ViewContainer_PageContainer_0' popUpCollection={this.state.popUpCollection} /> : null }
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+        <LearningContextProvider 
+          contextId = "pppp"
+          contentType = "PDF"
+          pdfInstance = {__pdfInstance}
+          providers = {providers}>
+        <VegaViewPager
+          contentType = "PDF"
+          currentPage = {this.props.book.currentPageInfo}
+          pageLoaded = {this.state.pageLoaded}
+          callbackOnPageChange = {this.pdfBookCallback}
+          viewerCallBacks = {viewerCallBacks}
+          highlightList = {this.state.highlightList}
+          currentPageRegions = {this.state.currentPageRegions}
+          bookFeatures = {this.props.book.bookFeatures ? this.props.book.bookFeatures : {}}
+          currZoomLevel = {this.state.currZoomLevel}
+        />
+        </LearningContextProvider>
         </div>
         {this.state.pageLoaded !== true ?
           <div className="centerCircularBar">

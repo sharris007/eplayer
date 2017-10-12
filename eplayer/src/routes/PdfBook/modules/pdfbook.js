@@ -63,6 +63,7 @@ export const RECEIVE_BASEPATH_PENDING= 'RECEIVE_BASEPATH_PENDING';
 export const RECEIVE_BASEPATH_FULFILLED= 'RECEIVE_BASEPATH_FULFILLED';
 export const RECEIVE_BASEPATH_REJECTED= 'RECEIVE_BASEPATH_REJECTED';
 export const UPDATE_AUTH_KEY= 'UPDATE_AUTH_KEY';
+export const LOAD_CURRENT_PAGE= 'LOAD_CURRENT_PAGE';
 
 export const POST = 'POST';
 export const PUT = 'PUT';
@@ -371,7 +372,7 @@ export function fetchTocAndViewer(bookId, authorName, title,
     },
     childern: {}
   };
-  return (dispatch,getState) => {
+return (dispatch,getState) => {
     dispatch(request('toc'));
     // Here axios is getting base url from client.js file and append with rest url and frame. This is similar for all the action creators in this file.
     var serviceurl = `${bookServerURL}/ebook/pdfplayer/getbaskettocinfo?userroleid=${roleTypeID}&bookid=${bookId}&language=en_US&authkey=${sessionKey}&bookeditionid=${bookeditionid}&basket=toc`;
@@ -1034,6 +1035,18 @@ export function getlocaluserID(bookServerURL,globaluserid,type)
   };
 }
 
+// Load the current page details in redux store
+export function loadcurrentPage(bookId,currentPageOrder,pdfpath,pagetype)
+{
+  const currentPage = {
+    bookId,currentPageOrder,pdfpath,pagetype
+  };
+  return {
+    type: LOAD_CURRENT_PAGE,
+    payload: currentPage
+  };
+}
+
 // ------------------------------------
 // Action Handlers for every action type which is used above.
 // ------------------------------------
@@ -1361,6 +1374,15 @@ const ACTION_HANDLERS = {
   [RECEIVE_GLOSSARY_TERM]: (state,action) => ({
     ...state,
     glossaryInfoList: action.bookState.bookInfo.glossaryInfoList
+  }),
+  [LOAD_CURRENT_PAGE]: (state,action) => ({
+    ...state,
+    currentPageInfo : {
+      bookId: action.payload.bookId,
+      currentPageOrder: action.payload.currentPageOrder,
+      pdfpath: action.payload.pdfpath,
+      pagetype: action.payload.pagetype
+    }
   })
 };
 
@@ -1408,6 +1430,9 @@ const initialState = {
   },
   sessionInfo: {
     ssoKey:''
+  },
+  currentPageInfo: {
+
   }
 };
 

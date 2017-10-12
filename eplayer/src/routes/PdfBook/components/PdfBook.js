@@ -279,6 +279,7 @@ used for before mounting occurs. */
           fetchBookFeatures={this.props.fetchBookFeatures}
           fetchGlossaryItems={this.props.fetchGlossaryItems}
           fetchBasepaths={this.props.fetchBasepaths}
+          loadcurrentPage={this.props.loadcurrentPage}
         />);
     }
 
