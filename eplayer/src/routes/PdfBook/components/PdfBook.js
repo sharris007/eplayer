@@ -259,7 +259,6 @@ used for before mounting occurs. */
           fetchBookmarksUsingReaderApi={this.props.fetchBookmarksUsingReaderApi}
           addBookmarkUsingReaderApi={this.props.addBookmarkUsingReaderApi}
           removeBookmarkUsingReaderApi={this.props.removeBookmarkUsingReaderApi}
-          fetchBookInfo={this.props.fetchBookInfo}
           fetchPageInfo={this.props.fetchPageInfo}
           goToPage={this.props.goToPage}
           book={this.props.book}
@@ -271,11 +270,9 @@ used for before mounting occurs. */
           saveHighlightUsingReaderApi={this.props.saveHighlightUsingReaderApi}
           removeHighlightUsingReaderApi={this.props.removeHighlightUsingReaderApi}
           PdfbookMessages={PdfbookMessages}
-          loadAssertUrl={this.props.loadAssertUrl}
           editHighlightUsingReaderApi={this.props.editHighlightUsingReaderApi}
           fetchRegionsInfo={this.props.fetchRegionsInfo}
           fetchPagebyPageNumber={this.props.fetchPagebyPageNumber}
-          fetchUserIcons={this.props.fetchUserIcons}
           fetchBookFeatures={this.props.fetchBookFeatures}
           fetchGlossaryItems={this.props.fetchGlossaryItems}
           fetchBasepaths={this.props.fetchBasepaths}

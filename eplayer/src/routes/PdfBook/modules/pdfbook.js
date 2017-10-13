@@ -11,8 +11,6 @@
  *  * Dissemination of this information, reproduction of this material, and copying or distribution of this software 
  *  * is strictly forbidden unless prior written permission is obtained from Pearson Education, Inc.
  *******************************************************************************/
-// import fetch from 'isomorphic-fetch'; /* isomorphic-fetch is third party library used for making ajax call like axios. */
-// import map from 'lodash/map'; /* lodash is a JavaScript utility library delivering modularity, performance and map is method used for iterating the array or object. */
 import axios from 'axios'; /* axios is third party library, used to make ajax request. */
 import Hawk from 'hawk';
 import find from 'lodash/find';
@@ -26,11 +24,6 @@ const security = (resources.constants.secureApi === true ? 'eTSecureServiceUrl' 
 const etextService = resources.links[security];
 const etextCourseService = resources.links['courseServiceUrl'];
 const envType = domain.getEnvType();/* Importing the client file for framing the complete url, since baseurls are stored in client file. */
-
-
-// ------------------------------------
-// Constants
-// ------------------------------------
 
 // Created Action Constant for BOOKMARKS, TOC, GO_TO_PAGE and so on.
 export const REQUEST_BOOKMARKS = 'REQUEST_BOOKMARKS';
@@ -51,7 +44,6 @@ export const SAVE_HIGHLIGHT = 'SAVE_HIGHLIGHT';
 export const REQUEST_HIGHLIGHTS = 'REQUEST_HIGHLIGHTS';
 export const RECIEVE_HIGHLIGHTS = 'RECIEVE_HIGHLIGHTS';
 export const REMOVE_HIGHLIGHT = 'REMOVE_HIGHLIGHT';
-export const LOAD_ASSERT_URL = 'LOAD_ASSERT_URL';
 export const EDIT_HIGHLIGHT = 'EDIT_HIGHLIGHT';
 export const REQUEST_REGIONS = 'REQUEST_REGIONS';
 export const RECEIVE_REGIONS = 'RECEIVE_REGIONS';
@@ -871,35 +863,6 @@ export function removeHighlightUsingReaderApi(id) {
     });
   };
 }
-export function loadAssertUrl(totalPagesToHit, openFile, storeAssertUrl, pages) {
-  const bookState = {
-    bookInfo: {
-      assertUrls: []
-    }
-  };
-  return (dispatch) => {
-    const pagesToHit = totalPagesToHit.split(',');
-    for (let i = 0; i < pagesToHit.length; i++) {
-      const urlObj = {
-
-      };
-      if (pagesToHit[i] !== '') {
-        const currentPage = find(pages, page => page.pageorder === parseInt(pagesToHit[i], 10));
-       // const assertUrlObj = find(assertUrls, obj => obj.pageOrder == currentPage.pageorder);
-        // if(assertUrlObj == undefined)
-              // {
-        urlObj.pageOrder = currentPage.pageorder;
-        urlObj.pageNumber = currentPage.pagenumber;
-        urlObj.assertUrl = openFile(currentPage.pageorder, currentPage.pdfPath);
-        bookState.bookInfo.assertUrls.push(urlObj);
-
-               // }
-      }
-    }
-    dispatch({ type: 'LOAD_ASSERT_URL', bookState });
-    storeAssertUrl();
-  };
-}
 
 export function editHighlightUsingReaderApi(id, note, colour, isShared) {
   const editHightlightURI = `/highlight/${id}`;
@@ -980,25 +943,6 @@ export function fetchbookDetails(urn, piToken,bookID)
         }
       }
       return bookDetails;
-    });
-}
-
-export function validateAuthkey(userid,authkey,bookServerURL)
-{
-  var serviceurl = ''+bookServerURL+'/ebook/ipad/validateauthkey?authkey=' + authkey + '&userid=' +  userid;
-  // tempurl is starts with http to create hash key for matching with server
-  var tempurl = serviceurl.replace("https","http");
-  var hsid = getmd5(eT1Contants.MD5_SECRET_KEY+tempurl);
-  return dispatch => 
-    axios.get(''+serviceurl+'&hsid='+hsid).then((response) => {
-      if (response.status >= 400) {
-        console.log(`validateAuthkey service error`);
-      }
-      else if(response.data)
-      {
-
-        return response.data[0].authkeyValid;
-      }
     });
 }
 
@@ -1276,14 +1220,6 @@ const ACTION_HANDLERS = {
     userInfo: {
       fetching: false,
       fetched: false
-    }
-  }),
-  [LOAD_ASSERT_URL]: (state, action) => ({
-    ...state,
-    bookinfo: {
-      ...state.bookinfo,
-      assertUrls: state.bookinfo.assertUrls === undefined ?
-      action.bookState.bookInfo.assertUrls : state.bookinfo.assertUrls.concat(action.bookState.bookInfo.assertUrls)
     }
   }),
   [REQUEST_REGIONS]: state => ({
