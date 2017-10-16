@@ -62,7 +62,6 @@ export class PdfBookReader extends Component {
     Binding the method like parseDom and navChanged on the attribute like contentLoaded and navChanged. */
     document.body.addEventListener('contentLoaded', this.parseDom);
     document.body.addEventListener('navChanged', this.navChanged);
-    pdfAnnotatorInstance.init();
   }
  /* componentDidMount() is invoked immediately after a component is mounted. */
   componentDidMount() {
@@ -113,7 +112,6 @@ export class PdfBookReader extends Component {
     localStorage.removeItem('isReloaded');
     localStorage.removeItem('currentPageOrder');
     localStorage.removeItem('pages');
-    localStorage.removeItem('assertUrls');
     pages = null;
     assertUrls = null;
   }
@@ -139,11 +137,6 @@ export class PdfBookReader extends Component {
   loadPdfPage = (currentPageIndex) => {
     const currentPage = find(pages, page => page.pageorder === currentPageIndex);
     const pdfPath = currentPage.pdfPath;
-    let assertUrl = '';
-    const assertUrlListObj = find(assertUrls, url => url.pageOrder === currentPageIndex);
-    if (assertUrlListObj !== undefined) {
-      assertUrl = assertUrlListObj.assertUrl;
-    }
     const PDFassetURL = `${serverDetails}/ebookassets`
                 + `/ebook${this.props.book.bookinfo.book.globalbookid}/ipadpdfs/${pdfPath}`;
     this.props.loadcurrentPage(this.props.location.query.bookid,currentPageIndex,PDFassetURL,'BookPage');
@@ -184,7 +177,6 @@ export class PdfBookReader extends Component {
   pdfBookCallback = (pdfEvent) => {
     if (pdfEvent === 'pageChanged') {
       localStorage.setItem('currentPageOrder', this.state.currPageIndex);
-      // __pdfInstance.setCurrentZoomLevel(this.state.currZoomLevel);
       this.props.fetchRegionsInfo(this.props.location.query.bookid,this.props.book.bookinfo.book.bookeditionid,this.state.currPageIndex,ssoKey,this.props.book.bookinfo.book.roleTypeID,serverDetails,this.props.currentbook.scenario,this.props.currentbook.platform).then(() => {
         if(this.props.book.regions.length > 0 )
         {
@@ -219,15 +211,16 @@ export class PdfBookReader extends Component {
                 }
               }
             }
-            this.setState({glossaryRegions : regionsData});
-            this.setState({popUpCollection : glossaryData});
+            this.setState({glossaryRegions : regionsData, popUpCollection : glossaryData});
           });
         }
       });
-      this.setState({ pageLoaded: true });
-      this.setState({ executed: false });
       if (this.state.isFirstPageBeingLoad === true) {
-        this.setState({ isFirstPageBeingLoad: false });
+        this.setState({ pageLoaded: true, executed: false, isFirstPageBeingLoad: false });
+      }
+      else
+      {
+        this.setState({ pageLoaded: true, executed: false});
       }
     }
     if (pdfEvent === 'pageLoaded') { 
@@ -935,26 +928,15 @@ handleRegionClick(hotspotID) {
     callbacks.removeBookmarkHandler = this.removeBookmarkHandler;
     callbacks.removeAnnotationHandler = this.deleteHighlight;
     callbacks.saveHighlightHandler = this.saveHighlight;
-    // callbacks.removeBookmarkHandlerForBookmarkList =this.removeBookmarkHandlerForBookmarkList;
     callbacks.isCurrentPageBookmarked = this.isCurrentPageBookmarked;
     callbacks.goToPage = this.goToPage;
     callbacks.goToPageCallback = this.goToPage;
-    // viewerCallBacks.createHighlight = this.createHighlight.bind(this);
-    // viewerCallBacks.handleHighlightClick = this.handleHighlightClick.bind(this);
     viewerCallBacks.editHighlight = this.editHighlight.bind(this);
     viewerCallBacks.saveHighlight = this.saveHighlight.bind(this);
     viewerCallBacks.deleteHighlight = this.deleteHighlight.bind(this);
-
     viewerCallBacks.handleRegionClick = this.handleRegionClick.bind(this);
     viewerCallBacks.handleTransparentRegionHover = this.handleTransparentRegionHover.bind(this);
     viewerCallBacks.handleTransparentRegionUnhover = this.handleTransparentRegionUnhover.bind(this)
-    // const drawerOpen = true;
-    let viewerClassName;
-    if (this.state.pageLoaded !== true) {
-      viewerClassName = 'hideViewerContent';
-    } else {
-      viewerClassName = '';
-    }
     const searchUrl = `${serverDetails}/ebook/pdfplayer/searchbook?bookid=${this.props.location.query.bookid}`
         + `&globalbookid=${globalbookid}&searchtext=searchText&sortby=1&version=${this.props.book.bookinfo.book.version}&authkey=${ssoKey}`;
     this.props.book.annTotalData.forEach((annotation) => {
@@ -974,14 +956,6 @@ handleRegionClick(hotspotID) {
     {
       this.props.book.tocReceived = false;
     }
-    var pdfBookScripts = {
-      scriptsToAdd: [`${window.location.origin}/eplayer/pdf/pdfannotator.js`,
-                     `${window.location.origin}/eplayer/pdf/webpdf.tools.mini.js`,
-                     `${window.location.origin}/eplayer/pdf/pdfWrapper.js`,
-                     `${window.location.origin}/eplayer/pdf/webpdf.mini.js`,
-                     `${window.location.origin}/eplayer/pdf/seajs.js`
-                    ]
-    };
     var providers = {};
     /* Here we are passing data, pages, goToPageCallback,
        getPrevNextPage method and isET1 flag in ViewerComponent
@@ -1030,10 +1004,11 @@ handleRegionClick(hotspotID) {
         <LearningContextProvider 
           contextId = "pppp"
           contentType = "PDF"
-          pdfInstance = {__pdfInstance}
           providers = {providers}>
         <VegaViewPager
           contentType = "PDF"
+          pdfInstance = {__pdfInstance}
+          pdfAnnotatorInstance = {pdfAnnotatorInstance}
           currentPage = {this.props.book.currentPageInfo}
           pageLoaded = {this.state.pageLoaded}
           callbackOnPageChange = {this.pdfBookCallback}
@@ -1043,7 +1018,6 @@ handleRegionClick(hotspotID) {
           currentPageRegions = {this.state.currentPageRegions}
           bookFeatures = {this.props.book.bookFeatures ? this.props.book.bookFeatures : {}}
           currZoomLevel = {this.state.currZoomLevel}
-          pdfAnnotatorInstance = {pdfAnnotatorInstance}
           activebook = {this.props.book.bookinfo.book}
           intermediateHighlight = {this.state.intermediateHighlight}
           translations = {languages.translations[this.props.locale]}
