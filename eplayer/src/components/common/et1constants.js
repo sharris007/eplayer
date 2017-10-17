@@ -73,7 +73,12 @@ export const eT1Contants = {
             CERT1 : 'https://view.cert1.ebookplus.pearsoncmg.com',
             CERT2 : 'https://view.cert2.ebookplus.pearsoncmg.com',
             CERT3 : 'https://view.cert3.ebookplus.pearsoncmg.com'
-         }
+         },
+    prod  : {
+            PROD1 : 'https://view.prod1.ebookplus.pearsoncmg.com',
+            PROD2 : 'https://view.prod2.ebookplus.pearsoncmg.com',
+            PROD3 : 'https://view.prod3.ebookplus.pearsoncmg.com'
+        }
   },
   BookshelfBaseUrls :{
     DEV : 'https://sms.bookshelf.dev1.ebookplus.pearsoncmg.com',
