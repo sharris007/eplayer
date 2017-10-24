@@ -63,6 +63,12 @@ export const eT1Contants = {
     S11 : 11,
     S88 : 88
   },
+  FoxitUrls : {
+    // qa: 'https://foxit-qa.gls.pearson-intl.com/foxit-webpdf-web/pc/',
+    qa: 'https://foxit-prod.gls.pearson-intl.com/foxit-webpdf-web/pc/',
+    stage: 'https://foxit-sandbox.gls.pearson-intl.com/foxit-webpdf-web/pc/',
+    prod: 'https://foxit-prod.gls.pearson-intl.com/foxit-webpdf-web/pc/'
+  },
   ServerUrls : {
     qa : {
             CERT1 : 'https://view.cert1.ebookplus.pearsoncmg.com',

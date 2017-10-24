@@ -11,14 +11,17 @@ import Header from '../../../components/Header';/* Importing header for padfPage
 import './PdfBook.scss';/* Importing the css for PdfBook. */
 import { languages } from '../../../../locale_config/translations/index';
 import { eT1Contants } from '../../../components/common/et1constants';
+import { resources, domain } from '../../../../const/Settings';
 import { AudioPlayer,VideoPlayerPreview,ImageViewerPreview} from '@pearson-incubator/aquila-js-media';
 import { ExternalLink } from '@pearson-incubator/aquila-js-basics';
 import { loadState } from '../../../localStorage';
 import Popup from 'react-popup';
+import { PopUpInfo } from '@pearson-incubator/popup-info';
 import {convertHexToRgba} from '../../../components/Utility/Util';
 import { LearningContextProvider } from '@pearson-incubator/vega-viewer';
 import { VegaViewPager } from '@pearson-incubator/vega-viewer';
 
+const envType = domain.getEnvType();
 /* Defining the variables for sessionStorage. */
 let title;
 let authorName;
@@ -48,19 +51,18 @@ export class PdfBookReader extends Component {
       },
       isET1: 'Y',
       highlightList: [],
-      currentPageRegions: [],
       assertUrlList: [],
       totalPagesToHit: '',
       executed: false,
       popUpCollection : [],
-      currZoomLevel: 1,
-      intermediateHighlight: null
+      currZoomLevel: 1
     };
     this.nodesToUnMount = [];
     /* Adding the eventListener on the attribute and attaching the method.
     Binding the method like parseDom and navChanged on the attribute like contentLoaded and navChanged. */
     document.body.addEventListener('contentLoaded', this.parseDom);
     document.body.addEventListener('navChanged', this.navChanged);
+    pdfAnnotatorInstance.init();
   }
  /* componentDidMount() is invoked immediately after a component is mounted. */
   componentDidMount() {
@@ -183,10 +185,11 @@ export class PdfBookReader extends Component {
     }
     if (pdfEvent === 'pageLoaded') {
       this.setState({ pageLoaded: true });
+      __pdfInstance.setCurrentZoomLevel(this.state.currZoomLevel);
       this.props.fetchRegionsInfo(this.props.location.query.bookid,this.props.book.bookinfo.book.bookeditionid,this.state.currPageIndex,ssoKey,this.props.book.bookinfo.book.roleTypeID,serverDetails,this.props.currentbook.scenario,this.props.currentbook.platform).then(() => {
         if(this.props.book.regions.length > 0 )
         {
-          this.setState({currentPageRegions : this.props.book.regions});
+          __pdfInstance.displayRegions(this.props.book.regions,this.props.book.bookFeatures,_);
           var regionsData = [];
           var glossaryEntryIDsToFetch = '';
           for(var arr=0;arr < this.props.book.regions.length ; arr++)
@@ -265,8 +268,9 @@ export class PdfBookReader extends Component {
         this.setState({ drawerOpen: false });
         return; 
       }
+      __pdfInstance.removeExistingHighlightCornerImages();
       this.setState({ drawerOpen: false,pageLoaded: false,regionData: null,
-        popUpCollection: [],highlightList: [],currentPageRegions: []});
+        popUpCollection: [],highlightList: []});
       const totalPagesToHit = this.getPageOrdersToGetPageDetails(pageIndexToLoad);
       this.setState({ totalPagesToHit });
       if (totalPagesToHit !== undefined || totalPagesToHit !== '' || totalPagesToHit !== null) {
@@ -413,11 +417,11 @@ export class PdfBookReader extends Component {
     }else{
       currZoomLevel = level;
     }
-    this.setState({currZoomLevel : currZoomLevel});
+    __pdfInstance.setCurrentZoomLevel(currZoomLevel);
     this.displayHighlight();
     if(this.props.book.regions.length > 0 )
     {
-      this.setState({currentPageRegions : this.props.book.regions});
+      __pdfInstance.displayRegions(this.props.book.regions,this.props.book.bookFeatures,_);
     }
     var glossaryDataUpdated = [];
     for(var i=0;i<this.props.book.glossaryInfoList.length;i++)
@@ -440,8 +444,9 @@ export class PdfBookReader extends Component {
     }
     if(glossaryDataUpdated.length>0)
     {
-     this.setState({popUpCollection : glossaryDataUpdated});
+     new PopUpInfo({'popUpCollection' : glossaryDataUpdated, 'bookContainerId' : 'docViewer_ViewContainer_PageContainer_0', isET1 : 'Y'});
     }
+    this.setState({currZoomLevel : currZoomLevel});
   }
 /*Method for removing hotspot content on clicking the close button*/
   onHotspotClose() {
@@ -840,6 +845,63 @@ handleRegionClick(hotspotID) {
       }    
     }    
   }
+
+  /* Method for creating highLight for selected area by user. */
+  createHighlight(highlightData) {
+    const highLightcordinates = {
+      left: highlightData[0].offsetLeft,
+      top: highlightData[0].offsetTop,
+      width: highlightData[0].offsetWidth,
+      height: highlightData[0].offsetHeight
+    };
+    const currentHighlight = {};
+    const highlightList = this.state.highlightList;
+    const highlightData1 = __pdfInstance.createHighlight();
+    const curHighlightCords = highlightData1.serializedHighlight;
+    const curHighlightCordsStr = curHighlightCords.replace('@0.000000', '');
+    const curHighlightCordsList = JSON.parse(curHighlightCordsStr);
+    let highLightID;
+    let isExistinghighlightFound = false;
+    for (let i = 0; i < highlightList.length; i++) {
+      const actSt = highlightList[i].highlightHash;
+      const objSt = actSt.replace('@0.000000', '');
+      const cordList = JSON.parse(objSt);
+      for (let j = 0; j < cordList.length; j++) {
+        for (let k = 0; k < curHighlightCordsList.length; k++) {
+          if (parseInt(cordList[j].left, 10) <= parseInt(curHighlightCordsList[k].left, 10)
+                  && parseInt(cordList[j].top, 10) <= parseInt(curHighlightCordsList[k].top, 10)
+                  && parseInt(cordList[j].bottom, 10) >= parseInt(curHighlightCordsList[k].bottom, 10)
+                  && parseInt(cordList[j].right, 10) >= parseInt(curHighlightCordsList[k].right, 10)) {
+            highLightID = highlightList[i].id;
+            isExistinghighlightFound = true;
+          }
+          if (isExistinghighlightFound) {
+            break;
+          }
+        }
+        if (isExistinghighlightFound) {
+          break;
+        }
+      }
+      if (isExistinghighlightFound) {
+        break;
+      }
+    }
+
+    if (highLightID !== undefined && isExistinghighlightFound) {
+      this.handleHighlightClick(highLightID);
+    } else {
+      const highlightsLength = highlightList.length;
+      currentHighlight.id = highlightsLength + 1;
+      currentHighlight.highlightHash = highlightData1.serializedHighlight;
+      currentHighlight.selection = highlightData1.selection;
+      currentHighlight.pageIndex = highlightData1.pageInformation.pageNumber;
+      pdfAnnotatorInstance.showCreateHighlightPopup(currentHighlight, highLightcordinates,
+        this.saveHighlight.bind(this), this.editHighlight.bind(this), 'docViewer_ViewContainer_PageContainer_0',
+        (languages.translations[this.props.locale]), this.props.book.bookinfo.book.roleTypeID, this.props.book.bookinfo.book.activeCourseID);
+    }
+  }
+
 /* Method created for displaying the selected highLights. */
   saveHighlight(currentHighlight, highLightMetadata) {
     const currentPageId = this.state.currPageIndex;
@@ -864,8 +926,7 @@ handleRegionClick(hotspotID) {
       _.toString(currentPage.pagenumber), _.toString(courseId), isShared, currentHighlight.highlightHash,
       note, selectedText, highLightMetadata.currHighlightColor,
       meta, _.toString(currentPageId)).then((newHighlight) => {
-        // pdfAnnotatorInstance.setCurrentHighlight(newHighlight);
-        this.setState({intermediateHighlight: newHighlight});
+        pdfAnnotatorInstance.setCurrentHighlight(newHighlight);
         this.displayHighlight();
       });
   }
@@ -877,6 +938,30 @@ handleRegionClick(hotspotID) {
       });
   }
   
+  /* Method defined for when user click on Highlighted area on the page. */
+  handleHighlightClick(highLightClickedData) {
+    var hId;
+    var cornerFoldedImageTop;
+    if(highLightClickedData.highlightId === undefined)
+    {
+      hId = highLightClickedData;
+    }
+    else
+    {
+      hId = highLightClickedData.highlightId;
+      cornerFoldedImageTop = highLightClickedData.cornerFoldedImageTop;
+    }
+    var highlightClicked = find(this.state.highlightList, highlight => highlight.id === hId);
+    if (highlightClicked.shared === true)
+    {
+      highlightClicked = find(this.props.book.annTotalData, highlight => highlight.id === hId);
+    }
+    highlightClicked.color = highlightClicked.originalColor;
+    pdfAnnotatorInstance.showSelectedHighlight(highlightClicked,
+      this.editHighlight.bind(this), this.deleteHighlight.bind(this), 'docViewer_ViewContainer_PageContainer_0',
+      (languages.translations[this.props.locale]), this.props.book.bookinfo.book.roleTypeID,cornerFoldedImageTop, this.props.book.bookinfo.book.activeCourseID);
+  }
+
   /* Method for displaying the Highlight already stored. */
   displayHighlight = () => {
     const currentPageId = this.state.currPageIndex;
@@ -899,10 +984,13 @@ handleRegionClick(hotspotID) {
         }
       }
     });
+    __pdfInstance.restoreHighlights(highlightList, this.deleteHighlight);
+    __pdfInstance.reRenderHighlightCornerImages(highlightList);
     this.setState({ highlightList });
   }
   /* Method for delete Highlight via passing the id of selected area. */
   deleteHighlight = (id) => {
+    __pdfInstance.removeHighlightElement(id);
     this.props.removeHighlightUsingReaderApi(id).then(() => {
       this.displayHighlight();
     });
@@ -914,6 +1002,10 @@ handleRegionClick(hotspotID) {
     } else {
       this.setState({ drawerOpen: false });
     }
+  }
+
+  onPageClick = () => {
+    __pdfInstance.enableSelectTool();
   }
 
 /* Method for render the component and any change in store data, reload the changes. */
@@ -928,12 +1020,12 @@ handleRegionClick(hotspotID) {
     callbacks.isCurrentPageBookmarked = this.isCurrentPageBookmarked;
     callbacks.goToPage = this.goToPage;
     callbacks.goToPageCallback = this.goToPage;
-    viewerCallBacks.editHighlight = this.editHighlight.bind(this);
-    viewerCallBacks.saveHighlight = this.saveHighlight.bind(this);
-    viewerCallBacks.deleteHighlight = this.deleteHighlight.bind(this);
+    viewerCallBacks.handleHighlightClick = this.handleHighlightClick.bind(this);
+    viewerCallBacks.createHighlight = this.createHighlight.bind(this);
     viewerCallBacks.handleRegionClick = this.handleRegionClick.bind(this);
     viewerCallBacks.handleTransparentRegionHover = this.handleTransparentRegionHover.bind(this);
     viewerCallBacks.handleTransparentRegionUnhover = this.handleTransparentRegionUnhover.bind(this)
+    viewerCallBacks.onPageClick = this.onPageClick.bind(this);
     const searchUrl = `${serverDetails}/ebook/pdfplayer/searchbook?bookid=${this.props.location.query.bookid}`
         + `&globalbookid=${globalbookid}&searchtext=searchText&sortby=1&version=${this.props.book.bookinfo.book.version}&authkey=${ssoKey}`;
     this.props.book.annTotalData.forEach((annotation) => {
@@ -954,6 +1046,7 @@ handleRegionClick(hotspotID) {
       this.props.book.tocReceived = false;
     }
     var providers = {};
+    const foxiturl = eT1Contants.FoxitUrls[envType];
     /* Here we are passing data, pages, goToPageCallback,
        getPrevNextPage method and isET1 flag in ViewerComponent
        which is defined in @pearson-incubator/viewer . */
@@ -999,28 +1092,20 @@ handleRegionClick(hotspotID) {
         <div>
         {this.state.regionData ? <div id="hotspot" className='hotspotContent'>{this.renderHotspot(this.state.regionData)}</div> : null }
         <LearningContextProvider 
-          contextId = "pppp"
+          contextId = {this.props.location.query.bookid}
           contentType = "PDF"
           providers = {providers}>
         <VegaViewPager
-          contentType = "PDF"
           pdfInstance = {__pdfInstance}
-          pdfAnnotatorInstance = {pdfAnnotatorInstance}
-          currentPage = {this.props.book.currentPageInfo}
           pageLoaded = {this.state.pageLoaded}
+          foxiturl = {foxiturl}
+          currentPage = {this.props.book.currentPageInfo}
           callbackOnPageChange = {this.pdfBookCallback}
           viewerCallBacks = {viewerCallBacks}
-          highlightList = {this.state.highlightList}
-          annTotalData = {this.props.book.annTotalData}
-          currentPageRegions = {this.state.currentPageRegions}
           bookFeatures = {this.props.book.bookFeatures ? this.props.book.bookFeatures : {}}
-          currZoomLevel = {this.state.currZoomLevel}
-          activebook = {this.props.book.bookinfo.book}
-          intermediateHighlight = {this.state.intermediateHighlight}
-          popUpCollection = {this.state.popUpCollection}
-          translations = {languages.translations[this.props.locale]}
         />
         </LearningContextProvider>
+        {this.state.popUpCollection.length ? <PopUpInfo bookContainerId='docViewer_ViewContainer_PageContainer_0' popUpCollection={this.state.popUpCollection} isET1='Y'/> : null }
         </div>
         {this.state.pageLoaded !== true ?
           <div className="centerCircularBar">
