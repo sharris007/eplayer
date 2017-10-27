@@ -1,14 +1,14 @@
-/** *****************************************************************************
+/*******************************************************************************
  * PEARSON PROPRIETARY AND CONFIDENTIAL INFORMATION SUBJECT TO NDA
- *
+ *   
  *  *  Copyright © 2017 Pearson Education, Inc.
  *  *  All Rights Reserved.
- *  *
+ *  * 
  *  * NOTICE:  All information contained herein is, and remains
  *  * the property of Pearson Education, Inc.  The intellectual and technical concepts contained
  *  * herein are proprietary to Pearson Education, Inc. and may be covered by U.S. and Foreign Patents,
  *  * patent applications, and are protected by trade secret or copyright law.
- *  * Dissemination of this information, reproduction of this material, and copying or distribution of this software
+ *  * Dissemination of this information, reproduction of this material, and copying or distribution of this software 
  *  * is strictly forbidden unless prior written permission is obtained from Pearson Education, Inc.
  *******************************************************************************/
 /* global piSession ,localStorage */
@@ -55,22 +55,24 @@ export default class BookshelfPage extends React.Component {
     document.title = 'Bookshelf';
     this.cookies = new Cookies();
     this.piTokenFlag = false;
-    if (this.props.location.query.invoketype !== 'et1') {
-      const appPath = window.location.origin;
-      let redirectCourseUrl = `${appPath}/eplayer/bookshelf`;
-      redirectCourseUrl = decodeURIComponent(redirectCourseUrl).replace(/\s/g, '+').replace(/%20/g, '+');
-      setTimeout(() => {
+    if(this.props.location.query.invoketype !== 'et1')
+    {
+      let appPath             = window.location.origin;
+      let redirectCourseUrl   = appPath+'/eplayer/bookshelf';
+      redirectCourseUrl       = decodeURIComponent(redirectCourseUrl).replace(/\s/g, "+").replace(/%20/g, "+");
+      setTimeout(()=>{
         piSession.getToken((result, userToken) => {
-          if (result === piSession.Success) {
-            localStorage.setItem('secureToken', userToken);
-            this.piTokenFlag = true;
-          } else if (result === 'unknown' || result === 'notoken') {
-            this.piTokenFlag = true;
-            piSession.login(redirectCourseUrl, 10);
+        if (result === piSession.Success) {
+          localStorage.setItem('secureToken',userToken);
+           this.piTokenFlag = true;
+        }
+        else if(result === 'unknown' || result === 'notoken' ){
+             this.piTokenFlag = true;
+             piSession.login(redirectCourseUrl, 10);
           }
         });
-      }, 2000);
-    }
+      },2000)
+   }
   }
 
   /* Method for mounting before the page loaded. checking the condition wether the toc data present
@@ -88,9 +90,9 @@ export default class BookshelfPage extends React.Component {
     if (this.props.book.bookmarks !== undefined) {
       this.props.book.bookmarks = [];
     }
-    // let sessionid;
+    //let sessionid;
     let piToken;
-    /* if (this.props.login.data === undefined) {
+    /*if (this.props.login.data === undefined) {
       sessionid = localStorage.getItem('sessionid');
     } else {
       // piToken = this.props.login.data.piToken;
@@ -99,7 +101,7 @@ export default class BookshelfPage extends React.Component {
     // Added eT1StandaloneBkshf flag based flow to use eT1 getuserbookshelf
     // service if paperApi login or bookshelf service is down or some other related issues.
     if (this.props.location.query.invoketype === 'et1') {
-      // sessionid = this.props.location.query.authkey;
+      //sessionid = this.props.location.query.authkey;
       piToken = 'getuserbookshelf';
       localStorage.setItem('identityId', this.props.location.query.globaluserid);
     }
@@ -113,30 +115,37 @@ export default class BookshelfPage extends React.Component {
     // Get Eps Auth Token to fetch eps book images
 
     /* Adding sessionid for creating url for Bookshelf. Dispatcing the action. */
-    let isSessionLoaded = false;
-    const IntervalCheck = setInterval(() => {
-      if (!isSessionLoaded && this.piTokenFlag) {
-        const secureToken = localStorage.getItem('secureToken');
-        if (secureToken || this.props.location.query.invoketype === 'et1') {
+     let isSessionLoaded = false;
+     const IntervalCheck = setInterval(()=>{
+      if(!isSessionLoaded && this.piTokenFlag) {
+        const secureToken  = localStorage.getItem('secureToken');
+        if(secureToken || this.props.location.query.invoketype === 'et1') {
           const cdnToken = this.cookies.get('etext-cdn-token');
-          if (!cdnToken) {
-            this.props.getAuthToken(secureToken);
-          }
-          // let urn = `bookShelf?key=${sessionid}&bookShelfMode=BOTH`;
+          if(!cdnToken){
+             this.props.getAuthToken(secureToken);
+           }
+          //let urn = `bookShelf?key=${sessionid}&bookShelfMode=BOTH`;
           let urn = 'compositeBookShelf';
-          let baseBookshelfUrl;
+          var baseBookshelfUrl;
           if (this.props.location.query.invoketype === 'et1') {
             // This bookshelf temp mentioned as constant
-            if (envType == 'qa' || envType == 'stage') {
-              baseBookshelfUrl = eT1Contants.BookshelfBaseUrls.CERT;
-            } else if (envType == 'prod') {
-              baseBookshelfUrl = eT1Contants.BookshelfBaseUrls.PROD;
+            if (envType == 'qa')
+            {
+              baseBookshelfUrl = eT1Contants.SMSBookshelfBaseUrls['CERT'];
             }
-            const siteid = eT1Contants.SITE_IDs[envType].S1;
-            urn = `${baseBookshelfUrl
-                 }/ebook/ipad/getuserbookshelf?siteid=${siteid}&smsuserid=${this.props.location.query.globaluserid}`;
-            const hsid = getmd5(`siteid=${siteid}${eT1Contants.BOOKSHELF_MD5_SECRET_KEY}`);
-            urn = `${urn}&hsid=${hsid}`;
+            else if(envType == 'stage')
+            {
+              baseBookshelfUrl = eT1Contants.SMSBookshelfBaseUrls['PPE'];
+            }
+            else if(envType == 'prod')
+            {
+              baseBookshelfUrl = eT1Contants.SMSBookshelfBaseUrls['PROD'];
+            }
+            var siteid = eT1Contants.SITE_IDs[envType].S1;
+            urn = baseBookshelfUrl
+                + `/ebook/ipad/getuserbookshelf?siteid=${siteid}&smsuserid=${this.props.location.query.globaluserid}`;
+            var hsid = getmd5('siteid='+siteid+''+eT1Contants.BOOKSHELF_MD5_SECRET_KEY);
+            urn = ''+urn+'&hsid='+hsid;
           }
           // const secureToken = this.cookies.get('secureToken');
           if (this.props.location.query.invoketype === 'et1') {
@@ -148,41 +157,47 @@ export default class BookshelfPage extends React.Component {
           clearInterval(IntervalCheck);
         }
       }
-    }, 200);
-  }
+     },200);
+   }
   getCookie = (name) => {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length == 2) return parts.pop().split(';').shift();
+      var value = "; " + document.cookie;
+      var parts = value.split("; " + name + "=");
+      if (parts.length == 2) return parts.pop().split(";").shift();
   }
-  componentWillReceiveProps = (nextProps) => {
+  componentWillReceiveProps = (nextProps) =>{
     const cdnToken = this.cookies.get('etext-cdn-token');
-    if (cdnToken && nextProps.bookshelf.authFetched) {
-      const frameSrc = `${resources.links.authDomainUrl[envType]}/setEtextCDN.html`;
-      $('body').append(`<iframe src="${frameSrc}" name="cdnIframe" id="cdnIframe" width=0 height=0></iframe>`);
+    if(cdnToken && nextProps.bookshelf.authFetched){
+      const frameSrc = resources.links.authDomainUrl[envType]+'/setEtextCDN.html';
+       $('body').append('<iframe src="'+frameSrc+'" name="cdnIframe" id="cdnIframe" width=0 height=0></iframe>');
       this.props.gotAuthToken(false);
     }
   }
   /* Created function for handle single book click.*/
   handleBookClick = (bookId, type) => {
-    if (type === 'et1') {
+    if ( type === 'et1') {
        /* BrowserHistory used for navigating the next page from current page. */
-      let entries;
-      let invoketype;
-      if (this.props.location.query.invoketype === 'et1') {
-        entries = this.props.bookshelf.books.data[0].entries;
-        invoketype = 'et1';
-      } else {
-        entries = this.props.bookshelf.books.data.entries;
-        invoketype = 'pi';
-      }
-      const bookObj = _.find(entries, bookData => bookData.bookId == bookId);
-      if (!bookObj.expired) {
-        browserHistory.push(`/eplayer/pdfbook?bookid=${bookId}&invoketype=${invoketype}`);
-      }
-    } else if (type === 'et2') {
+       var entries;
+       var invoketype;
+       if (this.props.location.query.invoketype === 'et1')
+       {
+          entries = this.props.bookshelf.books.data[0].entries;
+          invoketype = "et1";
+       }
+       else
+       {
+          entries = this.props.bookshelf.books.data.entries;
+          invoketype = "pi";
+       }
+       const bookObj = _.find(entries, bookData => bookData.bookId == bookId);
+       if(!bookObj.expired) {
+
+      browserHistory.push(`/eplayer/pdfbook?bookid=${bookId}&invoketype=${invoketype}`);
+    }
+
+    }  else if( type === 'et2'){
       browserHistory.push(`/eplayer/ETbook/${bookId}`);
-    } else if (type === 'course') {
+    }
+    else if( type === 'course') {
       localStorage.setItem('sourceUrl', window.location.origin);
       browserHistory.push(`/eplayer/Course/${bookId}`);
       localStorage.setItem('sourceUrl', window.location.origin);
@@ -192,9 +207,8 @@ export default class BookshelfPage extends React.Component {
   render() {
     /* Setting the bookshelfLang in localStorage */
     localStorage.setItem('bookshelfLang', langQuery);
-    let firstName,
-      lastName;
-    if (this.props.login.data !== undefined) {
+    let firstName,lastName;
+    if(this.props.login.data !== undefined){
       firstName = this.props.login.data.firstName;
       lastName = this.props.login.data.lastName;
     }
@@ -212,15 +226,20 @@ export default class BookshelfPage extends React.Component {
         booksArray = books.data.entries;
         courseBookArray = books.data.userCourseSectionEntries || [];
       }
-      if (booksArray.length !== 0 && (firstName === undefined || lastName === undefined)) {
-        for (let i = 0; i < booksArray.length; i++) {
-          if (booksArray[i].iseT1) {
-            if (booksArray[i].firstName !== undefined && booksArray[i].firstName !== ''
-                  && booksArray[i].firstName !== null) {
+      if(booksArray.length !== 0 && (firstName === undefined || lastName === undefined))
+      {
+        for(var i=0; i<booksArray.length; i++)
+        {
+          if(booksArray[i].iseT1)
+          {
+           if (booksArray[i].firstName !== undefined && booksArray[i].firstName !== ''
+                  && booksArray[i].firstName !== null  )
+            {
               firstName = booksArray[i].firstName;
               lastName = booksArray[i].lastName;
             }
             // this else block added for temp purpose and will removed once firstname & lastname is available in composite bookshelf response
+
           }
         }
       }
@@ -233,18 +252,18 @@ export default class BookshelfPage extends React.Component {
         /* Created an object which contains all book properties. which we are passing in bookself component. */
         /* Book thumbnail Image change*/
         let bookThumbnail = bookRef.thumbnailImageUrl;
-        bookThumbnail = bookThumbnail ? bookThumbnail.replace('http:', 'https:') : '';
-        if (envType == 'qa' && bookThumbnail) {
-          if (bookThumbnail.match('etext-dev.pearson.com')) {
-            bookThumbnail = bookThumbnail.replace('etext-dev.pearson.com', 'etext-qa-stg.pearson.com');
-          } else if (bookThumbnail.match('etext-stg.pearson.com')) {
-            bookThumbnail = bookThumbnail.replace('etext-stg.pearson.com', 'etext-qa-stg.pearson.com');
+        bookThumbnail = bookThumbnail ? bookThumbnail.replace('http:', 'https:'):'';
+        if(envType=='qa' && bookThumbnail){
+          if(bookThumbnail.match("etext-dev.pearson.com") ) {
+            bookThumbnail = bookThumbnail.replace("etext-dev.pearson.com", "etext-qa-stg.pearson.com");
+          }else if(bookThumbnail.match("etext-stg.pearson.com") ){
+            bookThumbnail = bookThumbnail.replace("etext-stg.pearson.com", "etext-qa-stg.pearson.com");
           }
         }
         const book = {
           id: bookRef.bookId,
           author: bookRef.creator || '',
-          image: bookThumbnail || '',
+          image: bookThumbnail ? bookThumbnail : '',
           title: bookRef.title || '',
           description: bookRef.description || '',
           tocId: '',
@@ -252,7 +271,7 @@ export default class BookshelfPage extends React.Component {
           globalBookId: bookRef.globalBookId,
           globalUserId: bookRef.globalUserId,
           bookeditionid: bookRef.bookeditionid,
-          type: bookRef.iseT1 ? 'et1' : 'et2',
+          type: bookRef.iseT1 ? 'et1':'et2',
           bookServerUrl: bookRef.bookServerUrl,
           userInfoLastModifiedDate: bookRef.userInfoLastModifiedDate,
           userBookLastModifiedDate: bookRef.userBookLastModifiedDate,
@@ -276,7 +295,7 @@ export default class BookshelfPage extends React.Component {
           bookeditionid: '',
           type: 'course',
           bookServerUrl: '',
-          userInfoLastModifiedDate: null,
+          userInfoLastModifiedDate: null ,
           userBookLastModifiedDate: null,
           userBookScenarioLastModifiedDate: null,
           roleTypeID: ''

@@ -18,11 +18,12 @@
     "test": "better-npm-run test",
     "unit-test": "jest",
     "test:dev": "npm run test -- --watch",
+    "testpdf": "better-npm-run testpdf",
     "deploy": "better-npm-run deploy",
     "deploy:dev": "better-npm-run deploy:dev",
     "deploy:prod": "better-npm-run deploy:prod && cp dist/index.html dist/200.html",
     "codecov": "cat coverage/*/lcov.info | codecov"
-  },
+	},
   "betterScripts": {
     "compile": {
       "command": "node bin/compile",
@@ -75,6 +76,13 @@
         "NODE_ENV": "test",
         "DEBUG": "app:*"
       }
+    },
+    "testpdf": {
+      "command": "node ./node_modules/karma/bin/karma start build/karma.conf",
+      "env": {
+        "NODE_ENV": "test",
+        "DEBUG": "app:*"
+      }
     }
   },
   "repository": {
@@ -99,7 +107,7 @@
     "@pearson-incubator/preferences": "^0.1.35",
     "@pearson-incubator/pxe-annotation": "^1.0.19",
     "@pearson-incubator/pxe-printpage": "*",
-    "@pearson-incubator/pxe-wrapper": "^1.0.1",
+    "@pearson-incubator/pxe-wrapper": "^1.0.2",
     "@pearson-incubator/search": "^0.1.33",
     "@pearson-incubator/toc": "^0.1.54",
     "@pearson-incubator/vega-core": "0.0.44",
@@ -212,7 +220,14 @@
     "webdriverio": "^4.8.0",
     "webpack-dev-middleware": "^1.6.1",
     "webpack-hot-middleware": "^2.12.2",
-    "xmldom": "^0.1.27"
+    "xmldom": "^0.1.27",
+    "karma": "^1.0.0",
+    "karma-coverage": "^1.0.0",
+    "karma-mocha": "^1.0.1",
+    "karma-mocha-reporter": "^2.0.0",
+    "karma-phantomjs-launcher": "^1.0.2",
+    "karma-webpack-with-fast-source-maps": "^1.9.2",
+    "mocha": "^3.0.1"
   },
   "jest": {
     "collectCoverage": true,
