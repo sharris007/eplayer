@@ -117,17 +117,12 @@ function createAuthorizationToken(relativeURL, method) {
     key: 't7hCxYrbAP0HMqpB57ieN0qzFUu9Y3Flb0D3',
     algorithm: 'sha256'
   };
-  var credentials;
-  if(envType === 'qa')
-  {
+  let credentials;
+  if (envType === 'qa') {
     credentials = qa_credentials;
-  }
-  else if(envType === 'stage')
-  {
+  } else if (envType === 'stage') {
     credentials = stage_credentials;
-  }
-  else if(envType === 'prod')
-  {
+  } else if (envType === 'prod') {
     credentials = prod_credentials;
   }
   const baseUrl = clients.readerApi[envType].defaults.baseURL;
