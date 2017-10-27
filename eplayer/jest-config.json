@@ -1,0 +1,33 @@
+{
+    "moduleDirectories": [
+        "node_modules",
+        "src",
+        "tests"
+    ],
+    "moduleFileExtensions": [
+        "ts",
+        "tsx",
+        "js",
+        "json",
+        "svg",
+        "png",
+        "gif"
+    ],
+    "setupTestFrameworkScriptFile": "<rootDir>/setup.js",
+    "testEnvironment": "node",
+    "testRegex": "(../tests)/.*\\.test\\.js$",
+    "roots": [
+        "<rootDir>/src"
+    ],
+    "testPathIgnorePatterns": [
+        "node_modules/"
+    ],
+    "testResultsProcessor": "jest-teamcity-reporter",
+    "coverageDirectory": "<rootDir>/build/coverage/",
+    "coverageReporters": [
+        "text-summary",
+        "teamcity",
+        "html",
+        "json"
+    ]
+}

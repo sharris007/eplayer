@@ -1,14 +1,14 @@
-/*******************************************************************************
+/** *****************************************************************************
  * PEARSON PROPRIETARY AND CONFIDENTIAL INFORMATION SUBJECT TO NDA
- *   
+ *
  *  *  Copyright © 2017 Pearson Education, Inc.
  *  *  All Rights Reserved.
- *  * 
+ *  *
  *  * NOTICE:  All information contained herein is, and remains
  *  * the property of Pearson Education, Inc.  The intellectual and technical concepts contained
  *  * herein are proprietary to Pearson Education, Inc. and may be covered by U.S. and Foreign Patents,
  *  * patent applications, and are protected by trade secret or copyright law.
- *  * Dissemination of this information, reproduction of this material, and copying or distribution of this software 
+ *  * Dissemination of this information, reproduction of this material, and copying or distribution of this software
  *  * is strictly forbidden unless prior written permission is obtained from Pearson Education, Inc.
  *******************************************************************************/
 import axios from 'axios';
@@ -16,7 +16,7 @@ import { resources, domain } from '../../../../const/Settings';
 
 const security = (resources.constants.secureApi === true ? 'eTSecureServiceUrl' : 'etextServiceUrl');
 const etextService = resources.links[security];
-const etextCourseService = resources.links['courseServiceUrl'];
+const etextCourseService = resources.links.courseServiceUrl;
 const envType = domain.getEnvType();
 
 
@@ -25,14 +25,13 @@ const envType = domain.getEnvType();
    piToken that is coming from Login response in order to make Ajax request.*/
 
 export const fetch = (urn, piToken) => {
-   
   if (piToken !== 'getuserbookshelf') {
     const url = `${etextCourseService[envType]}/web/compositeBookShelf`;
     return {
       type: 'BOOKS',
       payload: axios.get(url, {
-      headers: { 'Content-Type': 'application/json',
-        'X-Authorization': piToken } 
+        headers: { 'Content-Type': 'application/json',
+          'X-Authorization': piToken }
       })
     };
   }
@@ -48,21 +47,19 @@ export const getAuthToken = (piToken) => {
   return {
     type: 'AUTH',
     payload: axios.get(url, {
-    headers: { 'Content-Type': 'application/json',
-      'X-Authorization': piToken } 
+      headers: { 'Content-Type': 'application/json',
+        'X-Authorization': piToken }
     })
   };
-   
 };
 export const gotAuthToken = (status) => {
   const url = `${etextService[envType]}/nextext/eps/authtoken`;
   return {
     type: 'GOTAUTH',
     payload: {
-      authFetched : status
+      authFetched: status
     }
   };
-   
 };
 
 /* Created a Action creater for BOOK_DETAILS, contains all the Book data like, authorName, thumbnail, title and so on.  */

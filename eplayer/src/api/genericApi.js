@@ -1,14 +1,14 @@
-/*******************************************************************************
+/** *****************************************************************************
  * PEARSON PROPRIETARY AND CONFIDENTIAL INFORMATION SUBJECT TO NDA
- *   
+ *
  *  *  Copyright © 2017 Pearson Education, Inc.
  *  *  All Rights Reserved.
- *  * 
+ *  *
  *  * NOTICE:  All information contained herein is, and remains
  *  * the property of Pearson Education, Inc.  The intellectual and technical concepts contained
  *  * herein are proprietary to Pearson Education, Inc. and may be covered by U.S. and Foreign Patents,
  *  * patent applications, and are protected by trade secret or copyright law.
- *  * Dissemination of this information, reproduction of this material, and copying or distribution of this software 
+ *  * Dissemination of this information, reproduction of this material, and copying or distribution of this software
  *  * is strictly forbidden unless prior written permission is obtained from Pearson Education, Inc.
  *******************************************************************************/
 /* global fetch */
@@ -163,7 +163,7 @@ export const getGotoPage = data => fetch(`${pxeService[envType]}/context/${data.
 
 
 // Pi User Profile
-export const getPiUserProfile = data =>fetch(`${etextService[envType]}/nextext/getUsername`, {  // eslint-disable-line max-len
+export const getPiUserProfile = data => fetch(`${etextService[envType]}/nextext/getUsername`, {  // eslint-disable-line max-len
   method: 'GET',
   headers: {
     Accept: 'application/json',
@@ -171,7 +171,7 @@ export const getPiUserProfile = data =>fetch(`${etextService[envType]}/nextext/g
   }
 });
 
-//getPreferencedata
+// getPreferencedata
 export const getPreferencedata = data => fetch(`${etextService[envType]}/nextext/users/${data.userId}/preferences/?bookId=${data.bookId}`, {
   method: 'GET',
   headers: {
@@ -182,7 +182,7 @@ export const getPreferencedata = data => fetch(`${etextService[envType]}/nextext
   }
 });
 
-//postPreferencedata
+// postPreferencedata
 export const postPreferencedata = data => fetch(`${etextService[envType]}/nextext/users/${data.userId}/preferences/?bookId=${data.bookId}`, { // eslint-disable-line no-undef
   method: 'POST',
   headers: {

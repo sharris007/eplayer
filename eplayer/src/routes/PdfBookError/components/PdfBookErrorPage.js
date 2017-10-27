@@ -1,14 +1,14 @@
-/*******************************************************************************
+/** *****************************************************************************
  * PEARSON PROPRIETARY AND CONFIDENTIAL INFORMATION SUBJECT TO NDA
- *   
+ *
  *  *  Copyright © 2017 Pearson Education, Inc.
  *  *  All Rights Reserved.
- *  * 
+ *  *
  *  * NOTICE:  All information contained herein is, and remains
  *  * the property of Pearson Education, Inc.  The intellectual and technical concepts contained
  *  * herein are proprietary to Pearson Education, Inc. and may be covered by U.S. and Foreign Patents,
  *  * patent applications, and are protected by trade secret or copyright law.
- *  * Dissemination of this information, reproduction of this material, and copying or distribution of this software 
+ *  * Dissemination of this information, reproduction of this material, and copying or distribution of this software
  *  * is strictly forbidden unless prior written permission is obtained from Pearson Education, Inc.
  *******************************************************************************/
 import React from 'react'; /* Importing the react library, for using the react methods and keywords.*/
@@ -33,47 +33,44 @@ class PdfBookErrorPage extends React.Component {
         localStorage.removeItem(key);
       }
     }
-    try
-    {
-        piSession.logout();  
-    }
-    catch(e)
-    {}
-    cookies.remove('ReactPlayerCookie',{ path: '/' });
+    try {
+      piSession.logout();
+    } catch (e) {}
+    cookies.remove('ReactPlayerCookie', { path: '/' });
     this.state = {
-      open: true,
+      open: true
     };
   }
   handleOpen = () => {
-    this.setState({open: true});
+    this.setState({ open: true });
   };
 
   handleClose = () => {
-    this.setState({open: false});
+    this.setState({ open: false });
     browserHistory.push('/eplayer/');
   };
-  
+
   render() {
-   const actions = [
-       <FlatButton
+    const actions = [
+      <FlatButton
         label="OK"
-        primary={true}
-        keyboardFocused={true}
+        primary
+        keyboardFocused
         onClick={this.handleClose}
-      />,
+      />
     ];
-   const errorCode = this.props.location.query.errorcode;
-   const errorMessage = eT1Contants.ErrorCodeMessages['Error_'+errorCode];
+    const errorCode = this.props.location.query.errorcode;
+    const errorMessage = eT1Contants.ErrorCodeMessages[`Error_${errorCode}`];
     return (
       <div>
         <Dialog
           title="Error!"
           actions={actions}
-          modal={true}
+          modal
           open={this.state.open}
           onRequestClose={this.handleClose}
         >
-        {errorMessage}
+          {errorMessage}
         </Dialog>
       </div>
     );

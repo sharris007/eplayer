@@ -1,4 +1,4 @@
-/*******************************************************************************
+/** *****************************************************************************
  * PEARSON PROPRIETARY AND CONFIDENTIAL INFORMATION SUBJECT TO NDA
  *
  *  *  Copyright © 2017 Pearson Education, Inc.
@@ -54,18 +54,18 @@ export class Header extends React.Component {
       loadingFirstTime: true
     };
   }
-  componentDidUpdate(){
-    if(this.state.loadingFirstTime === true){
-      if( $('.navigation').length){
+  componentDidUpdate() {
+    if (this.state.loadingFirstTime === true) {
+      if ($('.navigation').length) {
         $('#frame,.navigation,.moreIcon,h1').on('click', () => {
-          this.setState({prefOpen : false})
-          this.setState({searchOpen : false})
-        })
+          this.setState({ prefOpen: false });
+          this.setState({ searchOpen: false });
+        });
         $('#frame,.navigation').on('mousedown', () => {
-          this.setState({prefOpen : false})
-          this.setState({searchOpen : false})
-        })
-        this.setState({loadingFirstTime : false})
+          this.setState({ prefOpen: false });
+          this.setState({ searchOpen: false });
+        });
+        this.setState({ loadingFirstTime: false });
       }
     }
   }
@@ -78,14 +78,13 @@ export class Header extends React.Component {
   }
 
   handleDrawer = () => {
-    try{
+    try {
       Popup.close();
-    }
-    catch(e){
+    } catch (e) {
     }
     this.setState({ drawerOpen: true });
-    this.setState({prefOpen : false})
-    this.setState({searchOpen : false})
+    this.setState({ prefOpen: false });
+    this.setState({ searchOpen: false });
     this.props.viewerContentCallBack(false);
   }
 
@@ -98,37 +97,34 @@ export class Header extends React.Component {
   }
 
   handleBookshelfClick = () => {
-    try{
+    try {
       Popup.close();
-    }
-    catch(e){
+    } catch (e) {
     }
     if (this.props.bookData.toc.content !== undefined) {
-      this.props.bookData.toc.content = {list:[]};
+      this.props.bookData.toc.content = { list: [] };
       this.props.bookData.bookmarks = [];
       this.props.bookData.bookinfo = [];
       this.props.bookData.annTotalData = [];
       this.props.bookData.bookFeatures = {};
     }
-    if(window.location.pathname.indexOf('/eplayer/Course/')>-1){
-      let redirectConsoleUrl   = consoleUrl[envType];
+    if (window.location.pathname.indexOf('/eplayer/Course/') > -1) {
+      const redirectConsoleUrl = consoleUrl[envType];
       window.location.href = redirectConsoleUrl;
-    }else {
+    } else {
       const langQuery = localStorage.getItem('bookshelfLang');
       if (langQuery && langQuery !== '?languageid=1') {
         browserHistory.push(`/eplayer/bookshelf${langQuery}`);
       } else {
-        var bookshelfRoute = '/eplayer/bookshelf';
+        let bookshelfRoute = '/eplayer/bookshelf';
         piSession.getToken((result, userToken) => {
-        if (result === piSession.Success) {
+          if (result === piSession.Success) {
 
-        }
-        else if(result === 'unknown' || result === 'notoken' ){
-          bookshelfRoute = '/eplayer/bookshelf?invoketype=et1&globaluserid='+this.props.globaluserid;
-         }
-         browserHistory.push(bookshelfRoute);
+          } else if (result === 'unknown' || result === 'notoken') {
+            bookshelfRoute = `/eplayer/bookshelf?invoketype=et1&globaluserid=${this.props.globaluserid}`;
+          }
+          browserHistory.push(bookshelfRoute);
         });
-
       }
     }
     sessionStorage.removeItem('isReloaded');
@@ -143,10 +139,9 @@ export class Header extends React.Component {
     }
   }
   handlePreferenceClick = () => {
-    try{
+    try {
       Popup.close();
-    }
-    catch(e){
+    } catch (e) {
     }
     if (this.state.prefOpen === true) {
       this.setState({ prefOpen: false });
@@ -162,10 +157,9 @@ export class Header extends React.Component {
     }
   }
   searchClick = () => {
-    try{
+    try {
       Popup.close();
-    }
-    catch(e){
+    } catch (e) {
     }
     if (this.state.searchOpen === true) {
       this.setState({ searchOpen: false });
@@ -204,19 +198,17 @@ export class Header extends React.Component {
   }
 
   handleHeaderClick = () => {
-    try{
+    try {
       Popup.close();
+    } catch (e) {
     }
-    catch(e){
-    }
-    this.setState({prefOpen : false})
-    this.setState({searchOpen : false})
+    this.setState({ prefOpen: false });
+    this.setState({ searchOpen: false });
   }
   handleMoreMenuClick = () => {
-    try{
+    try {
       Popup.close();
-    }
-    catch(e){
+    } catch (e) {
     }
   }
 
