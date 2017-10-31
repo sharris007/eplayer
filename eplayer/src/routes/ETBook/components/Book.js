@@ -23,7 +23,7 @@
   import './Book.scss';
   import { browserHistory } from 'react-router';
   import { getTotalAnnCallService, getAnnCallService, postAnnCallService, putAnnCallService, deleteAnnCallService, getTotalAnnotationData, deleteAnnotationData, annStructureChange } from '../../../actions/annotation';
-  import { getBookPlayListCallService, getPlaylistCallService, getBookTocCallService, getCourseCallService } from '../../../actions/playlist';
+  import { getBookPlayListCallService, getPlaylistCallService, getBookTocCallService, getCourseCallService, putCustomTocCallService } from '../../../actions/playlist';
   import { getGotoPageCall } from '../../../actions/gotopage';
   import { getPreferenceCallService, postPreferenceCallService } from '../../../actions/preference';
   import { loadPageEvent, unLoadPageEvent } from '../../../api/loadunloadApi';
@@ -212,6 +212,8 @@
       this.nodesToUnMount = [];
       WidgetManager.loadComponents(this.nodesToUnMount, this.context);
     }
+
+ 
 
     removeAnnotationHandler = (annotationId) => {
       const deleteAnnData = $.extend(this.state.urlParams, { annId: annotationId });
@@ -641,12 +643,16 @@
       this.viewerContentCallBack(true);
     }
 
+    
+
+
     handleBookshelfClick = () => {
       if (this.props.book.toc.content !== undefined) {
         this.props.book.toc.content = {list:[]};
         this.props.book.bookmarks = [];
         this.props.book.bookinfo = [];
         this.props.book.annTotalData = [];
+
       }
       if(window.location.pathname.indexOf('/eplayer/Course/')>-1){
          let originurl = localStorage.getItem('sourceUrl');       
@@ -827,6 +833,54 @@
         isTocWrapperRequired: false
       };
 
+      let configTocData = {
+          dropLevelType: 'WITH_IN_SAME_LEVEL',
+          tocContents: tocCompData.data.content.list,
+          tocLevel: 3,
+          dndType: 'TableOfContents',
+          handlePublish: (changedTocContent) => {
+            //console.log("changedTocContent---------", changedTocContent);
+            this.props.dispatch(putCustomTocCallService(changedTocContent));
+          },
+          handleDashBoard: () => {
+             if (this.props.book.toc.content !== undefined) {
+             this.props.book.toc.content = {list:[]};
+             this.props.book.bookmarks = [];
+             this.props.book.bookinfo = [];
+             this.props.book.annTotalData = [];
+
+          }
+       if(window.location.pathname.indexOf('/eplayer/Course/')>-1){
+         let originurl = localStorage.getItem('sourceUrl');       
+        if(originurl != null)
+          {
+            const langQuery = localStorage.getItem('bookshelfLang');
+            if (langQuery && langQuery !== '?languageid=1') {
+              browserHistory.push(`/eplayer/bookshelf${langQuery}`);
+            } else {
+              browserHistory.push('/eplayer/bookshelf');
+            }
+          }
+          else
+            {
+                let redirectConsoleUrl   = resources.links.consoleUrl[domain.getEnvType()];
+        window.location.href = redirectConsoleUrl;
+            }  
+        }else {
+          const langQuery = localStorage.getItem('bookshelfLang');
+          if (langQuery && langQuery !== '?languageid=1') {
+            browserHistory.push(`/eplayer/bookshelf${langQuery}`);
+          } else {
+            browserHistory.push('/eplayer/bookshelf');
+          }
+        }
+      this.setState({ open: false });
+      }
+
+    };
+
+      
+
       const pages = bootstrapParams.pageDetails.playListURL || [];
       const bookmarArr = this.props.book.bookmarks ? this.props.book.bookmarks : [];
       const bookmarkCompData = {
@@ -853,9 +907,11 @@
           user: this.state.urlParams.user
         }
       });
+
+      let userType;
       if (playlistReceived && bookdetailsdata) {
         const getMathjaxJs = this.loadMathjax();
-        let userType,i;
+        let i;
         if( bookdetailsdata.roles === undefined )
           userType = bookdetailsdata.userCourseSectionDetail.authgrouptype;
         else {
@@ -865,12 +921,12 @@
           }
         }
         if (userType === 'instructor') {
-           annJsPath = 'eplayer/annotation-lib/instructor-annotator/instructor-annotator.js';
-           annCssPath = 'eplayer/annotation-lib/instructor-annotator/instructor-annotator.css';
+           annJsPath = 'annotation-lib/instructor-annotator/instructor-annotator.js';
+           annCssPath = 'annotation-lib/instructor-annotator/instructor-annotator.css';
         }
         else {
-          annJsPath = 'eplayer/annotation-lib/annotator.js';
-          annCssPath = 'eplayer/annotation-lib/annotator.css';
+          annJsPath = 'annotation-lib/annotator.js';
+          annCssPath = 'annotation-lib/annotator.css';
         }
         productData = {
         product: 'PXE',
@@ -893,22 +949,22 @@
           }
         },
         pxeOptions:{
-          script: `${window.location.origin}/eplayer/pxe_scripts/bundle.js`,
-          style: `${window.location.origin}/eplayer/pxe_scripts/style.css`,
+          script: `${window.location.origin}/pxe_scripts/bundle.js`,
+          style: `${window.location.origin}/pxe_scripts/style.css`,
           scriptsToReplace: [
             {
               old: 'https://revel-content.openclass.com/content/amc/amc-bootstrap.js',
-              new: `${window.location.origin}/eplayer/bxix_scripts/brix.js`
+              new: `${window.location.origin}/bxix_scripts/brix.js`
             }
           ],
-          scriptsToAdd:[`${window.location.origin}/eplayer/annotation-lib/jquery.min.js`,
+          scriptsToAdd:[`${window.location.origin}/annotation-lib/jquery.min.js`,
           `${window.location.origin}/${annJsPath}`,
           getMathjaxJs],
           stylesToAdd:[`${window.location.origin}/${annCssPath}`]
         },
         metaData: {
           brixClient: 'https://grid-static-dev.pearson.com/11-thinclient/0.0.0/js/brixClient-3.6.1-exp.5129.0.js',
-          brixCss: `${window.location.origin}/eplayer/bxix_scripts/brix.css`,
+          brixCss: `${window.location.origin}/bxix_scripts/brix.css`,
           environment: 'LOCAL', 
           pxeUserPreference:{
             bgColor:bootstrapParams.pageDetails.bgColor, 
@@ -919,6 +975,14 @@
         }
       };
       }
+
+        const isInstructor = userType==='instructor'?true:false;
+        //const isInstructor=true;
+        let isconfigTocData=true;
+        if(!isInstructor){
+          isconfigTocData = false;
+        }
+
       const locale = bootstrapParams.pageDetails.locale ? bootstrapParams.pageDetails.locale : 'en';
       const headerTitleData = {
         params: this.props.params,
@@ -977,6 +1041,8 @@
                   currentPageId={this.state.currentPageId}
                   bookCallbacks={callbacks}
                   intl={this.props.intl}
+                  configureTocData={configTocData}
+                  isConfigurableToc={isconfigTocData}
                 />
               }
 

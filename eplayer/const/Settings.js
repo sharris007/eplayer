@@ -115,6 +115,13 @@ export const resources = {
       qa           :"https://idc-web-ar-qa.dev-prsn.com",
       stage        :"https://idc-web-ar.stg-prsn.com",
       prod         :"https://idc-web-ar.stg-prsn.com",
+    },
+    updateCustomTocUrl : {
+      local        :"https://idc-api-ar-qa.dev-prsn.com/idc-api/course",
+      dev          :"https://idc-api-ar-qa.dev-prsn.com/idc-api/course",
+      qa           :"https://idc-api-ar-qa.dev-prsn.com/idc-api/course",
+      stage        :"https://idc-api-ar-stg.dev-prsn.com/idc-api/course",
+      prod         :"https://idc-api-ar-stg.dev-prsn.com/idc-api/course",
     }
   }
 };
@@ -138,7 +145,8 @@ export const typeConstants = {
   ANNOTATION_DELETED     : 'ANNOTATION_DELETED',
   BOOK_DETAILS           : 'BOOK_DETAILS',
   GET_PREFERENCE         : 'GET_PREFERENCE',
-  POST_PREFERENCE        : 'POST_PREFERENCE'
+  POST_PREFERENCE        : 'POST_PREFERENCE',
+  PUT_CUSTOM_TOC         : 'PUT_CUSTOM_TOC'
 };
 
 export const domain = {
