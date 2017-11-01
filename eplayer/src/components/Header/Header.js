@@ -67,7 +67,7 @@ export class Header extends React.Component {
         });
         this.setState({ loadingFirstTime: false });
       }
-      $('.navigation').css({height :60})
+      $('.navigation').css({ height: 60 });
     }
   }
 
@@ -263,24 +263,24 @@ export class Header extends React.Component {
       },
       hideBookshelfIcon: {
         margin: '0',
-        visibility:'hidden'
+        visibility: 'hidden'
       },
       hideDrawerIcon: {
         margin: '0 0 0 30px',
         height: '16.5px',
         width: '18px',
-        visibility:'hidden'
+        visibility: 'hidden'
       },
       hideBookmarkIcon: {
-        visibility:'hidden'
+        visibility: 'hidden'
       },
       hidePrefIcon: {
         margin: '0 0 0 30px',
-        visibility:'hidden'
+        visibility: 'hidden'
       },
       hideSearchIcon: {
         margin: '0 30px',
-        visibility:'hidden'
+        visibility: 'hidden'
       }
     };
 
