@@ -19,7 +19,7 @@ import Popup from 'react-popup';
 import { PopUpInfo } from '@pearson-incubator/popup-info';
 import {convertHexToRgba} from '../../../components/Utility/Util';
 import { LearningContextProvider } from '@pearson-incubator/vega-viewer';
-import { VegaViewPager } from '@pearson-incubator/vega-viewer';
+import { PdfViewer } from '@pearson-incubator/vega-viewer';
 
 const envType = domain.getEnvType();
 /* Defining the variables for sessionStorage. */
@@ -1004,10 +1004,6 @@ handleRegionClick(hotspotID) {
     }
   }
 
-  onPageClick = () => {
-    __pdfInstance.enableSelectTool();
-  }
-
 /* Method for render the component and any change in store data, reload the changes. */
   render() {
     const callbacks = {};
@@ -1024,8 +1020,7 @@ handleRegionClick(hotspotID) {
     viewerCallBacks.createHighlight = this.createHighlight.bind(this);
     viewerCallBacks.handleRegionClick = this.handleRegionClick.bind(this);
     viewerCallBacks.handleTransparentRegionHover = this.handleTransparentRegionHover.bind(this);
-    viewerCallBacks.handleTransparentRegionUnhover = this.handleTransparentRegionUnhover.bind(this)
-    viewerCallBacks.onPageClick = this.onPageClick.bind(this);
+    viewerCallBacks.handleTransparentRegionUnhover = this.handleTransparentRegionUnhover.bind(this);
     const searchUrl = `${serverDetails}/ebook/pdfplayer/searchbook?bookid=${this.props.location.query.bookid}`
         + `&globalbookid=${globalbookid}&searchtext=searchText&sortby=1&version=${this.props.book.bookinfo.book.version}&authkey=${ssoKey}`;
     this.props.book.annTotalData.forEach((annotation) => {
@@ -1045,8 +1040,14 @@ handleRegionClick(hotspotID) {
     {
       this.props.book.tocReceived = false;
     }
-    var providers = {};
     const foxiturl = eT1Contants.FoxitUrls[envType];
+    let productData = {
+      metaData : {
+        pdfInstance : __pdfInstance,
+        pdfRendererUrl : foxiturl,
+        bookFeatures : (this.props.book.bookFeatures ? this.props.book.bookFeatures : {})
+      }
+    };
     /* Here we are passing data, pages, goToPageCallback,
        getPrevNextPage method and isET1 flag in ViewerComponent
        which is defined in @pearson-incubator/viewer . */
@@ -1094,15 +1095,13 @@ handleRegionClick(hotspotID) {
         <LearningContextProvider 
           contextId = {this.props.location.query.bookid}
           contentType = "PDF"
-          providers = {providers}>
-        <VegaViewPager
-          pdfInstance = {__pdfInstance}
-          pageLoaded = {this.state.pageLoaded}
-          foxiturl = {foxiturl}
+          metadata = {productData.metaData}
+        >
+        <PdfViewer
+          isPageLoaded = {this.state.pageLoaded}
           currentPage = {this.props.book.currentPageInfo}
-          callbackOnPageChange = {this.pdfBookCallback}
+          onPageLoadComplete = {this.pdfBookCallback}
           viewerCallBacks = {viewerCallBacks}
-          bookFeatures = {this.props.book.bookFeatures ? this.props.book.bookFeatures : {}}
         />
         </LearningContextProvider>
         {this.state.popUpCollection.length ? <PopUpInfo bookContainerId='docViewer_ViewContainer_PageContainer_0' popUpCollection={this.state.popUpCollection} isET1='Y'/> : null }
