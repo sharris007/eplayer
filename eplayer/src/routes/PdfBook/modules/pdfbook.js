@@ -1,4 +1,4 @@
-/** *****************************************************************************
+/*******************************************************************************
  * PEARSON PROPRIETARY AND CONFIDENTIAL INFORMATION SUBJECT TO NDA
  *
  *  *  Copyright © 2017 Pearson Education, Inc.
@@ -24,7 +24,7 @@ import { eT1Contants } from '../../../components/common/et1constants';
 
 const security = (resources.constants.secureApi === true ? 'eTSecureServiceUrl' : 'etextServiceUrl');
 const etextService = resources.links[security];
-const etextCourseService = resources.links.courseServiceUrl;
+const etextCourseService = resources.links['courseServiceUrl'];
 const envType = domain.getEnvType();/* Importing the client file for framing the complete url, since baseurls are stored in client file. */
 
 
@@ -55,14 +55,14 @@ export const LOAD_ASSERT_URL = 'LOAD_ASSERT_URL';
 export const EDIT_HIGHLIGHT = 'EDIT_HIGHLIGHT';
 export const REQUEST_REGIONS = 'REQUEST_REGIONS';
 export const RECEIVE_REGIONS = 'RECEIVE_REGIONS';
-export const RECEIVE_BOOK_FEATURES_PENDING = 'RECEIVE_BOOK_FEATURES_PENDING';
-export const RECEIVE_BOOK_FEATURES_FULFILLED = 'RECEIVE_BOOK_FEATURES_FULFILLED';
-export const RECEIVE_BOOK_FEATURES_REJECTED = 'RECEIVE_BOOK_FEATURES_REJECTED';
-export const RECEIVE_GLOSSARY_TERM = 'RECEIVE_GLOSSARY_TERM';
-export const RECEIVE_BASEPATH_PENDING = 'RECEIVE_BASEPATH_PENDING';
-export const RECEIVE_BASEPATH_FULFILLED = 'RECEIVE_BASEPATH_FULFILLED';
-export const RECEIVE_BASEPATH_REJECTED = 'RECEIVE_BASEPATH_REJECTED';
-export const UPDATE_AUTH_KEY = 'UPDATE_AUTH_KEY';
+export const RECEIVE_BOOK_FEATURES_PENDING= 'RECEIVE_BOOK_FEATURES_PENDING';
+export const RECEIVE_BOOK_FEATURES_FULFILLED= 'RECEIVE_BOOK_FEATURES_FULFILLED';
+export const RECEIVE_BOOK_FEATURES_REJECTED='RECEIVE_BOOK_FEATURES_REJECTED';
+export const RECEIVE_GLOSSARY_TERM= 'RECEIVE_GLOSSARY_TERM';
+export const RECEIVE_BASEPATH_PENDING= 'RECEIVE_BASEPATH_PENDING';
+export const RECEIVE_BASEPATH_FULFILLED= 'RECEIVE_BASEPATH_FULFILLED';
+export const RECEIVE_BASEPATH_REJECTED= 'RECEIVE_BASEPATH_REJECTED';
+export const UPDATE_AUTH_KEY= 'UPDATE_AUTH_KEY';
 
 export const POST = 'POST';
 export const PUT = 'PUT';
@@ -81,16 +81,16 @@ export function request(component) {
     case 'highlights' :
       return { type: REQUEST_HIGHLIGHTS };
     case 'regions' :
-      return { type: REQUEST_REGIONS };
+      return {type: REQUEST_REGIONS};
     case 'bookInfo' :
-      return { type: RECEIVEBOOKINFO_PENDING };
+      return {type: RECEIVEBOOKINFO_PENDING};
     default:
       return {};
   }
 }
 function extractTextContent(content) {
-  const span = document.createElement('span');
-  span.innerHTML = content;
+  var span= document.createElement('span');
+  span.innerHTML= content;
   return span.textContent || span.innerText;
 }
 function randomString(length) {
@@ -117,12 +117,17 @@ function createAuthorizationToken(relativeURL, method) {
     key: 't7hCxYrbAP0HMqpB57ieN0qzFUu9Y3Flb0D3',
     algorithm: 'sha256'
   };
-  let credentials;
-  if (envType === 'qa') {
+  var credentials;
+  if(envType === 'qa')
+  {
     credentials = qa_credentials;
-  } else if (envType === 'stage') {
+  }
+  else if(envType === 'stage')
+  {
     credentials = stage_credentials;
-  } else if (envType === 'prod') {
+  }
+  else if(envType === 'prod')
+  {
     credentials = prod_credentials;
   }
   const baseUrl = clients.readerApi[envType].defaults.baseURL;
@@ -389,65 +394,66 @@ export function fetchTocAndViewer(bookId, authorName, title,
     },
     childern: {}
   };
-  return (dispatch, getState) => {
+  return (dispatch,getState) => {
     dispatch(request('toc'));
     // Here axios is getting base url from client.js file and append with rest url and frame. This is similar for all the action creators in this file.
-    const serviceurl = `${bookServerURL}/ebook/pdfplayer/getbaskettocinfo?userroleid=${roleTypeID}&bookid=${bookId}&language=en_US&authkey=${sessionKey}&bookeditionid=${bookeditionid}&basket=toc`;
+    var serviceurl = `${bookServerURL}/ebook/pdfplayer/getbaskettocinfo?userroleid=${roleTypeID}&bookid=${bookId}&language=en_US&authkey=${sessionKey}&bookeditionid=${bookeditionid}&basket=toc`;
     // tempurl is starts with http to create hash key for matching with server
-    const tempurl = serviceurl.replace('https', 'http');
-    const hsid = getmd5(eT1Contants.MD5_SECRET_KEY + tempurl);
+    var tempurl = serviceurl.replace("https","http");
+    var hsid = getmd5(eT1Contants.MD5_SECRET_KEY+tempurl);
     return axios.get(`${serviceurl}&hsid=${hsid}`,
       {
         timeout: 100000
       })
     .then((response) => {
-      if (getState().location.query.bookid === bookId) {
-        response.data.forEach((allBaskets) => {
-          const basketData = allBaskets.basketsInfoTOList;
+      if(getState().location.query.bookid === bookId){
+          response.data.forEach((allBaskets) => {
+        const basketData = allBaskets.basketsInfoTOList;
       // bookState.toc.content.bookId = basketData[0].bookID || '';
-          bookState.toc.content.id = basketData[0].bookID || '';
+        bookState.toc.content.id = basketData[0].bookID || '';
       // bookState.toc.showDuplicateTitle = true;
-          bookState.toc.content.mainTitle = title;
-          bookState.toc.content.author = authorName;
-          bookState.toc.content.thumbnail = thumbnail
+        bookState.toc.content.mainTitle = title ;
+        bookState.toc.content.author = authorName ;
+        bookState.toc.content.thumbnail = thumbnail
         ||
         'http://view.cert1.ebookplus.pearsoncmg.com/ebookassets/'
         + 'ebookCM21254346/assets/1256799653_Iannone_thumbnail.png';
-          bookState.toc.content.list = [];
-          basketData.forEach((tocLevel1) => {
-            const tocLevel1ChildData = tocLevel1.document;
-            const tocLevel1ChildList = [];
-            tocLevel1ChildData.forEach((tocLevel2) => {
-              const tocLevel2ChildData = tocLevel2.bc.b.be;
-              if (tocLevel2ChildData.length === undefined) {
-                const childList = constructTree(tocLevel2ChildData);
+        bookState.toc.content.list = [];
+        basketData.forEach((tocLevel1) => {
+          const tocLevel1ChildData = tocLevel1.document;
+          const tocLevel1ChildList = [];
+          tocLevel1ChildData.forEach((tocLevel2) => {
+            const tocLevel2ChildData = tocLevel2.bc.b.be;
+            if (tocLevel2ChildData.length === undefined) {
+              const childList = constructTree(tocLevel2ChildData);
+              tocLevel1ChildList.push(childList);
+            } else {
+              tocLevel2ChildData.forEach((tocLevel3) => {
+                const childList = constructTree(tocLevel3);
                 tocLevel1ChildList.push(childList);
-              } else {
-                tocLevel2ChildData.forEach((tocLevel3) => {
-                  const childList = constructTree(tocLevel3);
-                  tocLevel1ChildList.push(childList);
-                });
-              }
-            });
+              });
+            }
+          });
         /* var tocLevel_1_Obj = new Node();
         tocLevel_1_Obj.id=tocLevel1.basketID;
         tocLevel_1_Obj.title=tocLevel1.name;
         tocLevel_1_Obj.children=tocLevel1ChildList;*/
-            if (hastocflatten === 'Y') {
-              bookState.toc.content.list = flatten1(tocLevel1ChildList);
-            } else {
-              bookState.toc.content.list = tocLevel1ChildList;
-            }
+          if (hastocflatten === 'Y') {
+            bookState.toc.content.list = flatten1(tocLevel1ChildList);
+          } else {
+            bookState.toc.content.list = tocLevel1ChildList;
+          }
 
         // bookState.toc.content.list=tocLevel1ChildList;
         // bookState.toc.content.list=flatten1(tocLevel1ChildList);
-          });
         });
-        bookState.toc.fetching = false;
-        bookState.toc.fetched = true;
-        bookState.isFetching.toc = false;
-        dispatch({ type: RECEIVE_TOC, bookState });
+      });
+      bookState.toc.fetching = false;
+      bookState.toc.fetched = true;
+      bookState.isFetching.toc = false;
+      dispatch({ type: RECEIVE_TOC, bookState });
       }
+
     });
   };
 }
@@ -460,7 +466,8 @@ export function goToPage(pageId) {
   };
 }
 
-export function updateAuthKey(ssoKey) {
+export function updateAuthKey(ssoKey)
+{
   return (dispatch) => {
     dispatch({ type: UPDATE_AUTH_KEY, ssoKey });
   };
@@ -474,62 +481,70 @@ export function fetchBookInfo(bookid, scenario, userid, bookServerURL, roleTypeI
   }
   const bookState = {
     bookInfo: {
-      userbook: {},
+    userbook : {},
       book: {}
-    }
+    },
   };
   return (dispatch) => {
     dispatch(request('bookInfo'));
-    const serviceurl = `${bookServerURL}/ebook/pdfplayer/getbookinfo?userid=${userid}&bookid=${bookid}&userroleid=${roleTypeID}&scenario=${scenario}&userinfolastmodifieddate=${uid}&userbooklastmodifieddate=${ubd}&userbookscenariolastmodifieddate=${ubsd}&globaluserid=${globaluserid}&authkey=${authkey}&outputformat=JSON`;
+      var serviceurl = `${bookServerURL}/ebook/pdfplayer/getbookinfo?userid=${userid}&bookid=${bookid}&userroleid=${roleTypeID}&scenario=${scenario}&userinfolastmodifieddate=${uid}&userbooklastmodifieddate=${ubd}&userbookscenariolastmodifieddate=${ubsd}&globaluserid=${globaluserid}&authkey=${authkey}&outputformat=JSON`;
     // tempurl is starts with http to create hash key for matching with server
-    const tempurl = serviceurl.replace('https', 'http');
-    const hsid = getmd5(eT1Contants.MD5_SECRET_KEY + tempurl);
-    return axios.get(`${serviceurl}&hsid=${hsid}`,
+    var tempurl = serviceurl.replace("https","http");
+    var hsid = getmd5(eT1Contants.MD5_SECRET_KEY+tempurl);
+    return axios.get(''+serviceurl+'&hsid='+hsid,
+  {
+  timeout: 20000
+  }).then((response) => {
+      if (response.data.code >= 400)
       {
-        timeout: 20000
-      }).then((response) => {
-        if (response.data.code >= 400) {
-          return dispatch({ type: 'RECEIVEBOOKINFO_FAILED', bookState });
-        } else if (response.data.length) {
-          const userbookObj = {};
+        return dispatch({ type: 'RECEIVEBOOKINFO_FAILED',bookState});
+      }
+      else if(response.data.length)
+      {
+        const userbookObj = {};
           const bookObj = {};
-          userbookObj.userbookid = response.data[0].userBookTOList[0].userBookID,
-      bookObj.globalbookid = response.data[0].userBookTOList[0].globalBookID,
-      bookObj.numberOfPages = response.data[0].userBookTOList[0].numberOfPages,
-      bookObj.bookid = response.data[0].userBookTOList[0].bookID,
-      bookObj.bookeditionid = response.data[0].userBookTOList[0].bookEditionID,
-      bookObj.hastocflatten = response.data[0].userBookTOList[0].hastocflatten,
-      bookObj.languageid = response.data[0].userBookTOList[0].languageID,
-      bookObj.roleTypeID = response.data[0].userBookTOList[0].roleTypeID,
-      bookObj.activeCourseID = response.data[0].userBookTOList[0].lastAccessedCourseID,
-      bookObj.version = response.data[0].userBookTOList[0].version,
-      bookObj.author = `${response.data[0].userBookTOList[0].authorList[0].firstName} ${
-        response.data[0].userBookTOList[0].authorList[0].lastName}`,
-      bookObj.thumbnailimg = response.data[0].userBookTOList[0].thumbnailArt,
-      bookObj.title = response.data[0].userBookTOList[0].title,
-      bookObj.pdfCoverArt = response.data[0].userBookTOList[0].pdfCoverArt,
-      bookObj.ssoKey = response.data[0].userBookTOList[0].sessionID;
-          bookState.bookInfo.userbook = userbookObj;
-          bookState.bookInfo.book = bookObj;
-          bookState.bookInfo.fetching = false;
-          bookState.bookInfo.fetched = true;
-          return dispatch({ type: 'RECEIVEBOOKINFO_SUCCESS', bookState });
-        }
-      });
-  };
-}
+          var author = (response.data[0].userBookTOList[0].authorList[0].firstName+' '+response.data[0].userBookTOList[0].authorList[0].lastName);
+          var authorListLen = response.data[0].userBookTOList[0].authorList.length;
+          for(var i=1; i<authorListLen; i++)
+          {
+            author += '/ ' + (response.data[0].userBookTOList[0].authorList[i].firstName+' '+response.data[0].userBookTOList[0].authorList[i].lastName);
+          }
+        userbookObj.userbookid = response.data[0].userBookTOList[0].userBookID,
+        bookObj.globalbookid= response.data[0].userBookTOList[0].globalBookID,
+        bookObj.numberOfPages= response.data[0].userBookTOList[0].numberOfPages,
+        bookObj.bookid= response.data[0].userBookTOList[0].bookID,
+        bookObj.bookeditionid= response.data[0].userBookTOList[0].bookEditionID,
+        bookObj.hastocflatten= response.data[0].userBookTOList[0].hastocflatten,
+        bookObj.languageid= response.data[0].userBookTOList[0].languageID,
+        bookObj.roleTypeID= response.data[0].userBookTOList[0].roleTypeID,
+        bookObj.activeCourseID= response.data[0].userBookTOList[0].lastAccessedCourseID,
+        bookObj.version= response.data[0].userBookTOList[0].version,
+        bookObj.author=author,
+        bookObj.thumbnailimg = response.data[0].userBookTOList[0].thumbnailArt,
+        bookObj.title = response.data[0].userBookTOList[0].title,
+        bookObj.pdfCoverArt = response.data[0].userBookTOList[0].pdfCoverArt,
+        bookObj.ssoKey= response.data[0].userBookTOList[0].sessionID
+        bookState.bookInfo.userbook = userbookObj;
+        bookState.bookInfo.book = bookObj;
+        bookState.bookInfo.fetching = false;
+        bookState.bookInfo.fetched = true;
+      return dispatch({ type: 'RECEIVEBOOKINFO_SUCCESS',bookState});
+      }
+    });
+    }
+  }
 /* Created Action creator for getting page details by page number */
 export function fetchPagebyPageNumber(userid, roleTypeID, bookid, bookeditionid,
-  pageNo, sessionKey, bookServerURL) {
+  pageNo, sessionKey,bookServerURL) {
   const bookState = {
     bookInfo: {
       pages: []
     }
   };
-  const serviceurl = `${bookServerURL}/ebook/pdfplayer/getpagebybookpagenumber?userid=${userid}&userroleid=${roleTypeID}&bookid=${bookid}&bookeditionid=${bookeditionid}&bookpagenumbers=${pageNo}&authkey=${sessionKey}&outputformat=JSON`;
+  var serviceurl = `${bookServerURL}/ebook/pdfplayer/getpagebybookpagenumber?userid=${userid}&userroleid=${roleTypeID}&bookid=${bookid}&bookeditionid=${bookeditionid}&bookpagenumbers=${pageNo}&authkey=${sessionKey}&outputformat=JSON`;
   // tempurl is starts with http to create hash key for matching with server
-  const tempurl = serviceurl.replace('https', 'http');
-  const hsid = getmd5(eT1Contants.MD5_SECRET_KEY + tempurl);
+  var tempurl = serviceurl.replace("https","http");
+  var hsid = getmd5(eT1Contants.MD5_SECRET_KEY+tempurl);
   return dispatch =>
      // Here axios is getting base url from client.js file and append with rest url and frame. This is similar for all the action creators in this file.
      axios.get(`${serviceurl}&hsid=${hsid}`,
@@ -571,10 +586,10 @@ export function fetchPageInfo(userid, bookid, bookeditionid,
       pages: []
     }
   };
-  const serviceurl = `${bookServerURL}/ebook/pdfplayer/getpagebypageorder?userid=${userid}&userroleid=${roleTypeID}&bookid=${bookid}&bookeditionid=${bookeditionid}&listval=${totalPagesToHit}&authkey=${sessionKey}&outputformat=JSON`;
+  var serviceurl = `${bookServerURL}/ebook/pdfplayer/getpagebypageorder?userid=${userid}&userroleid=${roleTypeID}&bookid=${bookid}&bookeditionid=${bookeditionid}&listval=${totalPagesToHit}&authkey=${sessionKey}&outputformat=JSON`;
   // tempurl is starts with http to create hash key for matching with server
-  const tempurl = serviceurl.replace('https', 'http');
-  const hsid = getmd5(eT1Contants.MD5_SECRET_KEY + tempurl);
+  var tempurl = serviceurl.replace("https","http");
+  var hsid = getmd5(eT1Contants.MD5_SECRET_KEY+tempurl);
   return dispatch =>
      // Here axios is getting base url from client.js file and append with rest url and frame. This is similar for all the action creators in this file.
      axios.get(`${serviceurl}&hsid=${hsid}`,
@@ -609,7 +624,7 @@ export function fetchPageInfo(userid, bookid, bookeditionid,
     });
 }
 /* Created Action creator for getting regions/hotspots. */
-export function fetchRegionsInfo(bookid, bookeditionid, pageorder, sessionKey, roleTypeID, bookServerURL, scenarioId, platformId) {
+export function fetchRegionsInfo(bookid,bookeditionid,pageorder,sessionKey,roleTypeID,bookServerURL,scenarioId,platformId){
   const bookState = {
     regions: [],
     isFetching: {
@@ -618,92 +633,99 @@ export function fetchRegionsInfo(bookid, bookeditionid, pageorder, sessionKey, r
   };
   return (dispatch) => {
     dispatch(request('regions'));
-    let serviceurl;
-    if (platformId == undefined || platformId == null || platformId == '') {
-      serviceurl = `${bookServerURL}/ebook/pdfplayer/getregionbypageorder?bookid=${bookid}&bookeditionid=${bookeditionid}&listval=${pageorder}&scenario=${scenarioId}&userroleid=${roleTypeID}&authkey=${sessionKey}&outputformat=JSON`;
-    } else {
-      serviceurl = `${bookServerURL}/ebook/pdfplayer/getregionbypageorder?bookid=${bookid}&bookeditionid=${bookeditionid}&listval=${pageorder}&platformid=${platformId}&scenario=${scenarioId}&userroleid=${roleTypeID}&authkey=${sessionKey}&outputformat=JSON`;
+    var serviceurl;
+    if (platformId == undefined || platformId == null || platformId == "")
+    {
+      serviceurl = ''+bookServerURL+'/ebook/pdfplayer/getregionbypageorder?bookid='+bookid+'&bookeditionid='+bookeditionid+'&listval='+pageorder+'&scenario='+scenarioId+'&userroleid='+roleTypeID+'&authkey='+sessionKey+'&outputformat=JSON';
+    }
+    else
+    {
+      serviceurl = ''+bookServerURL+'/ebook/pdfplayer/getregionbypageorder?bookid='+bookid+'&bookeditionid='+bookeditionid+'&listval='+pageorder+'&platformid='+platformId+'&scenario='+scenarioId+'&userroleid='+roleTypeID+'&authkey='+sessionKey+'&outputformat=JSON';
     }
     // tempurl is starts with http to create hash key for matching with server
-    const tempurl = serviceurl.replace('https', 'http');
-    const hsid = getmd5(eT1Contants.MD5_SECRET_KEY + tempurl);
-    return axios.get(`${serviceurl}&hsid=${hsid}`,
+    var tempurl = serviceurl.replace("https","http");
+    var hsid = getmd5(eT1Contants.MD5_SECRET_KEY+tempurl);
+    return axios.get(''+serviceurl+'&hsid='+hsid,
+  {
+  timeout: 20000
+  }).then((response) => {
+      if (response.status >= 400)
       {
-        timeout: 20000
-      }).then((response) => {
-        if (response.status >= 400) {
-          console.log(`fetchRegionsInfo error: ${response.statusText}`);
-        } else if (response.data.length) {
-          for (var i = 0; i < response.data[0].regionsList.length; i++) {
-            response.data.forEach((region) => {
-              const regionObj = {};
-              regionObj.regionID = region.regionsList[i].regionID;
-              regionObj.globalBookID = region.regionsList[i].globalBookID;
-              regionObj.regionTypeID = region.regionsList[i].regionTypeID;
-              regionObj.guid = region.regionsList[i].guid;
-              regionObj.roleTypeID = region.regionsList[i].roleTypeID;
-              regionObj.isicon = region.regionsList[i].isicon;
-              regionObj.iconTypeID = region.regionsList[i].iconTypeID;
-              regionObj.page = region.regionsList[i].page;
-              regionObj.x = region.regionsList[i].x;
-              regionObj.y = region.regionsList[i].y;
-              regionObj.width = region.regionsList[i].width;
-              regionObj.height = region.regionsList[i].height;
-              regionObj.name = region.regionsList[i].name;
-              regionObj.description = region.regionsList[i].description;
-              regionObj.note = region.regionsList[i].note;
-              regionObj.linkSearch = region.regionsList[i].linkSearch;
-              regionObj.linkTypeID = region.regionsList[i].linkTypeID;
-              regionObj.linkTypeLocation = region.regionsList[i].linkTypeLocation;
-              regionObj.linkValue = region.regionsList[i].linkValue;
-              regionObj.linkX = region.regionsList[i].linkX;
-              regionObj.linkY = region.regionsList[i].linkY;
-              regionObj.linkWidth = region.regionsList[i].linkWidth;
-              regionObj.linkHeight = region.regionsList[i].linkHeight;
-              regionObj.mediaWidth = region.regionsList[i].mediaWidth;
-              regionObj.mediaHeight = region.regionsList[i].mediaHeight;
-              regionObj.glossaryEntryID = region.regionsList[i].glossaryEntryID;
-              regionObj.imagePath = region.regionsList[i].imagePath;
-              regionObj.useCustom = region.regionsList[i].useCustom;
-              regionObj.readyToPublish = region.regionsList[i].readyToPublish;
-              regionObj.sequenceId = region.regionsList[i].sequenceId;
-              regionObj.platformID = region.regionsList[i].platformID;
-              regionObj.isIpad = region.regionsList[i].isIpad;
-              regionObj.hasPlatformIcon = region.regionsList[i].hasPlatformIcon;
-              regionObj.regionType = region.regionsList[i].regionType;
-              regionObj.linkType = region.regionsList[i].linkType;
-              regionObj.iconType = region.regionsList[i].iconType;
-              regionObj.roleType = region.regionsList[i].roleType;
-              regionObj.alternateMediaLink = region.regionsList[i].alternateMediaLink;
-              regionObj.transparent = region.regionsList[i].transparent;
-              regionObj.pearsonSmartPlayer = region.regionsList[i].pearsonSmartPlayer;
-              regionObj.downloadable = region.regionsList[i].downloadable;
-              regionObj.isBrowserView = region.regionsList[i].isBrowserView;
-              regionObj.assetSize = region.regionsList[i].assetSize;
-              regionObj.assetLastModifiedDate = region.regionsList[i].assetLastModifiedDate;
-              regionObj.downloadURL = region.regionsList[i].downloadURL;
-              bookState.regions.push(regionObj);
-            });
-          }
+        console.log(`fetchRegionsInfo error: ${response.statusText}`);
+      }
+      else if(response.data.length)
+      {
+          for (var i=0;i<response.data[0].regionsList.length;i++)
+          {
+          response.data.forEach((region) => {
+          const regionObj= {};
+          regionObj.regionID = region.regionsList[i].regionID;
+          regionObj.globalBookID=region.regionsList[i].globalBookID;
+          regionObj.regionTypeID=region.regionsList[i].regionTypeID;
+          regionObj.guid=region.regionsList[i].guid;
+          regionObj.roleTypeID=region.regionsList[i].roleTypeID;
+          regionObj.isicon=region.regionsList[i].isicon;
+          regionObj.iconTypeID=region.regionsList[i].iconTypeID;
+          regionObj.page=region.regionsList[i].page;
+          regionObj.x=region.regionsList[i].x;
+          regionObj.y=region.regionsList[i].y;
+          regionObj.width=region.regionsList[i].width;
+          regionObj.height=region.regionsList[i].height;
+          regionObj.name=region.regionsList[i].name;
+          regionObj.description=region.regionsList[i].description;
+          regionObj.note=region.regionsList[i].note;
+          regionObj.linkSearch=region.regionsList[i].linkSearch;
+          regionObj.linkTypeID=region.regionsList[i].linkTypeID;
+          regionObj.linkTypeLocation=region.regionsList[i].linkTypeLocation;
+          regionObj.linkValue=region.regionsList[i].linkValue;
+          regionObj.linkX=region.regionsList[i].linkX;
+          regionObj.linkY=region.regionsList[i].linkY;
+          regionObj.linkWidth=region.regionsList[i].linkWidth;
+          regionObj.linkHeight=region.regionsList[i].linkHeight;
+          regionObj.mediaWidth=region.regionsList[i].mediaWidth;
+          regionObj.mediaHeight=region.regionsList[i].mediaHeight;
+          regionObj.glossaryEntryID=region.regionsList[i].glossaryEntryID;
+          regionObj.imagePath=region.regionsList[i].imagePath;
+          regionObj.useCustom=region.regionsList[i].useCustom;
+          regionObj.readyToPublish=region.regionsList[i].readyToPublish;
+          regionObj.sequenceId=region.regionsList[i].sequenceId;
+          regionObj.platformID=region.regionsList[i].platformID;
+          regionObj.isIpad=region.regionsList[i].isIpad;
+          regionObj.hasPlatformIcon=region.regionsList[i].hasPlatformIcon;
+          regionObj.regionType=region.regionsList[i].regionType;
+          regionObj.linkType=region.regionsList[i].linkType;
+          regionObj.iconType=region.regionsList[i].iconType;
+          regionObj.roleType=region.regionsList[i].roleType;
+          regionObj.alternateMediaLink=region.regionsList[i].alternateMediaLink;
+          regionObj.transparent=region.regionsList[i].transparent;
+          regionObj.pearsonSmartPlayer=region.regionsList[i].pearsonSmartPlayer;
+          regionObj.downloadable=region.regionsList[i].downloadable;
+          regionObj.isBrowserView=region.regionsList[i].isBrowserView;
+          regionObj.assetSize=region.regionsList[i].assetSize;
+          regionObj.assetLastModifiedDate=region.regionsList[i].assetLastModifiedDate;
+          regionObj.downloadURL=region.regionsList[i].downloadURL;
+          bookState.regions.push(regionObj);
+        });
         }
-        bookState.isFetching.regions = false;
-        return dispatch({ type: RECEIVE_REGIONS, bookState });
-      });
-  };
-}
+      }
+      bookState.isFetching.regions=false;
+      return dispatch({ type: RECEIVE_REGIONS,bookState});
+    });
+    }
+  }
 /* Created Action creator for getting Glossary Information. */
-export function fetchGlossaryItems(bookid, glossaryentryid, sessionKey, bookServerURL) {
+export function fetchGlossaryItems(bookid,glossaryentryid,sessionKey,bookServerURL) {
   const bookState = {
-    bookInfo: {
-      glossaryInfoList: []
+    bookInfo : {
+      glossaryInfoList : [],
     }
   };
-  const serviceurl = `${bookServerURL}/ebook/pdfplayer/getglossary?bookid=${bookid}&glossaryentryid=${glossaryentryid}&authkey=${sessionKey}&outputformat=JSON`;
+  var serviceurl = ''+bookServerURL+'/ebook/pdfplayer/getglossary?bookid='+bookid+'&glossaryentryid='+glossaryentryid+'&authkey='+sessionKey+'&outputformat=JSON';
   // tempurl is starts with http to create hash key for matching with server
-  const tempurl = serviceurl.replace('https', 'http');
-  const hsid = getmd5(eT1Contants.MD5_SECRET_KEY + tempurl);
+  var tempurl = serviceurl.replace("https","http");
+  var hsid = getmd5(eT1Contants.MD5_SECRET_KEY+tempurl);
   return dispatch =>
-     axios.get(`${serviceurl}&hsid=${hsid}`,
+     axios.get(''+serviceurl+'&hsid='+hsid,
        {
          timeout: 20000
        })
@@ -711,51 +733,52 @@ export function fetchGlossaryItems(bookid, glossaryentryid, sessionKey, bookServ
       if (response.status >= 400) {
         console.log(`fetch Glossary Items error: ${response.statusText}`);
       } else if (response.data.length) {
-        for (var i = 0; i < response.data[0].glossaryList.length; i++) {
-          response.data.forEach((glossTerm) => {
-            const glossaryInfo = {};
-            glossaryInfo.glossaryTerm = glossTerm.glossaryList[i].glossaryTerm;
-            glossaryInfo.glossaryDefinition = extractTextContent(glossTerm.glossaryList[i].glossaryDefinition);
-            glossaryInfo.glossaryEntryID = glossTerm.glossaryList[i].glossaryEntryID;
-            bookState.bookInfo.glossaryInfoList.push(glossaryInfo);
-          });
-        }
+          for(var i=0;i<response.data[0].glossaryList.length;i++)
+          {
+            response.data.forEach((glossTerm) => {
+              const glossaryInfo = {};
+              glossaryInfo.glossaryTerm = glossTerm.glossaryList[i].glossaryTerm;
+              glossaryInfo.glossaryDefinition = extractTextContent(glossTerm.glossaryList[i].glossaryDefinition);
+              glossaryInfo.glossaryEntryID = glossTerm.glossaryList[i].glossaryEntryID;
+              bookState.bookInfo.glossaryInfoList.push(glossaryInfo);
+            });
+          }
       }
       dispatch({ type: 'RECEIVE_GLOSSARY_TERM', bookState });
     });
 }
  /* Created Action creator for getting basepath of relative regions/hotspots. */
 export function fetchBasepaths(bookid, sessionKey, userid, bookServerURL, roleTypeID) {
-  const serviceurl = `${bookServerURL}/ebook/pdfplayer/launchbook?authkey=${sessionKey}&userid=${userid}&bookid=${bookid}&userroleid=${roleTypeID}&outputformat=JSON`;
+  var serviceurl = ''+bookServerURL+'/ebook/pdfplayer/launchbook?authkey=' + sessionKey + '&userid=' +  userid + '&bookid=' + bookid + '&userroleid=' + roleTypeID + '&outputformat=JSON';
   // tempurl is starts with http to create hash key for matching with server
-  const tempurl = serviceurl.replace('https', 'http');
-  const hsid = getmd5(eT1Contants.MD5_SECRET_KEY + tempurl);
+  var tempurl = serviceurl.replace("https","http");
+  var hsid = getmd5(eT1Contants.MD5_SECRET_KEY+tempurl);
   return {
     type: 'RECEIVE_BASEPATH',
-    payload: axios.get(`${serviceurl}&hsid=${hsid}`),
+    payload: axios.get(''+serviceurl+'&hsid='+hsid),
     timeout: 20000
   };
 }
  /* Created Action creator for getting book features. */
-export function fetchBookFeatures(bookid, sessionKey, userid, bookServerURL, roleTypeID, scenarioId) {
+export function fetchBookFeatures(bookid, sessionKey, userid, bookServerURL, roleTypeID,scenarioId) {
     // payload: axios.get(''+bookServerURL+'/ebook/ipad/getbookfeatures?authkey=' + sessionKey + '&userid=' +  userid + '&bookid=' + bookid + '&userroleid=' + roleTypeID + '&outputformat=JSON',
-  const serviceurl = `${bookServerURL}/ebook/pdfplayer/getbookfeatures?authkey=${sessionKey}&userid=${userid}&bookid=${bookid}&userroleid=${roleTypeID}&scenario=${scenarioId}&outputformat=JSON`;
+  var serviceurl = ''+bookServerURL+'/ebook/pdfplayer/getbookfeatures?authkey=' + sessionKey + '&userid=' +  userid + '&bookid=' + bookid + '&userroleid=' + roleTypeID + '&scenario=' + scenarioId + '&outputformat=JSON';
   // tempurl is starts with http to create hash key for matching with server
-  const tempurl = serviceurl.replace('https', 'http');
-  const hsid = getmd5(eT1Contants.MD5_SECRET_KEY + tempurl);
+  var tempurl = serviceurl.replace("https","http");
+  var hsid = getmd5(eT1Contants.MD5_SECRET_KEY+tempurl);
   return {
     type: 'RECEIVE_BOOK_FEATURES',
-    payload: axios.get(`${serviceurl}&hsid=${hsid}`),
+    payload: axios.get(''+serviceurl+'&hsid='+hsid),
     timeout: 20000
   };
 }
  /* Created Action creator for fetching user information. */
 export function fetchUserInfo(globaluserid, bookid, uid, ubd, ubsd, sessionKey, bookServerURL) {
     // Here axios is getting base url from client.js file and append with rest url and frame. This is similar for all the action creators in this file.
-  const serviceurl = `${bookServerURL}/ebook/ipad/synchbookwithbookshelfserverdata?globaluserid=${globaluserid}&bookid=${bookid}&uid=${ubd}&ubd=${ubd}&ubsd=${ubsd}&authkey=${sessionKey}`;
+  var serviceurl = `${bookServerURL}/ebook/ipad/synchbookwithbookshelfserverdata?globaluserid=${globaluserid}&bookid=${bookid}&uid=${ubd}&ubd=${ubd}&ubsd=${ubsd}&authkey=${sessionKey}`;
   // tempurl is starts with http to create hash key for matching with server
-  const tempurl = serviceurl.replace('https', 'http');
-  const hsid = getmd5(eT1Contants.MD5_SECRET_KEY + tempurl);
+  var tempurl = serviceurl.replace("https","http");
+  var hsid = getmd5(eT1Contants.MD5_SECRET_KEY+tempurl);
   return {
     type: 'RECEIVE_USER_INFO',
     payload: axios.get(`${serviceurl}&hsid=${hsid}`),
@@ -993,66 +1016,77 @@ export function editHighlightUsingReaderApi(id, note, colour, isShared) {
   };
 }
 
-export function fetchbookDetails(urn, piToken, bookID) {
+export function fetchbookDetails(urn, piToken,bookID)
+{
   const url = `${etextCourseService[envType]}/web/compositeBookShelf`;
   return dispatch =>
      axios.get(url, {
-       headers: { 'Content-Type': 'application/json',
-         'X-Authorization': piToken }
-     }).then((response) => {
-       let bookDetails;
-       if (response.status >= 400) {
-         console.log('bookshelf error');
-       } else if (response.data) {
-         const booksArray = response.data.entries;
-         for (let i = 0; i < booksArray.length; i++) {
-           if (booksArray[i].bookId === bookID) {
-             bookDetails = booksArray[i];
-             break;
-           }
-         }
-       }
-       return bookDetails;
-     });
+      headers: { 'Content-Type': 'application/json',
+        'X-Authorization': piToken }
+      }).then((response) => {
+      var bookDetails;
+      if (response.status >= 400) {
+        console.log(`bookshelf error`);
+      } else if (response.data) {
+        var booksArray = response.data.entries;
+           for(var i=0; i<booksArray.length; i++)
+        {
+          if(booksArray[i].bookId === bookID)
+          {
+            bookDetails = booksArray[i];
+            break;
+          }
+        }
+      }
+      return bookDetails;
+    });
 }
 
-export function validateAuthkey(userid, authkey, bookServerURL) {
-  const serviceurl = `${bookServerURL}/ebook/ipad/validateauthkey?authkey=${authkey}&userid=${userid}`;
+export function validateAuthkey(userid,authkey,bookServerURL)
+{
+  var serviceurl = ''+bookServerURL+'/ebook/ipad/validateauthkey?authkey=' + authkey + '&userid=' +  userid;
   // tempurl is starts with http to create hash key for matching with server
-  const tempurl = serviceurl.replace('https', 'http');
-  const hsid = getmd5(eT1Contants.MD5_SECRET_KEY + tempurl);
+  var tempurl = serviceurl.replace("https","http");
+  var hsid = getmd5(eT1Contants.MD5_SECRET_KEY+tempurl);
   return dispatch =>
-    axios.get(`${serviceurl}&hsid=${hsid}`).then((response) => {
+    axios.get(''+serviceurl+'&hsid='+hsid).then((response) => {
       if (response.status >= 400) {
-        console.log('validateAuthkey service error');
-      } else if (response.data) {
+        console.log(`validateAuthkey service error`);
+      }
+      else if(response.data)
+      {
+
         return response.data[0].authkeyValid;
       }
     });
 }
 
-export function validateUser(userid, scenario, invoketype, bookid, roletypeid, piToken, bookServerURL) {
-  const serviceurl = `${bookServerURL}/ebook/pdfplayer/validateuser?values=bookid::${bookid}::scenario::${scenario}::invoketype::${
-                        invoketype}::userid::${userid}::roletypeid::${roletypeid}&key=${piToken}&outputformat=JSON`;
+export function validateUser(userid,scenario,invoketype,bookid,roletypeid,piToken,bookServerURL)
+{
+  var serviceurl = ''+bookServerURL+'/ebook/pdfplayer/validateuser?values=bookid::' + bookid + '::scenario::' +  scenario + '::invoketype::'
+                        +invoketype+'::userid::'+userid+'::roletypeid::'+roletypeid+'&key='+piToken+'&outputformat=JSON';
   // tempurl is starts with http to create hash key for matching with server
-  const tempurl = serviceurl.replace('https', 'http');
-  const hsid = getmd5(eT1Contants.MD5_SECRET_KEY + tempurl);
+  var tempurl = serviceurl.replace("https","http");
+  var hsid = getmd5(eT1Contants.MD5_SECRET_KEY+tempurl);
   return dispatch =>
-    axios.get(`${serviceurl}&hsid=${hsid}`).then((response) => {
+    axios.get(''+serviceurl+'&hsid='+hsid).then((response) => {
       if (response.status >= 400) {
-        console.log('validateuser service error');
-      } else if (response.data) {
+        console.log(`validateuser service error`);
+      }
+      else if(response.data)
+      {
         const ssoKey = response.data[0].authKey;
         return dispatch({ type: UPDATE_AUTH_KEY, ssoKey });
       }
     });
 }
 
-export function getlocaluserID(bookServerURL, globaluserid, type) {
-  const serviceurl = `${bookServerURL}/ebook/ipad/getlocaluserid?globaluserid=${globaluserid}&type=${type}&outputformat=JSON`;
+export function getlocaluserID(bookServerURL,globaluserid,type)
+{
+  var serviceurl = ''+bookServerURL+'/ebook/ipad/getlocaluserid?globaluserid=' + globaluserid + '&type=' +  type + '&outputformat=JSON';
   // tempurl is starts with http to create hash key for matching with server
-  const tempurl = serviceurl.replace('https', 'http');
-  const hsid = getmd5(eT1Contants.MD5_SECRET_KEY + tempurl);
+  var tempurl = serviceurl.replace("https","http");
+  var hsid = getmd5(eT1Contants.MD5_SECRET_KEY+tempurl);
   return {
     type: 'RECEIVE_USER_INFO',
     payload: axios.get(`${serviceurl}&hsid=${hsid}`),
@@ -1190,7 +1224,7 @@ const ACTION_HANDLERS = {
   }),
   [REQUEST_TOC]: state => ({
     ...state,
-    toc: {
+    toc : {
       fetching: true,
       fetched: false
     },
@@ -1223,14 +1257,14 @@ const ACTION_HANDLERS = {
   }),
   [RECEIVEBOOKINFO_PENDING]: state => ({
     ...state,
-    bookinfo: {
+    bookinfo : {
       fetching: true,
       fetched: false
-    }
+    },
   }),
   [RECEIVEBOOKINFO_SUCCESS]: (state, action) => ({
     ...state,
-    bookinfo: action.bookState.bookInfo
+    bookinfo: action.bookState.bookInfo,
   }),
   [RECEIVEBOOKINFO_FAILED]: state => ({
     ...state,
@@ -1241,7 +1275,7 @@ const ACTION_HANDLERS = {
   }),
   [UPDATE_AUTH_KEY]: (state, action) => ({
     ...state,
-    sessionInfo: {
+    sessionInfo : {
       ssoKey: action.ssoKey
     }
   }),
@@ -1305,20 +1339,20 @@ const ACTION_HANDLERS = {
       fetched: false
     }
   }),
-  [RECEIVE_BOOK_FEATURES_FULFILLED]: (state, action) => ({
+  [RECEIVE_BOOK_FEATURES_FULFILLED]: (state,action) => ({
     ...state,
     bookFeatures: {
       fetching: false,
       fetched: true,
-      hotspotcolor: action.payload.data[0].ipadFeaturesTO.hotSpotColor,
-      isunderlinehotspot: action.payload.data[0].generalFeaturesTO.isUnderLineHotspot,
-      hassearchbutton: action.payload.data[0].generalFeaturesTO.hasSearchButton,
-      hasnotesmanager: action.payload.data[0].generalFeaturesTO.hasNotesManager,
-      iconhotspotalpha: action.payload.data[0].ipadFeaturesTO.iconHotSpotAlpha,
-      regionhotspotalpha: action.payload.data[0].ipadFeaturesTO.regionHotSpotAlpha,
-      underlinehotspotcolor: action.payload.data[0].ipadFeaturesTO.underLineHotSpotColor,
-      underlinehotspotthickness: action.payload.data[0].ipadFeaturesTO.underLineHotSpotThickness,
-      underlinehotppothovercolor: action.payload.data[0].ipadFeaturesTO.underLineHotSpotHoverColor,
+      hotspotcolor : action.payload.data[0].ipadFeaturesTO.hotSpotColor,
+      isunderlinehotspot : action.payload.data[0].generalFeaturesTO.isUnderLineHotspot,
+      hassearchbutton : action.payload.data[0].generalFeaturesTO.hasSearchButton,
+      hasnotesmanager : action.payload.data[0].generalFeaturesTO.hasNotesManager,
+      iconhotspotalpha : action.payload.data[0].ipadFeaturesTO.iconHotSpotAlpha,
+      regionhotspotalpha : action.payload.data[0].ipadFeaturesTO.regionHotSpotAlpha,
+      underlinehotspotcolor : action.payload.data[0].ipadFeaturesTO.underLineHotSpotColor,
+      underlinehotspotthickness : action.payload.data[0].ipadFeaturesTO.underLineHotSpotThickness,
+      underlinehotppothovercolor : action.payload.data[0].ipadFeaturesTO.underLineHotSpotHoverColor,
       hasbookshelflink: action.payload.data[0].headerFeaturesTO.hasBookshelfLink,
       haslogoutlink: action.payload.data[0].headerFeaturesTO.hasLogoutLink,
       hasprevnavpagebutton: action.payload.data[0].toolBarFeaturesTO.hasPreviousNavigatePageButton,
@@ -1345,7 +1379,7 @@ const ACTION_HANDLERS = {
       fetched: false
     }
   }),
-  [RECEIVE_BASEPATH_FULFILLED]: (state, action) => ({
+  [RECEIVE_BASEPATH_FULFILLED]: (state,action) => ({
     ...state,
     basepaths: {
       fetching: false,
@@ -1368,7 +1402,7 @@ const ACTION_HANDLERS = {
       fetched: false
     }
   }),
-  [RECEIVE_GLOSSARY_TERM]: (state, action) => ({
+  [RECEIVE_GLOSSARY_TERM]: (state,action) => ({
     ...state,
     glossaryInfoList: action.bookState.bookInfo.glossaryInfoList
   })
@@ -1381,8 +1415,8 @@ const initialState = {
   annotations: [],
   bookmarks: [],
   annTotalData: [],
-  regions: [],
-  glossaryInfoList: [],
+  regions:[],
+  glossaryInfoList:[],
   preferences: {},
   toc: {
     fetching: false,
@@ -1417,7 +1451,7 @@ const initialState = {
     userid: ''
   },
   sessionInfo: {
-    ssoKey: ''
+    ssoKey:''
   }
 };
 
