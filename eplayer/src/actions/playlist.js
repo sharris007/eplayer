@@ -1,19 +1,19 @@
-/*******************************************************************************
+/** *****************************************************************************
  * PEARSON PROPRIETARY AND CONFIDENTIAL INFORMATION SUBJECT TO NDA
- *   
+ *
  *  *  Copyright © 2017 Pearson Education, Inc.
  *  *  All Rights Reserved.
- *  * 
+ *  *
  *  * NOTICE:  All information contained herein is, and remains
  *  * the property of Pearson Education, Inc.  The intellectual and technical concepts contained
  *  * herein are proprietary to Pearson Education, Inc. and may be covered by U.S. and Foreign Patents,
  *  * patent applications, and are protected by trade secret or copyright law.
- *  * Dissemination of this information, reproduction of this material, and copying or distribution of this software 
+ *  * Dissemination of this information, reproduction of this material, and copying or distribution of this software
  *  * is strictly forbidden unless prior written permission is obtained from Pearson Education, Inc.
  *******************************************************************************/
 /* global $ */
 import PlaylistApi from '../api/playlistApi';
-import { resources , domain , typeConstants } from '../../const/Settings';
+import { resources, domain, typeConstants } from '../../const/Settings';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -37,10 +37,10 @@ export const getBookDetails = json => ({
   bookDetailsRecived: true
 });
 
- var tocUrl = '';
- var piToken = '';
- var bookId='';
- var bookDetails ='';
+let tocUrl = '';
+let piToken = '';
+let bookId = '';
+let bookDetails = '';
 
 function getTocUrlOnResp(resp) {
   let tocUrl;
@@ -54,27 +54,26 @@ function getTocUrlOnResp(resp) {
   }
   return tocUrl ? tocUrl.replace('http:', 'https:') : null;
 }
-export const getBookPlayListCallService = data => dispatch => 
+export const getBookPlayListCallService = data => dispatch =>
   PlaylistApi.doGetPiUserDetails(data).then(response => response.json())
-  .then((response)=>{
-      data.userName  = response.UserName;
-      PlaylistApi.doGetBookDetails(data)
+  .then((response) => {
+    data.userName = response.UserName;
+    PlaylistApi.doGetBookDetails(data)
         .then(response => response.json())
         .then((response) => {
-         dispatch(getBookDetails(response));
-         bookId = response.bookDetail.bookId;
+          dispatch(getBookDetails(response));
+          bookId = response.bookDetail.bookId;
 
-     tocUrl = getTocUrlOnResp(response.bookDetail.metadata.toc);
-     bookDetails = response.bookDetail.metadata;
-     piToken = data.piToken;
-     PlaylistApi.doGetPlaylistDetails(bookId, tocUrl, piToken).then(response => response.json())
+          tocUrl = getTocUrlOnResp(response.bookDetail.metadata.toc);
+          bookDetails = response.bookDetail.metadata;
+          piToken = data.piToken;
+          PlaylistApi.doGetPlaylistDetails(bookId, tocUrl, piToken).then(response => response.json())
       .then(response => dispatch(getPlaylistCompleteDetails(response)));
-   }
+        }
 );
- 
-});
+  });
 
-export const getBookTocCallService  = data => dispatch => 
+export const getBookTocCallService = data => dispatch =>
   PlaylistApi.doGetTocDetails(bookId, tocUrl, piToken).then(response => response.json())
       .then((response) => {
         const tocResponse = response.content;
@@ -89,7 +88,7 @@ export const getBookTocCallService  = data => dispatch =>
         const listData = tocItems.map((itemObj) => {
           if (itemObj.items) {
             subItems = itemObj.items.map(n => ({
-                urn: n.id,
+              urn: n.id,
               href: n.href,
               id: n.id,
               playorder: n.playorder,
@@ -114,85 +113,83 @@ export const getBookTocCallService  = data => dispatch =>
 
 export const getCourseCallService = data => dispatch => PlaylistApi.doGetCourseDetails(data)
    .then(response => response.json())
-   .then((response) => {    
-      console.log("response----",response.status);
-      if(response.status>=400){
-         browserHistory.push('/eplayer/error/'+response.status);
-         return false;
-      }
-     
-      dispatch(getBookDetails(response));
-      const baseUrl      = response.userCourseSectionDetail.baseUrl;
-      tocUrl             = getTocUrlOnResp(response.userCourseSectionDetail.toc);
-      bookDetails        = response.userCourseSectionDetail;
-      piToken            = data.piToken;
-      bookId             = bookDetails.section.sectionId;
+   .then((response) => {
+     console.log('response----', response.status);
+     if (response.status >= 400) {
+       browserHistory.push(`/eplayer/error/${response.status}`);
+       return false;
+     }
 
-      const passportDetails = response.passportPermissionDetail;
-      const url = window.location.href;
-      const n = url.search('prdType');
-      let prdType  ='';
-      if (n > 0) {
-        const urlSplit = url.split('prdType=');
-        prdType = urlSplit[1];
-      }  
-      let studentCheck     = resources.constants.zeppelinEnabled; 
-      let instructorCheck  = resources.constants.idcDashboardEnabled; 
-      if(studentCheck && bookDetails.authgrouptype=='student' && passportDetails && !passportDetails.access){
-        redirectToZeppelin(bookDetails,passportDetails);
-        return false;
-      }
-      else if(instructorCheck && bookDetails.authgrouptype=='instructor' && !prdType ){
-        const productType = bookDetails.section.extras.metadata.productModel;
-        const prodType=productType, courseId=bookId;
-        redirectToIDCDashboard(prodType,courseId);
-        return false;
-      }
+     dispatch(getBookDetails(response));
+     const baseUrl = response.userCourseSectionDetail.baseUrl;
+     tocUrl = getTocUrlOnResp(response.userCourseSectionDetail.toc);
+     bookDetails = response.userCourseSectionDetail;
+     piToken = data.piToken;
+     bookId = bookDetails.section.sectionId;
+
+     const passportDetails = response.passportPermissionDetail;
+     const url = window.location.href;
+     const n = url.search('prdType');
+     let prdType = '';
+     if (n > 0) {
+       const urlSplit = url.split('prdType=');
+       prdType = urlSplit[1];
+     }
+     const studentCheck = resources.constants.zeppelinEnabled;
+     const instructorCheck = resources.constants.idcDashboardEnabled;
+     if (studentCheck && bookDetails.authgrouptype == 'student' && passportDetails && !passportDetails.access) {
+       redirectToZeppelin(bookDetails, passportDetails);
+       return false;
+     } else if (instructorCheck && bookDetails.authgrouptype == 'instructor' && !prdType) {
+       const productType = bookDetails.section.extras.metadata.productModel;
+       const prodType = productType,
+         courseId = bookId;
+       redirectToIDCDashboard(prodType, courseId);
+       return false;
+     }
 
      PlaylistApi.doGetPlaylistDetails(bookId, tocUrl, piToken).then(response => response.json())
-      .then(response => {
-        const securl      = baseUrl.replace(/^http:\/\//i, 'https://');
-        response.baseUrl  = securl ;
-        dispatch(getPlaylistCompleteDetails(response))
+      .then((response) => {
+        const securl = baseUrl.replace(/^http:\/\//i, 'https://');
+        response.baseUrl = securl;
+        dispatch(getPlaylistCompleteDetails(response));
       });
    }
 
-)
+);
 
-function redirectToIDCDashboard(prodType,courseId){
-  const idcBaseurl = resources.links.idcUrl[domain.getEnvType()]+'/idc?';
-  const IdcRelativeURL = 'product_type='+prodType+'&courseId='+courseId
-  const redirectIdcURL = idcBaseurl+ IdcRelativeURL;
-  window.open(redirectIdcURL,'_self');
-} 
+function redirectToIDCDashboard(prodType, courseId) {
+  const idcBaseurl = `${resources.links.idcUrl[domain.getEnvType()]}/idc?`;
+  const IdcRelativeURL = `product_type=${prodType}&courseId=${courseId}`;
+  const redirectIdcURL = idcBaseurl + IdcRelativeURL;
+  window.open(redirectIdcURL, '_self');
+}
 
-function redirectToZeppelin(bookDetails,passportDetails){
-  let successOriginUrl,errOriginUrl;
-  let userAccess = {
-          userType      : bookDetails.authgrouptype,
-          institutionId : bookDetails.section.extras.organizationId,
-          productId     : passportDetails.productId,
-          appAccess     : passportDetails.access,
-          launchUrl     : bookDetails.section.extras.metadata.launchUrl
-    }
-   if(window.location.pathname.indexOf('/eplayer/Course/')>-1)
-    {
-      successOriginUrl = resources.links.consoleUrl[domain.getEnvType()]; 
-      errOriginUrl = resources.links.consoleUrl[domain.getEnvType()]; 
+function redirectToZeppelin(bookDetails, passportDetails) {
+  let successOriginUrl,
+    errOriginUrl;
+  const userAccess = {
+    userType: bookDetails.authgrouptype,
+    institutionId: bookDetails.section.extras.organizationId,
+    productId: passportDetails.productId,
+    appAccess: passportDetails.access,
+    launchUrl: bookDetails.section.extras.metadata.launchUrl
+  };
+  if (window.location.pathname.indexOf('/eplayer/Course/') > -1) {
+    successOriginUrl = resources.links.consoleUrl[domain.getEnvType()];
+    errOriginUrl = resources.links.consoleUrl[domain.getEnvType()];
       // successOriginUrl = window.location.href;
-      // errOriginUrl= window.location.origin+'/eplayer'; 
-      
-    }
-    const productId     = userAccess.productId ,
-          institutionId = userAccess.institutionId ,
-          courseAccess  = userAccess.appAccess,
-          successUrl    = encodeURIComponent(successOriginUrl),
-          failureUrl    = encodeURIComponent(errOriginUrl),          
-          cancelUrl     = encodeURIComponent(errOriginUrl),    
-          zeppelinAccessBassUrl  = resources.links.zeppelinUrl[domain.getEnvType()],
-          zeppelinRelativeurl =productId+'?institutionId='+institutionId+
-          '&failureUrl='+failureUrl+'&cancelUrl='+cancelUrl+'&successUrl='+successUrl;
-    const zeppelinRedirect  = zeppelinAccessBassUrl+'/'+zeppelinRelativeurl;
-    window.location = zeppelinRedirect;
-    
+      // errOriginUrl= window.location.origin+'/eplayer';
+  }
+  const productId = userAccess.productId,
+    institutionId = userAccess.institutionId,
+    courseAccess = userAccess.appAccess,
+    successUrl = encodeURIComponent(successOriginUrl),
+    failureUrl = encodeURIComponent(errOriginUrl),
+    cancelUrl = encodeURIComponent(errOriginUrl),
+    zeppelinAccessBassUrl = resources.links.zeppelinUrl[domain.getEnvType()],
+    zeppelinRelativeurl = `${productId}?institutionId=${institutionId
+          }&failureUrl=${failureUrl}&cancelUrl=${cancelUrl}&successUrl=${successUrl}`;
+  const zeppelinRedirect = `${zeppelinAccessBassUrl}/${zeppelinRelativeurl}`;
+  window.location = zeppelinRedirect;
 }

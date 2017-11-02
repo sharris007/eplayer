@@ -1,14 +1,14 @@
-/*******************************************************************************
+/** *****************************************************************************
  * PEARSON PROPRIETARY AND CONFIDENTIAL INFORMATION SUBJECT TO NDA
- *   
+ *
  *  *  Copyright © 2017 Pearson Education, Inc.
  *  *  All Rights Reserved.
- *  * 
+ *  *
  *  * NOTICE:  All information contained herein is, and remains
  *  * the property of Pearson Education, Inc.  The intellectual and technical concepts contained
  *  * herein are proprietary to Pearson Education, Inc. and may be covered by U.S. and Foreign Patents,
  *  * patent applications, and are protected by trade secret or copyright law.
- *  * Dissemination of this information, reproduction of this material, and copying or distribution of this software 
+ *  * Dissemination of this information, reproduction of this material, and copying or distribution of this software
  *  * is strictly forbidden unless prior written permission is obtained from Pearson Education, Inc.
  *******************************************************************************/
 import React from 'react';
@@ -36,10 +36,10 @@ class DrawerComponent extends React.Component {
     } else if (this.props.locale === 'fr-FR-CG') {
       locale = 'fr';
     } else if (this.props.locale === 'en-CA-PS' || this.props.locale === 'en-CA-ER') {
-      locale = 'en-CA';   
+      locale = 'en-CA';
     } else {
       locale = this.props.locale;
-    }   
+    }
     this.state = {
       slideIndex: 0,
       drawerOpen: false,
@@ -58,9 +58,9 @@ class DrawerComponent extends React.Component {
     }
   }
   componentWillReceiveProps(nextProps) {
-    if(this.props.isOpen != nextProps.isOpen){
-      if(!nextProps.isOpen){
-      this.setState({slideIndex : 0});
+    if (this.props.isOpen != nextProps.isOpen) {
+      if (!nextProps.isOpen) {
+        this.setState({ slideIndex: 0 });
       }
     }
   }
@@ -154,7 +154,6 @@ class DrawerComponent extends React.Component {
   }
 
 
-
   navUpList = (reqIndex) => {
     this.setFocusbyClassName(reqIndex);
   }
@@ -228,7 +227,7 @@ class DrawerComponent extends React.Component {
       }
     }
   }
-  
+
   fixSwipableHeight = () => {
     if (this.tabCompwrapper) {
       const drawerHeight = this.tabCompwrapper.parentElement.clientHeight;
@@ -260,10 +259,10 @@ class DrawerComponent extends React.Component {
       this.bottomBar.classList.add('notesTab');
     }
     setTimeout(() => {
-     this.fixSwipableHeight();
+      this.fixSwipableHeight();
     }, 100);
   }
-  
+
 
   render() {
     const drawerTab = {
@@ -307,78 +306,78 @@ class DrawerComponent extends React.Component {
         role="dialog"
         onKeyUp={this.onArrowKeyPress}
       >
-      <div className="bookTitleAndTabs" ref={(titleSection) => { this.titleSection = titleSection; }}>
-        <div className="bookTitleSection">
-          <div className="title">{this.props.bookData.toc.content.mainTitle}</div>
-          <div className="author">{this.props.bookData.toc.content.author}</div>
-        </div>
-        <Tabs
-          inkBarStyle={drawerTab.inkBarStyle}
-          tabItemContainerStyle={drawerTab.tabItemContainerStyle}
-          className="tabComp"
-          onChange={this.handleChange}
-          value={this.state.slideIndex}
-        >
-          <Tab
-            label={this.props.messages !== undefined ? this.props.messages.contents : 'Contents'}
-            id="contents"
-            style={drawerTab.tabStyle}
-            onActive={ () => this.onActive('contents') }
-            buttonStyle={drawerTab.buttonStyle}
-            className="contentTab tablabel active"
-            onKeyDown={this.keyBoardNavigation}
-            value={0}
-          /> <Tab
-            label={this.props.messages !== undefined ? this.props.messages.bookmarks : 'Bookmarks'}
-            id="bookmarks"
-            style={drawerTab.bookmarks}
-            onActive={ () => this.onActive('bookmarks') }
-            buttonStyle={drawerTab.buttonStyle}
-            className="bookmarksTab tablabel"
-            onKeyDown={this.keyBoardNavigation}
-            value={1}
-          /> <Tab
-            label={this.props.messages !== undefined ? this.props.messages.notes : 'Notes'}
-            id="notes"
-            style={drawerTab.notes}
-            buttonStyle={drawerTab.buttonStyle}
-            onActive={ () => this.onActive('notes') }
-            className="notesTab tablabel"
-            onKeyDown={this.keyBoardNavigation}
-            value={2}
-          /> </Tabs > 
+        <div className="bookTitleAndTabs" ref={(titleSection) => { this.titleSection = titleSection; }}>
+          <div className="bookTitleSection">
+            <div className="title">{this.props.bookData.toc.content.mainTitle}</div>
+            <div className="author">{this.props.bookData.toc.content.author}</div>
+          </div>
+          <Tabs
+            inkBarStyle={drawerTab.inkBarStyle}
+            tabItemContainerStyle={drawerTab.tabItemContainerStyle}
+            className="tabComp"
+            onChange={this.handleChange}
+            value={this.state.slideIndex}
+          >
+            <Tab
+              label={this.props.messages !== undefined ? this.props.messages.contents : 'Contents'}
+              id="contents"
+              style={drawerTab.tabStyle}
+              onActive={() => this.onActive('contents')}
+              buttonStyle={drawerTab.buttonStyle}
+              className="contentTab tablabel active"
+              onKeyDown={this.keyBoardNavigation}
+              value={0}
+            /> <Tab
+              label={this.props.messages !== undefined ? this.props.messages.bookmarks : 'Bookmarks'}
+              id="bookmarks"
+              style={drawerTab.bookmarks}
+              onActive={() => this.onActive('bookmarks')}
+              buttonStyle={drawerTab.buttonStyle}
+              className="bookmarksTab tablabel"
+              onKeyDown={this.keyBoardNavigation}
+              value={1}
+            /> <Tab
+              label={this.props.messages !== undefined ? this.props.messages.notes : 'Notes'}
+              id="notes"
+              style={drawerTab.notes}
+              buttonStyle={drawerTab.buttonStyle}
+              onActive={() => this.onActive('notes')}
+              className="notesTab tablabel"
+              onKeyDown={this.keyBoardNavigation}
+              value={2}
+            /> </Tabs >
           <div className="bottomBar" ref={(bottomBar) => { this.bottomBar = bottomBar; }} />
         </div>
 
-          <SwipeableViews
-            index={this.state.slideIndex}
-            onChangeIndex={this.handleChange}
-            className="swipeviewStyle"
-          >
-            
-             
-              {this.props.bookData.tocReceived ? < TableOfContentsComponent
-                separateToggleIcon
-                data={this.props.bookData.toc}
-                showDuplicateTitle
-                depth={5}
-                childField={'children'}
-                clickTocHandler={this.props.bookCallbacks.goToPageCallback}
-                locale={locale}
-                isTocWrapperRequired={isTocWrapperRequired}
-                currentPageId={this.props.pageId}
-              />:<RefreshIndicator size={30} left={200} top={140} status="loading" />}
-            
-            { this.props.bookData.bookmarks &&
-              <BookmarkListComponent
-                bookmarksArr={this.props.bookData.bookmarks}
-                clickBookmarkHandler={this.props.bookCallbacks.goToPageCallback}
-                removeBookmarkHandler={this.props.bookCallbacks.removeBookmarkHandler}
-                isET1={this.props.isET1}
-                locale={locale}
-              />
+        <SwipeableViews
+          index={this.state.slideIndex}
+          onChangeIndex={this.handleChange}
+          className="swipeviewStyle"
+        >
+
+
+          {this.props.bookData.tocReceived ? < TableOfContentsComponent
+            separateToggleIcon
+            data={this.props.bookData.toc}
+            showDuplicateTitle
+            depth={5}
+            childField={'children'}
+            clickTocHandler={this.props.bookCallbacks.goToPageCallback}
+            locale={locale}
+            isTocWrapperRequired={isTocWrapperRequired}
+            currentPageId={this.props.pageId}
+          /> : <RefreshIndicator size={30} left={200} top={140} status="loading" />}
+
+          { this.props.bookData.bookmarks &&
+          <BookmarkListComponent
+            bookmarksArr={this.props.bookData.bookmarks}
+            clickBookmarkHandler={this.props.bookCallbacks.goToPageCallback}
+            removeBookmarkHandler={this.props.bookCallbacks.removeBookmarkHandler}
+            isET1={this.props.isET1}
+            locale={locale}
+          />
              }
-            { this.props.bookData.annTotalData &&
+          { this.props.bookData.annTotalData &&
             < NoteListComponent
               notes={this.props.bookData.annTotalData}
               clickNoteHandler={this.props.bookCallbacks.goToPageCallback}
@@ -386,8 +385,8 @@ class DrawerComponent extends React.Component {
               locale={locale}
             />
             }
-           
-          </SwipeableViews> </div > } </Drawer>
+
+        </SwipeableViews> </div > } </Drawer>
     );
   }
 }

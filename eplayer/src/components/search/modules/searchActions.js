@@ -1,14 +1,14 @@
-/*******************************************************************************
+/** *****************************************************************************
  * PEARSON PROPRIETARY AND CONFIDENTIAL INFORMATION SUBJECT TO NDA
- *   
+ *
  *  *  Copyright © 2017 Pearson Education, Inc.
  *  *  All Rights Reserved.
- *  * 
+ *  *
  *  * NOTICE:  All information contained herein is, and remains
  *  * the property of Pearson Education, Inc.  The intellectual and technical concepts contained
  *  * herein are proprietary to Pearson Education, Inc. and may be covered by U.S. and Foreign Patents,
  *  * patent applications, and are protected by trade secret or copyright law.
- *  * Dissemination of this information, reproduction of this material, and copying or distribution of this software 
+ *  * Dissemination of this information, reproduction of this material, and copying or distribution of this software
  *  * is strictly forbidden unless prior written permission is obtained from Pearson Education, Inc.
  *******************************************************************************/
 /* global fetch ,_ */
@@ -56,13 +56,12 @@ const searchActions = {
         results: []
       }
     };
-    var searchServiceURL = paramList.searchUrl.replace('searchText', searchText);
-    if(searchServiceURL.indexOf('/ebook/pdfplayer/searchbook') !== -1)
-    {
+    let searchServiceURL = paramList.searchUrl.replace('searchText', searchText);
+    if (searchServiceURL.indexOf('/ebook/pdfplayer/searchbook') !== -1) {
       // tempurl is starts with http to create hash key for matching with server
-      var tempurl = searchServiceURL.replace("https","http");
-      var hsid = getmd5(eT1Contants.MD5_SECRET_KEY+tempurl);
-      searchServiceURL = ''+searchServiceURL+'&hsid='+hsid;
+      const tempurl = searchServiceURL.replace('https', 'http');
+      const hsid = getmd5(eT1Contants.MD5_SECRET_KEY + tempurl);
+      searchServiceURL = `${searchServiceURL}&hsid=${hsid}`;
     }
     return dispatch => fetch(searchServiceURL)
       .then(response => response.json())
@@ -91,37 +90,34 @@ const searchActions = {
           // console.log(`SearchBook info error: ${response.statusText}`);
         } else if (response.length) {
           response.forEach((jsonData) => {
-            if(jsonData.status !== null){
-                const searchResults = jsonData.searchTextList;
-               searchResults.forEach((result, i) => {
-               const resultObj = {
+            if (jsonData.status !== null) {
+              const searchResults = jsonData.searchTextList;
+              searchResults.forEach((result, i) => {
+                const resultObj = {
 
-              };
-              resultObj.id = i;
-              resultObj.urn = result.pageOrder;
-              resultObj.title = result.chapterName;
-              if(result.chapterName == undefined)
-              {
-                resultObj.pageNo = 'Page ' + result.bookPageNumber;  
-              }
-              else
-              {
-                resultObj.pageNo = result.bookPageNumber;
-              }
-              resultObj.contentPreview = result.bestTextSnippet;
-              searchState.searchResult.results.push(resultObj);
-            });
+                };
+                resultObj.id = i;
+                resultObj.urn = result.pageOrder;
+                resultObj.title = result.chapterName;
+                if (result.chapterName == undefined) {
+                  resultObj.pageNo = `Page ${result.bookPageNumber}`;
+                } else {
+                  resultObj.pageNo = result.bookPageNumber;
+                }
+                resultObj.contentPreview = result.bestTextSnippet;
+                searchState.searchResult.results.push(resultObj);
+              });
             }
           });
         }
         dispatch({ type: 'SEARCH', searchState });
       });
   },
-clearSearchResults() {
+  clearSearchResults() {
     return (dispatch) => {
-    dispatch({ type: CLEAR_SEARCH_OBJ });
-  };
-}
+      dispatch({ type: CLEAR_SEARCH_OBJ });
+    };
+  }
 };
 
 

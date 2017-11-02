@@ -1,14 +1,14 @@
-/*******************************************************************************
+/** *****************************************************************************
  * PEARSON PROPRIETARY AND CONFIDENTIAL INFORMATION SUBJECT TO NDA
- *   
+ *
  *  *  Copyright © 2017 Pearson Education, Inc.
  *  *  All Rights Reserved.
- *  * 
+ *  *
  *  * NOTICE:  All information contained herein is, and remains
  *  * the property of Pearson Education, Inc.  The intellectual and technical concepts contained
  *  * herein are proprietary to Pearson Education, Inc. and may be covered by U.S. and Foreign Patents,
  *  * patent applications, and are protected by trade secret or copyright law.
- *  * Dissemination of this information, reproduction of this material, and copying or distribution of this software 
+ *  * Dissemination of this information, reproduction of this material, and copying or distribution of this software
  *  * is strictly forbidden unless prior written permission is obtained from Pearson Education, Inc.
  *******************************************************************************/
 /* global sessionStorage ,piSession */
@@ -27,26 +27,26 @@ class PiLoginPage extends React.Component {
    used to pass props for communication with other components. */
   constructor(props) {
     super(props);
-    this.state = { 
+    this.state = {
       loginname: '',
-      password: '' 
+      password: ''
     };
-    if(piSession){
-      let appPath             = window.location.origin;
-      let redirectCourseUrl   = appPath+'/eplayer/bookshelf';
-      redirectCourseUrl       = decodeURIComponent(redirectCourseUrl).replace(/\s/g, "+").replace(/%20/g, "+");
-      piSession.getToken(function(result, userToken){
-        if(result === 'success'){
-          localStorage.setItem('secureToken',userToken);
+    if (piSession) {
+      const appPath = window.location.origin;
+      let redirectCourseUrl = `${appPath}/eplayer/bookshelf`;
+      redirectCourseUrl = decodeURIComponent(redirectCourseUrl).replace(/\s/g, '+').replace(/%20/g, '+');
+      piSession.getToken((result, userToken) => {
+        if (result === 'success') {
+          localStorage.setItem('secureToken', userToken);
           browserHistory.push('/eplayer/bookshelf');
-        }else if(result === 'unknown' || result === 'notoken' ){
-           piSession.login(redirectCourseUrl, 10);
+        } else if (result === 'unknown' || result === 'notoken') {
+          piSession.login(redirectCourseUrl, 10);
         }
-      }); 
+      });
     }
   }
   render() {
-    return (<div></div>);
+    return (<div />);
   }
 }
 /* propTypes used for communication to child Component that which props are present in Parent Component*/
