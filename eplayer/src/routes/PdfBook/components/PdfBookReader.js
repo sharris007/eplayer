@@ -751,60 +751,60 @@ export class PdfBookReader extends Component {
           } else if (regionDetails.linkTypeID == eT1Contants.LinkType.PAGE_NUMBER) {
             regionDetails.hotspotType = 'PAGENUMBER';
           } else if (regionDetails.linkTypeID == eT1Contants.LinkType.EMAIL) {
-          regionDetails.hotspotType = 'EMAIL';
-        } else if (regionDetails.linkTypeID == eT1Contants.LinkType.LTILINK) {
+            regionDetails.hotspotType = 'EMAIL';
+          } else if (regionDetails.linkTypeID == eT1Contants.LinkType.LTILINK) {
             regionDetails.hotspotType = 'LTILINK';
           } else if (regionDetails.linkTypeID == eT1Contants.LinkType.H264) {
             regionDetails.hotspotType = 'VIDEO';
             if (this.props.book.basepaths.h264path !== null && this.props.book.basepaths.h264path !== '' && this.props.book.basepaths.h264path !== undefined) {
-                basepath = this.createHttps(this.props.book.basepaths.h264path);
-              }
-          } else if (regionDetails.linkTypeID == eT1Contants.LinkType.URL) {
-              if (regionDetails.regionTypeID == eT1Contants.RegionType.AUDIO) {
-                regionDetails.hotspotType = 'AUDIO';
-              }
-              if (regionDetails.regionTypeID == eT1Contants.RegionType.IMAGE) {
-                regionDetails.hotspotType = 'IMAGE';
-              }
-              if (regionDetails.regionTypeID == eT1Contants.RegionType.MEDIA || regionDetails.regionTypeID == eT1Contants.RegionType.URL) {
-                regionDetails.hotspotType = this.getHotspotType(regionDetails.linkValue);
-              }
-              if (regionDetails.regionTypeID == eT1Contants.RegionType.PDF || regionDetails.regionTypeID == eT1Contants.RegionType.WORD_DOC ||
-                regionDetails.regionTypeID == eT1Contants.RegionType.EXCEL || regionDetails.regionTypeID == eT1Contants.RegionType.POWERPOINT) {
-                regionDetails.hotspotType = 'DOCUMENT';
-              }
-              if (regionDetails.regionTypeID == eT1Contants.RegionType.VIDEO) {
-                regionDetails.hotspotType = 'VIDEO';
-              }
-              if (this.props.book.basepaths.urlpath !== null && this.props.book.basepaths.urlpath !== '' && this.props.book.basepaths.urlpath !== undefined) {
-                basepath = this.createHttps(this.props.book.basepaths.urlpath);
-              }
-            } else if (regionDetails.linkTypeID == eT1Contants.LinkType.VIRTUAL_LEARNING_ASSET) {
-              if (regionDetails.regionTypeID == eT1Contants.RegionType.AUDIO) {
-                regionDetails.hotspotType = 'AUDIO';
-              }
-              if (regionDetails.regionTypeID == eT1Contants.RegionType.IMAGE) {
-                regionDetails.hotspotType = 'IMAGE';
-              }
-              if (regionDetails.regionTypeID == eT1Contants.RegionType.MEDIA || regionDetails.regionTypeID == eT1Contants.RegionType.URL) {
-                regionDetails.hotspotType = this.getHotspotType(regionDetails.linkValue);
-              }
-              if (regionDetails.regionTypeID == eT1Contants.RegionType.PDF || regionDetails.regionTypeID == eT1Contants.RegionType.WORD_DOC ||
-                regionDetails.regionTypeID == eT1Contants.RegionType.EXCEL || regionDetails.regionTypeID == eT1Contants.RegionType.POWERPOINT) {
-                regionDetails.hotspotType = 'DOCUMENT';
-              }
-              if (regionDetails.regionTypeID == eT1Contants.RegionType.VIDEO) {
-                regionDetails.hotspotType = 'VIDEO';
-              }
-              if (this.props.book.basepaths.virtuallearningassetpath !== null && this.props.book.basepaths.virtuallearningassetpath !== '' && this.props.book.basepaths.virtuallearningassetpath !== undefined) {
-                basepath = this.createHttps(this.props.book.basepaths.virtuallearningassetpath);
-              }
-            } else if (regionDetails.linkTypeID == eT1Contants.LinkType.CHROMELESS_URL) {
-              regionDetails.hotspotType = this.getHotspotType(regionDetails.linkValue);
-              if (this.props.book.basepaths.chromelessurlpath !== null && this.props.book.basepaths.chromelessurlpath !== '' && this.props.book.basepaths.chromelessurlpath !== undefined) {
-                basepath = this.createHttps(this.props.book.basepaths.chromelessurlpath);
-              }
+              basepath = this.createHttps(this.props.book.basepaths.h264path);
             }
+          } else if (regionDetails.linkTypeID == eT1Contants.LinkType.URL) {
+            if (regionDetails.regionTypeID == eT1Contants.RegionType.AUDIO) {
+              regionDetails.hotspotType = 'AUDIO';
+            }
+            if (regionDetails.regionTypeID == eT1Contants.RegionType.IMAGE) {
+              regionDetails.hotspotType = 'IMAGE';
+            }
+            if (regionDetails.regionTypeID == eT1Contants.RegionType.MEDIA || regionDetails.regionTypeID == eT1Contants.RegionType.URL) {
+              regionDetails.hotspotType = this.getHotspotType(regionDetails.linkValue);
+            }
+            if (regionDetails.regionTypeID == eT1Contants.RegionType.PDF || regionDetails.regionTypeID == eT1Contants.RegionType.WORD_DOC ||
+                regionDetails.regionTypeID == eT1Contants.RegionType.EXCEL || regionDetails.regionTypeID == eT1Contants.RegionType.POWERPOINT) {
+              regionDetails.hotspotType = 'DOCUMENT';
+            }
+            if (regionDetails.regionTypeID == eT1Contants.RegionType.VIDEO) {
+              regionDetails.hotspotType = 'VIDEO';
+            }
+            if (this.props.book.basepaths.urlpath !== null && this.props.book.basepaths.urlpath !== '' && this.props.book.basepaths.urlpath !== undefined) {
+              basepath = this.createHttps(this.props.book.basepaths.urlpath);
+            }
+          } else if (regionDetails.linkTypeID == eT1Contants.LinkType.VIRTUAL_LEARNING_ASSET) {
+            if (regionDetails.regionTypeID == eT1Contants.RegionType.AUDIO) {
+              regionDetails.hotspotType = 'AUDIO';
+            }
+            if (regionDetails.regionTypeID == eT1Contants.RegionType.IMAGE) {
+              regionDetails.hotspotType = 'IMAGE';
+            }
+            if (regionDetails.regionTypeID == eT1Contants.RegionType.MEDIA || regionDetails.regionTypeID == eT1Contants.RegionType.URL) {
+              regionDetails.hotspotType = this.getHotspotType(regionDetails.linkValue);
+            }
+            if (regionDetails.regionTypeID == eT1Contants.RegionType.PDF || regionDetails.regionTypeID == eT1Contants.RegionType.WORD_DOC ||
+                regionDetails.regionTypeID == eT1Contants.RegionType.EXCEL || regionDetails.regionTypeID == eT1Contants.RegionType.POWERPOINT) {
+              regionDetails.hotspotType = 'DOCUMENT';
+            }
+            if (regionDetails.regionTypeID == eT1Contants.RegionType.VIDEO) {
+              regionDetails.hotspotType = 'VIDEO';
+            }
+            if (this.props.book.basepaths.virtuallearningassetpath !== null && this.props.book.basepaths.virtuallearningassetpath !== '' && this.props.book.basepaths.virtuallearningassetpath !== undefined) {
+              basepath = this.createHttps(this.props.book.basepaths.virtuallearningassetpath);
+            }
+          } else if (regionDetails.linkTypeID == eT1Contants.LinkType.CHROMELESS_URL) {
+            regionDetails.hotspotType = this.getHotspotType(regionDetails.linkValue);
+            if (this.props.book.basepaths.chromelessurlpath !== null && this.props.book.basepaths.chromelessurlpath !== '' && this.props.book.basepaths.chromelessurlpath !== undefined) {
+              basepath = this.createHttps(this.props.book.basepaths.chromelessurlpath);
+            }
+          }
           if (regionDetails.hotspotType !== 'PAGENUMBER' || regionDetails.hotspotType !== 'EMAIL' || regionDetails.hotspotType !== 'LTILINK') {
             if (!(_.startsWith(regionDetails.linkValue, 'http')) && !(_.startsWith(regionDetails.linkValue, 'https'))) {
               if (basepath !== undefined) {
@@ -831,9 +831,9 @@ export class PdfBookReader extends Component {
               }
             } else if (regionDetails.hotspotType == 'AUDIO' && regionDetails.linkTypeID == eT1Contants.LinkType.FACELESSAUDIO) {
               try {
-              thumbnailElement = document.getElementsByClassName('play-pause');
-            } catch (e) {
-            }
+                thumbnailElement = document.getElementsByClassName('play-pause');
+              } catch (e) {
+              }
             }
             if (regionDetails.hotspotType == 'AUDIO') {
               $.getScript('https://code.jquery.com/ui/1.12.1/jquery-ui.js', () => {
