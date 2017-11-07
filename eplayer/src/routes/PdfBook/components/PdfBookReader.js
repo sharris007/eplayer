@@ -11,13 +11,16 @@ import Header from '../../../components/Header';/* Importing header for padfPage
 import './PdfBook.scss';/* Importing the css for PdfBook. */
 import { languages } from '../../../../locale_config/translations/index';
 import { eT1Contants } from '../../../components/common/et1constants';
+import { resources, domain } from '../../../../const/Settings';
 import { AudioPlayer,VideoPlayerPreview,ImageViewerPreview} from '@pearson-incubator/aquila-js-media';
 import { ExternalLink } from '@pearson-incubator/aquila-js-basics';
 import { loadState } from '../../../localStorage';
 import Popup from 'react-popup';
-import { PopUpInfo } from '../../../components/GlossaryPopup/PopUpInfo';
+import { PopUpInfo } from '@pearson-incubator/popup-info';
 import {convertHexToRgba} from '../../../components/Utility/Util';
 
+const envType = domain.getEnvType();
+const foxiturl = eT1Contants.FoxitUrls[envType];
 /* Defining the variables for sessionStorage. */
 let title;
 let authorName;
@@ -35,7 +38,7 @@ export class PdfBookReader extends Component {
     super(props);
    /* Here we have set intial state of following properties. */
     this.state = {
-      classname: 'headerBar',
+      classname: 'eT1headerBar',
       currPageIndex: '',
       pageLoaded: false,
       drawerOpen: false,
@@ -100,8 +103,8 @@ export class PdfBookReader extends Component {
         ssoKey,serverDetails);
       this.goToPageNumber(this.props.currentbook.startpage);
     }
-    else if (localStorage.getItem('isReloaded') && localStorage.getItem('currentPageOrder')) {
-      this.goToPage(Number(localStorage.getItem('currentPageOrder')));
+    else if (sessionStorage.getItem('isReloaded') && sessionStorage.getItem('currentPageOrder')) {
+      this.goToPage(Number(sessionStorage.getItem('currentPageOrder')));
     } else {
       //this.goToPage(coverPage);
       this.loadCoverPage('cover');
@@ -109,8 +112,8 @@ export class PdfBookReader extends Component {
   }
   /* componentWillUnmount() is invoked immediately before a component is going to unmount. */
    componentWillUnmount(){
-    localStorage.removeItem('isReloaded');
-    localStorage.removeItem('currentPageOrder');
+    sessionStorage.removeItem('isReloaded');
+    sessionStorage.removeItem('currentPageOrder');
     localStorage.removeItem('pages');
     localStorage.removeItem('assertUrls');
     pages = null;
@@ -124,7 +127,7 @@ export class PdfBookReader extends Component {
     }
     const config = {
     // host: "https://foxit-sandbox.gls.pearson-intl.com/foxit-webpdf-web/pc/",
-      host: eT1Contants.FOXIT_HOST_URL,
+      host: foxiturl,
     // PDFassetURL: this.props.bookshelf.uPdf,
     // PDFassetURL: "http://view.cert1.ebookplus.pearsoncmg.com/ebookassets/ebookCM31206032/ipadpdfs/"+pdfPath,
       PDFassetURL: `${serverDetails}/ebookassets`
@@ -136,8 +139,8 @@ export class PdfBookReader extends Component {
     };
      __pdfInstance.createPDFViewer(config);
     this.setState({ currPageIndex: currentPageIndex });
-    localStorage.setItem("currentPageOrder",currentPageIndex);
-    localStorage.setItem('isReloaded',true);
+    sessionStorage.setItem("currentPageOrder",currentPageIndex);
+    sessionStorage.setItem('isReloaded',true);
     const data = this.state.data;
     data.isFirstPage = true;
     data.isLastPage = false;
@@ -155,7 +158,7 @@ export class PdfBookReader extends Component {
     }
     const config = {
     // host: "https://foxit-sandbox.gls.pearson-intl.com/foxit-webpdf-web/pc/",
-      host: eT1Contants.FOXIT_HOST_URL,
+      host: foxiturl,
     // PDFassetURL: this.props.bookshelf.uPdf,
     // PDFassetURL: "http://view.cert1.ebookplus.pearsoncmg.com/ebookassets/ebookCM31206032/ipadpdfs/"+pdfPath,
       PDFassetURL: `${serverDetails}/ebookassets`
@@ -175,7 +178,7 @@ export class PdfBookReader extends Component {
     __pdfInstance.registerEvent('RegionUnhovered', this.handleTransparentRegionUnhover.bind(this));
     __pdfInstance.createPDFViewer(config);
     this.setState({ currPageIndex: currentPageIndex });
-    localStorage.setItem("currentPageOrder",currentPageIndex);
+    sessionStorage.setItem("currentPageOrder",currentPageIndex);
     const data = this.state.data;
     var startpage = find(pages,page => page.pagenumber == this.props.currentbook.startpage);
     var endpage = find(pages,page => page.pagenumber == this.props.currentbook.endpage);
@@ -211,12 +214,19 @@ export class PdfBookReader extends Component {
   pdfBookCallback = (pdfEvent) => {
      // this.setState({currPageIndex : currentPageIndex});
     if (pdfEvent === 'pageChanged') {
-      localStorage.setItem('currentPageOrder', this.state.currPageIndex);
+      sessionStorage.setItem('currentPageOrder', this.state.currPageIndex);
+      this.setState({ executed: false });
+      if (this.state.isFirstPageBeingLoad === true) {
+        this.setState({ isFirstPageBeingLoad: false });
+      }
+    }
+    if (pdfEvent === 'pageLoaded') {
+      this.setState({ pageLoaded: true });
       __pdfInstance.setCurrentZoomLevel(this.state.currZoomLevel);
       this.props.fetchRegionsInfo(this.props.location.query.bookid,this.props.book.bookinfo.book.bookeditionid,this.state.currPageIndex,ssoKey,this.props.book.bookinfo.book.roleTypeID,serverDetails,this.props.currentbook.scenario,this.props.currentbook.platform).then(() => {
         if(this.props.book.regions.length > 0 )
         {
-          __pdfInstance.displayRegions(this.props.book.regions,this.props.book.bookFeatures);
+          __pdfInstance.displayRegions(this.props.book.regions,this.props.book.bookFeatures,_);
           var regionsData = [];
           var glossaryEntryIDsToFetch = '';
           for(var arr=0;arr < this.props.book.regions.length ; arr++)
@@ -252,13 +262,6 @@ export class PdfBookReader extends Component {
           });
         }
       });
-      this.setState({ pageLoaded: true });
-      this.setState({ executed: false });
-      if (this.state.isFirstPageBeingLoad === true) {
-        this.setState({ isFirstPageBeingLoad: false });
-      }
-    }
-    if (pdfEvent === 'pageLoaded') {
           // this.loadAssetUrl();
       setTimeout(this.displayHighlight, 1000);
       /*if (this.state.executed === false) {
@@ -282,7 +285,7 @@ export class PdfBookReader extends Component {
   }
 
   openFile = (currentPageIndex, pdfpath) => {
-    const host = eT1Contants.FOXIT_HOST_URL;
+    const host = foxiturl;
     const PDFassetURL = `${serverDetails}/ebookassets/`
           + `ebook${this.props.book.bookinfo.book.globalbookid}/ipadpdfs/${pdfpath}`;
     const index = host.lastIndexOf('foxit-webpdf-web');
@@ -549,7 +552,7 @@ export class PdfBookReader extends Component {
     this.displayHighlight();
     if(this.props.book.regions.length > 0 )
     {
-      __pdfInstance.displayRegions(this.props.book.regions,this.props.book.bookFeatures);
+      __pdfInstance.displayRegions(this.props.book.regions,this.props.book.bookFeatures,_);
     }
     var glossaryDataUpdated = [];
     for(var i=0;i<this.props.book.glossaryInfoList.length;i++)
@@ -572,7 +575,7 @@ export class PdfBookReader extends Component {
     }
     if(glossaryDataUpdated.length>0)
     {
-      new PopUpInfo({'popUpCollection' : glossaryDataUpdated, 'bookId' : 'docViewer_ViewContainer_PageContainer_0'});
+      new PopUpInfo({'popUpCollection' : glossaryDataUpdated, 'bookContainerId' : 'docViewer_ViewContainer_PageContainer_0', isET1 : 'Y'});
     }
     this.setState({currZoomLevel : currZoomLevel});
   }
@@ -1220,7 +1223,7 @@ handleRegionClick(hotspotID) {
                 <div id="toolbar" className="pdf-fwr-toolbar" />
                 <div id="frame" className={viewerClassName} onClick={this.onPageClick}>
                   <div id="docViewer" className="docViewer" >
-                    {this.state.popUpCollection.length ? <PopUpInfo bookId='docViewer_ViewContainer_PageContainer_0' popUpCollection={this.state.popUpCollection} /> : null }
+                    {this.state.popUpCollection.length ? <PopUpInfo bookContainerId='docViewer_ViewContainer_PageContainer_0' popUpCollection={this.state.popUpCollection} isET1='Y'/> : null }
                   </div>
                 </div>
               </div>

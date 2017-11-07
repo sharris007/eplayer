@@ -1,14 +1,14 @@
 /*******************************************************************************
  * PEARSON PROPRIETARY AND CONFIDENTIAL INFORMATION SUBJECT TO NDA
- *   
+ *
  *  *  Copyright © 2017 Pearson Education, Inc.
  *  *  All Rights Reserved.
- *  * 
+ *  *
  *  * NOTICE:  All information contained herein is, and remains
  *  * the property of Pearson Education, Inc.  The intellectual and technical concepts contained
  *  * herein are proprietary to Pearson Education, Inc. and may be covered by U.S. and Foreign Patents,
  *  * patent applications, and are protected by trade secret or copyright law.
- *  * Dissemination of this information, reproduction of this material, and copying or distribution of this software 
+ *  * Dissemination of this information, reproduction of this material, and copying or distribution of this software
  *  * is strictly forbidden unless prior written permission is obtained from Pearson Education, Inc.
  *******************************************************************************/
 // import fetch from 'isomorphic-fetch'; /* isomorphic-fetch is third party library used for making ajax call like axios. */
@@ -17,7 +17,7 @@ import axios from 'axios'; /* axios is third party library, used to make ajax re
 import Hawk from 'hawk';
 import find from 'lodash/find';
 import { browserHistory } from 'react-router';
-import { clients } from '../../../components/common/client'; 
+import { clients } from '../../../components/common/client';
 import { resources, domain } from '../../../../const/Settings';
 import { getmd5 } from '../../../components/Utility/Util';
 import { eT1Contants } from '../../../components/common/et1constants';
@@ -41,8 +41,8 @@ export const REQUEST_TOC = 'REQUEST_TOC';
 export const RECEIVE_TOC = 'RECEIVE_TOC';
 export const GO_TO_PAGE = 'GO_TO_PAGE';
 export const RECEIVEBOOKINFO_PENDING = 'RECEIVEBOOKINFO_PENDING';
-export const RECEIVEBOOKINFO_REJECTED = 'RECEIVEBOOKINFO_REJECTED';
-export const RECEIVEBOOKINFO_FULFILLED = 'RECEIVEBOOKINFO_FULFILLED';
+export const RECEIVEBOOKINFO_FAILED = 'RECEIVEBOOKINFO_FAILED';
+export const RECEIVEBOOKINFO_SUCCESS = 'RECEIVEBOOKINFO_SUCCESS';
 export const RECEIVE_PAGE_INFO = 'RECEIVE_PAGE_INFO';
 export const RECEIVE_USER_INFO_PENDING = 'RECEIVE_USER_INFO_PENDING';
 export const RECEIVE_USER_INFO_REJECTED = 'RECEIVE_USER_INFO_REJECTED';
@@ -82,6 +82,8 @@ export function request(component) {
       return { type: REQUEST_HIGHLIGHTS };
     case 'regions' :
       return {type: REQUEST_REGIONS};
+    case 'bookInfo' :
+      return {type: RECEIVEBOOKINFO_PENDING};
     default:
       return {};
   }
@@ -100,14 +102,35 @@ function randomString(length) {
   return text;
 }
 function createAuthorizationToken(relativeURL, method) {
-  const credentials = {
+  const qa_credentials = {
     id: 'tArkNWL2dK',
     key: 'Fc0C9w05bZy6U9TB7wN6CBgKyM32yk6Q',
     algorithm: 'sha256'
   };
-
-
-  const baseUrl = clients.readerApi.defaults.baseURL;
+  const stage_credentials = {
+    id: 'tArkNWL2dK',
+    key: 'Fc0C9w05bZy6U9TB7wN6CBgKyM32yk6Q',
+    algorithm: 'sha256'
+  };
+  const prod_credentials = {
+    id: 'h8wZiP6v1YJn',
+    key: 't7hCxYrbAP0HMqpB57ieN0qzFUu9Y3Flb0D3',
+    algorithm: 'sha256'
+  };
+  var credentials;
+  if(envType === 'qa')
+  {
+    credentials = qa_credentials;
+  }
+  else if(envType === 'stage')
+  {
+    credentials = stage_credentials;
+  }
+  else if(envType === 'prod')
+  {
+    credentials = prod_credentials;
+  }
+  const baseUrl = clients.readerApi[envType].defaults.baseURL;
   const uri = baseUrl + relativeURL;
   const header = Hawk.client.header(uri, method, { credentials,
     ext: '',
@@ -134,7 +157,7 @@ export function fetchBookmarksUsingReaderApi(bookId, shared, courseId, userId, P
   return (dispatch) => {
     dispatch(request('bookmarks'));
 
-    return clients.readerApi.get(`/bookmark?includeShared=${shared}&`
+    return clients.readerApi[envType].get(`/bookmark?includeShared=${shared}&`
       + `userId=${userId}&bookId=${bookId}&courseId=${courseId}`, {
         headers: {
           Accept: 'application/json',
@@ -179,7 +202,7 @@ export function fetchBookmarksUsingReaderApi(bookId, shared, courseId, userId, P
 export function addBookmarkUsingReaderApi(userId, bookId, pageId, pageNo, externalId, courseId, shared, Page) {
   const authorizationHeaderVal = createAuthorizationToken('/bookmark', 'POST');
 
-  clients.readerApi.defaults.headers.Authorization = authorizationHeaderVal;
+  clients.readerApi[envType].defaults.headers.Authorization = authorizationHeaderVal;
 
   const data = {
     userId,
@@ -196,7 +219,7 @@ export function addBookmarkUsingReaderApi(userId, bookId, pageId, pageNo, extern
   return (dispatch) => {
     dispatch(request('bookmarks'));
 
-    return clients.readerApi.post('/bookmark', data)
+    return clients.readerApi[envType].post('/bookmark', data)
     .then((response) => {
       if (response.status >= 400) {
         // console.log(`Add bookmark error: ${response.statusText}`);
@@ -231,7 +254,7 @@ export function removeBookmarkUsingReaderApi(bookmarkId) {
   const authorizationHeaderVal = createAuthorizationToken(`/bookmark/${bookmarkId}`, 'DELETE');
   return (dispatch) => {
     dispatch(request('bookmarks'));
-    return clients.readerApi.delete(`/bookmark/${bookmarkId}`, {
+    return clients.readerApi[envType].delete(`/bookmark/${bookmarkId}`, {
       headers: {
         Authorization: authorizationHeaderVal
       }
@@ -430,7 +453,7 @@ export function fetchTocAndViewer(bookId, authorName, title,
       bookState.isFetching.toc = false;
       dispatch({ type: RECEIVE_TOC, bookState });
       }
-      
+
     });
   };
 }
@@ -456,23 +479,60 @@ export function fetchBookInfo(bookid, scenario, userid, bookServerURL, roleTypeI
   if (roleTypeID === undefined || roleTypeID === null || roleTypeID === '') {
     roleTypeID = 2;
   }
-  /*let piToken = pitoken
-  if(piToken === '' || piToken === null || piToken === undefined)
-  {
-    piToken = 'NA';
-  }*/
-
-   // Here axios is getting base url from client.js file and append with rest url and frame. This is similar for all the action creators in this file.
-  var serviceurl = `${bookServerURL}/ebook/pdfplayer/getbookinfo?userid=${userid}&bookid=${bookid}&userroleid=${roleTypeID}&scenario=${scenario}&userinfolastmodifieddate=${uid}&userbooklastmodifieddate=${ubd}&userbookscenariolastmodifieddate=${ubsd}&globaluserid=${globaluserid}&authkey=${authkey}&outputformat=JSON`;
-  // tempurl is starts with http to create hash key for matching with server
-  var tempurl = serviceurl.replace("https","http");
-  var hsid = getmd5(eT1Contants.MD5_SECRET_KEY+tempurl);
-  return {
-    type: 'RECEIVEBOOKINFO',
-    payload: axios.get(`${serviceurl}&hsid=${hsid}`),
-    timeout: 20000
+  const bookState = {
+    bookInfo: {
+    userbook : {},
+      book: {}
+    },
   };
-}
+  return (dispatch) => {
+    dispatch(request('bookInfo'));
+      var serviceurl = `${bookServerURL}/ebook/pdfplayer/getbookinfo?userid=${userid}&bookid=${bookid}&userroleid=${roleTypeID}&scenario=${scenario}&userinfolastmodifieddate=${uid}&userbooklastmodifieddate=${ubd}&userbookscenariolastmodifieddate=${ubsd}&globaluserid=${globaluserid}&authkey=${authkey}&outputformat=JSON`;
+    // tempurl is starts with http to create hash key for matching with server
+    var tempurl = serviceurl.replace("https","http");
+    var hsid = getmd5(eT1Contants.MD5_SECRET_KEY+tempurl);
+    return axios.get(''+serviceurl+'&hsid='+hsid,
+  {
+  timeout: 20000
+  }).then((response) => {
+      if (response.data.code >= 400)
+      {
+        return dispatch({ type: 'RECEIVEBOOKINFO_FAILED',bookState});
+      }
+      else if(response.data.length)
+      {
+        const userbookObj = {};
+          const bookObj = {};
+          var author = (response.data[0].userBookTOList[0].authorList[0].firstName+' '+response.data[0].userBookTOList[0].authorList[0].lastName);
+          var authorListLen = response.data[0].userBookTOList[0].authorList.length;
+          for(var i=1; i<authorListLen; i++)
+          {
+            author += '/ ' + (response.data[0].userBookTOList[0].authorList[i].firstName+' '+response.data[0].userBookTOList[0].authorList[i].lastName);
+          }
+        userbookObj.userbookid = response.data[0].userBookTOList[0].userBookID,
+        bookObj.globalbookid= response.data[0].userBookTOList[0].globalBookID,
+        bookObj.numberOfPages= response.data[0].userBookTOList[0].numberOfPages,
+        bookObj.bookid= response.data[0].userBookTOList[0].bookID,
+        bookObj.bookeditionid= response.data[0].userBookTOList[0].bookEditionID,
+        bookObj.hastocflatten= response.data[0].userBookTOList[0].hastocflatten,
+        bookObj.languageid= response.data[0].userBookTOList[0].languageID,
+        bookObj.roleTypeID= response.data[0].userBookTOList[0].roleTypeID,
+        bookObj.activeCourseID= response.data[0].userBookTOList[0].lastAccessedCourseID,
+        bookObj.version= response.data[0].userBookTOList[0].version,
+        bookObj.author=author,
+        bookObj.thumbnailimg = response.data[0].userBookTOList[0].thumbnailArt,
+        bookObj.title = response.data[0].userBookTOList[0].title,
+        bookObj.pdfCoverArt = response.data[0].userBookTOList[0].pdfCoverArt,
+        bookObj.ssoKey= response.data[0].userBookTOList[0].sessionID
+        bookState.bookInfo.userbook = userbookObj;
+        bookState.bookInfo.book = bookObj;
+        bookState.bookInfo.fetching = false;
+        bookState.bookInfo.fetched = true;
+      return dispatch({ type: 'RECEIVEBOOKINFO_SUCCESS',bookState});
+      }
+    });
+    }
+  }
 /* Created Action creator for getting page details by page number */
 export function fetchPagebyPageNumber(userid, roleTypeID, bookid, bookeditionid,
   pageNo, sessionKey,bookServerURL) {
@@ -581,7 +641,7 @@ export function fetchRegionsInfo(bookid,bookeditionid,pageorder,sessionKey,roleT
     else
     {
       serviceurl = ''+bookServerURL+'/ebook/pdfplayer/getregionbypageorder?bookid='+bookid+'&bookeditionid='+bookeditionid+'&listval='+pageorder+'&platformid='+platformId+'&scenario='+scenarioId+'&userroleid='+roleTypeID+'&authkey='+sessionKey+'&outputformat=JSON';
-    } 
+    }
     // tempurl is starts with http to create hash key for matching with server
     var tempurl = serviceurl.replace("https","http");
     var hsid = getmd5(eT1Contants.MD5_SECRET_KEY+tempurl);
@@ -589,11 +649,11 @@ export function fetchRegionsInfo(bookid,bookeditionid,pageorder,sessionKey,roleT
   {
   timeout: 20000
   }).then((response) => {
-      if (response.status >= 400) 
+      if (response.status >= 400)
       {
         console.log(`fetchRegionsInfo error: ${response.statusText}`);
       }
-      else if(response.data.length) 
+      else if(response.data.length)
       {
           for (var i=0;i<response.data[0].regionsList.length;i++)
           {
@@ -674,7 +734,7 @@ export function fetchGlossaryItems(bookid,glossaryentryid,sessionKey,bookServerU
         console.log(`fetch Glossary Items error: ${response.statusText}`);
       } else if (response.data.length) {
           for(var i=0;i<response.data[0].glossaryList.length;i++)
-          { 
+          {
             response.data.forEach((glossTerm) => {
               const glossaryInfo = {};
               glossaryInfo.glossaryTerm = glossTerm.glossaryList[i].glossaryTerm;
@@ -741,7 +801,7 @@ export function fetchHighlightUsingReaderApi(userId, bookId, shared, courseId) {
   return (dispatch) => {
     dispatch(request('highlights'));
     // Here axios is getting base url from client.js file and append with rest url and frame. This is similar for all the action creators in this file.
-    return clients.readerApi.get(`/highlight?includeShared=${shared}&limit=100`
+    return clients.readerApi[envType].get(`/highlight?includeShared=${shared}&limit=100`
       + `&userId=${userId}&bookId=${bookId}&courseId=${courseId}`, {
         headers: {
           Authorization: authorizationHeaderVal
@@ -791,7 +851,7 @@ export function fetchHighlightUsingReaderApi(userId, bookId, shared, courseId) {
 export function saveHighlightUsingReaderApi(userId, bookId, pageId, pageNo,
   courseId, shared, highlightHash, note, selectedText, colour, meta, currentPageId) {
   const authorizationHeaderVal = createAuthorizationToken('/highlight', 'POST');
-  const axiosInstance = clients.readerApi;
+  const axiosInstance = clients.readerApi[envType];
   axiosInstance.defaults.headers.Authorization = authorizationHeaderVal;
   const data = {
     userId,
@@ -858,7 +918,7 @@ export function removeHighlightUsingReaderApi(id) {
         Accept : 'application/json',
         Authorization : authorizationHeaderVal
       }
-    })*/return clients.readerApi.delete(`/highlight/${id}`, {
+    })*/return clients.readerApi[envType].delete(`/highlight/${id}`, {
       headers: {
         Authorization: authorizationHeaderVal
       }
@@ -917,7 +977,7 @@ export function editHighlightUsingReaderApi(id, note, colour, isShared) {
   const authorizationHeaderVal = createAuthorizationToken(editHightlightURI, 'PUT');
   return (dispatch) => {
     dispatch(request('highlights'));
-    return clients.readerApi.put(editHightlightURI, data, {
+    return clients.readerApi[envType].put(editHightlightURI, data, {
       headers: {
         Authorization: authorizationHeaderVal
       }
@@ -962,14 +1022,14 @@ export function fetchbookDetails(urn, piToken,bookID)
   return dispatch =>
      axios.get(url, {
       headers: { 'Content-Type': 'application/json',
-        'X-Authorization': piToken } 
+        'X-Authorization': piToken }
       }).then((response) => {
       var bookDetails;
       if (response.status >= 400) {
         console.log(`bookshelf error`);
       } else if (response.data) {
         var booksArray = response.data.entries;
-           for(var i=0; i<booksArray.length; i++)    
+           for(var i=0; i<booksArray.length; i++)
         {
           if(booksArray[i].bookId === bookID)
           {
@@ -988,7 +1048,7 @@ export function validateAuthkey(userid,authkey,bookServerURL)
   // tempurl is starts with http to create hash key for matching with server
   var tempurl = serviceurl.replace("https","http");
   var hsid = getmd5(eT1Contants.MD5_SECRET_KEY+tempurl);
-  return dispatch => 
+  return dispatch =>
     axios.get(''+serviceurl+'&hsid='+hsid).then((response) => {
       if (response.status >= 400) {
         console.log(`validateAuthkey service error`);
@@ -1008,7 +1068,7 @@ export function validateUser(userid,scenario,invoketype,bookid,roletypeid,piToke
   // tempurl is starts with http to create hash key for matching with server
   var tempurl = serviceurl.replace("https","http");
   var hsid = getmd5(eT1Contants.MD5_SECRET_KEY+tempurl);
-  return dispatch => 
+  return dispatch =>
     axios.get(''+serviceurl+'&hsid='+hsid).then((response) => {
       if (response.status >= 400) {
         console.log(`validateuser service error`);
@@ -1195,34 +1255,18 @@ const ACTION_HANDLERS = {
       fetched: false
     }
   }),
-  [RECEIVEBOOKINFO_FULFILLED]: (state, action) => ({
+  [RECEIVEBOOKINFO_PENDING]: state => ({
     ...state,
-    bookinfo: {
-      fetching: false,
-      fetched: true,
-      userbook: {
-        userbookid: action.payload.data[0].userBookTOList[0].userBookID
-      },
-      book: {
-        globalbookid: action.payload.data[0].userBookTOList[0].globalBookID,
-        numberOfPages: action.payload.data[0].userBookTOList[0].numberOfPages,
-        bookid: action.payload.data[0].userBookTOList[0].bookID,
-        bookeditionid: action.payload.data[0].userBookTOList[0].bookEditionID,
-        hastocflatten: action.payload.data[0].userBookTOList[0].hastocflatten,
-        languageid: action.payload.data[0].userBookTOList[0].languageID,
-        roleTypeID: action.payload.data[0].userBookTOList[0].roleTypeID,
-        activeCourseID: action.payload.data[0].userBookTOList[0].lastAccessedCourseID,
-        version: action.payload.data[0].userBookTOList[0].version,
-        author: action.payload.data[0].userBookTOList[0].authorList[0].firstName+' '+
-                action.payload.data[0].userBookTOList[0].authorList[0].lastName,
-        thumbnailimg : action.payload.data[0].userBookTOList[0].thumbnailArt,
-        title : action.payload.data[0].userBookTOList[0].title,
-        pdfCoverArt : action.payload.data[0].userBookTOList[0].pdfCoverArt,
-        ssoKey: action.payload.data[0].userBookTOList[0].sessionID
-      }
-    }
+    bookinfo : {
+      fetching: true,
+      fetched: false
+    },
   }),
-  [RECEIVEBOOKINFO_REJECTED]: state => ({
+  [RECEIVEBOOKINFO_SUCCESS]: (state, action) => ({
+    ...state,
+    bookinfo: action.bookState.bookInfo,
+  }),
+  [RECEIVEBOOKINFO_FAILED]: state => ({
     ...state,
     bookinfo: {
       fetching: false,
@@ -1318,7 +1362,7 @@ const ACTION_HANDLERS = {
       hashighlightingtoolbutton: action.payload.data[0].toolBarFeaturesTO.hasHighlightingToolButton,
       hasnotetoolbutton: action.payload.data[0].toolBarFeaturesTO.hasNoteToolButton,
       hasbookmarkpagebutton: action.payload.data[0].toolBarFeaturesTO.hasBookMarkPageButton,
-      hasdrawerbutton: action.payload.data[0].generalFeaturesTO.hasLeftAccordion  
+      hasdrawerbutton: action.payload.data[0].generalFeaturesTO.hasLeftAccordion
     }
   }),
   [RECEIVE_BOOK_FEATURES_REJECTED]: state => ({

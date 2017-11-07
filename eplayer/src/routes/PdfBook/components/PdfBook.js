@@ -46,7 +46,7 @@ export class PdfBook extends Component {
       let appPath             = window.location.origin;
       let redirectBookUrl   = appPath+'/eplayer/pdfbook?bookid='+this.props.location.query.bookid+'&invoketype=pi';
       redirectBookUrl       = decodeURIComponent(redirectBookUrl).replace(/\s/g, "+").replace(/%20/g, "+");
-      setTimeout(()=>{
+     
         piSession.getToken((result, userToken) => {
         if (result === piSession.Success) {
           localStorage.setItem('secureToken',userToken);
@@ -55,7 +55,6 @@ export class PdfBook extends Component {
              piSession.login(redirectBookUrl, 10);
           }
         });
-      },2000)
     }
     else if(this.props.location.query.invoketype !== undefined && 
               this.props.location.query.invoketype === 'et1')
@@ -152,9 +151,13 @@ used for before mounting occurs. */
         {
           const bookserverno = this.props.location.query.bookserver;
           var bookserver;
-          if (envType == 'qa' || envType == 'stage')
+          if (envType == 'qa')
           {
             bookserver = 'CERT'+bookserverno;
+          }
+          else if(envType == 'stage')
+          {
+            bookserver = 'PPE'+bookserverno;
           }
           else if(envType == 'prod')
           {
@@ -217,7 +220,7 @@ used for before mounting occurs. */
               this.props.book.userInfo.userid, serverDetails, roleTypeID,uid,ubd,ubsd,identityId,authkey);
     if(!this.props.book.bookinfo.fetched)
     {
-      browserHistory.push('/eplayer/login');
+      browserHistory.push('/eplayer/pdfbookerror?errorcode=2');
     }
     currentbook.globaluserid = identityId;
     currentbook.authorName = bookData.author ? bookData.author : this.props.book.bookinfo.book.author;
@@ -308,4 +311,3 @@ PdfBook.propTypes = {
   editHighlightUsingReaderApi: React.PropTypes.func
 };
 export default PdfBook;
-
