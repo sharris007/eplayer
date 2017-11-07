@@ -95,7 +95,7 @@ export const getBookTocCallService  = data => dispatch =>
         const listData = tocItems.map((itemObj) => {
           if (itemObj.items) {
             subItems = itemObj.items.map(n => ({
-                urn: n.id,
+              urn: n.id,
               href: n.href,
               id: n.id,
               playorder: n.playorder,
@@ -123,6 +123,7 @@ export const putCustomTocCallService  = data => dispatch =>
       .then((response) => {
         //after service gets live dispatch updateToc passing param as same as getBookTocCallService tocFinalModifiedData 
         //and set state of tocdata in store playlist.js 
+     
       });
 
 export const getCourseCallService = data => dispatch => PlaylistApi.doGetCourseDetails(data)

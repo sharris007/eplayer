@@ -200,7 +200,8 @@ export const putCustomTocDetails = (tocContents, piToken, bookId) => fetch(`${re
   headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json',
-    'X-Authorization': piToken
+    'X-Authorization': piToken,
+    'productType':'ETEXT2_PXE'
   },
   body: JSON.stringify(tocContents)
 });

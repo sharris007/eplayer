@@ -117,11 +117,11 @@ export const resources = {
       prod         :"https://idc-web-ar.stg-prsn.com",
     },
     updateCustomTocUrl : {
-      local        :"https://idc-api-ar-qa.dev-prsn.com/idc-api/course",
-      dev          :"https://idc-api-ar-qa.dev-prsn.com/idc-api/course",
-      qa           :"https://idc-api-ar-qa.dev-prsn.com/idc-api/course",
-      stage        :"https://idc-api-ar-stg.dev-prsn.com/idc-api/course",
-      prod         :"https://idc-api-ar-stg.dev-prsn.com/idc-api/course",
+      local        :"https://etext-instructor-qa.pearson.com/idc-api/course",
+      dev          :"https://etext-instructor-qa.pearson.com/idc-api/course",
+      qa           :"https://etext-instructor-qa.pearson.com/idc-api/course",
+      stage        :"https://etext-instructor-qa.pearson.com/idc-api/course",
+      prod         :"https://etext-instructor-qa.pearson.com/idc-api/course",
     }
   }
 };

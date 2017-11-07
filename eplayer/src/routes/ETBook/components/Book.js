@@ -840,7 +840,38 @@
           dndType: 'TableOfContents',
           handlePublish: (changedTocContent) => {
             //console.log("changedTocContent---------", changedTocContent);
-            this.props.dispatch(putCustomTocCallService(changedTocContent));
+              let tocPayload=[];
+              let i=0;
+              for (const prop in changedTocContent) {
+              if (changedTocContent.hasOwnProperty(prop)) {
+             //   // console.log(`obj.${prop} = ${obj[prop]}`);
+                  tocPayload[i]=changedTocContent[prop];
+                   i++;        
+                 }
+                }
+                const tocItems = tocPayload;
+                let subItems = [];
+                const listData = tocItems.map((itemObj) => {
+                  if (itemObj.children) {
+                    subItems = itemObj.children.map(n => ({
+                    urn: n.id,
+                    href: n.href,
+                    id: n.id,
+                    title: n.title
+                    }));
+                  }
+                  return {
+                   id: itemObj.id,
+                    urn: itemObj.id,
+                    title: itemObj.title,
+                    coPage: itemObj.coPage,
+                    playOrder: itemObj.playOrder,
+                    children: subItems
+                  };
+                });
+
+                const tocResponseData={tocContents:listData};
+            this.props.dispatch(putCustomTocCallService());
           },
           handleDashBoard: () => {
              if (this.props.book.toc.content !== undefined) {
@@ -878,8 +909,6 @@
       }
 
       };
-
-      
 
       const pages = bootstrapParams.pageDetails.playListURL || [];
       const bookmarArr = this.props.book.bookmarks ? this.props.book.bookmarks : [];
@@ -978,9 +1007,9 @@
 
         const isInstructor = userType==='instructor'?true:false;
         //const isInstructor=true;
-        let isconfigTocData=true;
-        if(!isInstructor){
-          isconfigTocData = false;
+        let isconfigTocData=false;
+        if(isInstructor){
+          isconfigTocData = true;
       }
 
       const locale = bootstrapParams.pageDetails.locale ? bootstrapParams.pageDetails.locale : 'en';
