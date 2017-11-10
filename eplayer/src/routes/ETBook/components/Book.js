@@ -38,6 +38,10 @@ import { getBookPlayListCallService, getPlaylistCallService, getBookTocCallServi
   import { resources, domain, typeConstants } from '../../../../const/Settings';
   import Search from '../../../components/search/containers/searchContainer';
   import Utils from '../../../components/utils';
+  //import {StaticAlert, Icon.js} from 'pearson-compounds';
+  import * as Compounds from 'pearson-compounds';
+  //import {Icon} from '../pearson-compounds/src/Icon.js';
+  import * as Element from '@pearson-components/elements-sdk';
 
   export class Book extends Component {
     constructor(props) {
@@ -781,7 +785,7 @@ import { getBookPlayListCallService, getPlaylistCallService, getBookTocCallServi
     render() {
       const callbacks = {};
       let annJsPath,annCssPath,productData;
-      const { annotationData, annDataloaded, annotationTotalData, playlistData, playlistReceived, bookMarkData, tocData, tocReceived, bookdetailsdata } = this.props; // eslint-disable-line react/prop-types
+      const { annotationData, annDataloaded, annotationTotalData, playlistData, playlistReceived, bookMarkData, tocData, tocReceived, bookdetailsdata, tocResponse, updatedToc } = this.props; // eslint-disable-line react/prop-types
       // const annData  = annotationData.rows;
       this.props.book.annTotalData = annotationTotalData;
       this.props.book.toc = tocData;
@@ -829,7 +833,8 @@ import { getBookPlayListCallService, getPlaylistCallService, getBookTocCallServi
         childField: 'children',
         isTocWrapperRequired: false
       };
-
+      console.log("this.props.book.toc", this.props.book.toc);
+      console.log("tocCompData", tocCompData);
       let configTocData = {
         dropLevelType: 'WITH_IN_SAME_LEVEL',
         tocContents: tocCompData.data.content.list,
@@ -853,6 +858,7 @@ import { getBookPlayListCallService, getPlaylistCallService, getBookTocCallServi
               urn: n.id,
               href: n.href,
               id: n.id,
+              playOrder: n.playOrder,
               title: n.title
               }));
             }
@@ -900,6 +906,17 @@ import { getBookPlayListCallService, getPlaylistCallService, getBookTocCallServi
         }
       };
 
+          let type='';
+          if(tocResponse.status==='Success')
+            type= tocResponse.status;
+          else
+          {
+            type='Error';
+          }
+          const title = 'Status';
+          const message = tocResponse.message;
+          
+
 
       const pages = bootstrapParams.pageDetails.playListURL || [];
       const bookmarArr = this.props.book.bookmarks ? this.props.book.bookmarks : [];
@@ -941,12 +958,12 @@ import { getBookPlayListCallService, getPlaylistCallService, getBookTocCallServi
           }
         }
         if (userType === 'instructor') {
-           annJsPath = 'eplayer/annotation-lib/instructor-annotator/instructor-annotator.js';
-           annCssPath = 'eplayer/annotation-lib/instructor-annotator/instructor-annotator.css';
+           annJsPath = 'annotation-lib/instructor-annotator/instructor-annotator.js';
+           annCssPath = 'annotation-lib/instructor-annotator/instructor-annotator.css';
         }
         else {
-          annJsPath = 'eplayer/annotation-lib/annotator.js';
-          annCssPath = 'eplayer/annotation-lib/annotator.css';
+          annJsPath = 'annotation-lib/annotator.js';
+          annCssPath = 'annotation-lib/annotator.css';
         }
         productData = {
         product: 'PXE',
@@ -969,22 +986,22 @@ import { getBookPlayListCallService, getPlaylistCallService, getBookTocCallServi
           }
         },
         pxeOptions:{
-          script: `${window.location.origin}/eplayer/pxe_scripts/bundle.js`,
-          style: `${window.location.origin}/eplayer/pxe_scripts/style.css`,
+          script: `${window.location.origin}/pxe_scripts/bundle.js`,
+          style: `${window.location.origin}/pxe_scripts/style.css`,
           scriptsToReplace: [
             {
               old: 'https://revel-content.openclass.com/content/amc/amc-bootstrap.js',
-              new: `${window.location.origin}/eplayer/bxix_scripts/brix.js`
+              new: `${window.location.origin}/bxix_scripts/brix.js`
             }
           ],
-          scriptsToAdd:[`${window.location.origin}/eplayer/annotation-lib/jquery.min.js`,
+          scriptsToAdd:[`${window.location.origin}/annotation-lib/jquery.min.js`,
           `${window.location.origin}/${annJsPath}`,
           getMathjaxJs],
           stylesToAdd:[`${window.location.origin}/${annCssPath}`]
         },
         metaData: {
           brixClient: 'https://grid-static-dev.pearson.com/11-thinclient/0.0.0/js/brixClient-3.6.1-exp.5129.0.js',
-          brixCss: `${window.location.origin}/eplayer/bxix_scripts/brix.css`,
+          brixCss: `${window.location.origin}/bxix_scripts/brix.css`,
           environment: 'LOCAL', 
           pxeUserPreference:{
             theme:bootstrapParams.pageDetails.bgColor, 
@@ -1001,6 +1018,7 @@ import { getBookPlayListCallService, getPlaylistCallService, getBookTocCallServi
         if (isInstructor) {
           isconfigTocData = true;
         }
+
 
       const locale = bootstrapParams.pageDetails.locale ? bootstrapParams.pageDetails.locale : 'en';
       const headerTitleData = {
@@ -1104,8 +1122,17 @@ import { getBookPlayListCallService, getPlaylistCallService, getBookTocCallServi
           /> 
           </div> : <div></div>
         }
+        
         </div> 
-        </LearningContextProvider> } </div>
+        </LearningContextProvider> } 
+        {
+          updatedToc?
+          <div>
+          <Element.StaticAlert type={type} title={title} message={message} />
+          </div>:<div></div>
+        }
+        </div>
+        
         );
       }
     }
@@ -1139,6 +1166,8 @@ import { getBookPlayListCallService, getPlaylistCallService, getBookTocCallServi
         playlistData: state.playlistReducer.data,
         playlistReceived: state.playlistReducer.playlistReceived,
         tocData: state.playlistReducer.tocdata,
+        tocResponse: state.playlistReducer.tocresponse,
+        updatedToc: state.playlistReducer.updatedToc,
         tocReceived: state.playlistReducer.tocReceived,
         isBookmarked: state.bookmarkReducer.data.isBookmarked,
         bookMarkData: state.bookmarkReducer.bookmarksData,

@@ -15,7 +15,7 @@
     "lint-html": "eslint src -f html -o ./eslintReport/lint-results.html",
     "start": "better-npm-run start",
     "dev": "better-npm-run dev",
-     "unit-test": "jest",
+    "unit-test": "jest",
     "test": "better-npm-run test",
     "test:dev": "npm run test -- --watch",
     "testpdf": "better-npm-run testpdf",
@@ -23,7 +23,7 @@
     "deploy:dev": "better-npm-run deploy:dev",
     "deploy:prod": "better-npm-run deploy:prod && cp dist/index.html dist/200.html",
     "codecov": "cat coverage/*/lcov.info | codecov"
-	},
+  },
   "betterScripts": {
     "compile": {
       "command": "node bin/compile",
@@ -92,13 +92,14 @@
   "author": "David Zukowski <david@zuko.me> (http://zuko.me)",
   "license": "MIT",
   "dependencies": {
+    "@pearson-components/elements-sdk": "^1.4.1",
     "@pearson-incubator/aquila-js-basics": "*",
     "@pearson-incubator/aquila-js-core": "0.2.92",
     "@pearson-incubator/aquila-js-flashcards": "*",
-    "@pearson-incubator/aquila-js-media": "*",
-    "@pearson-incubator/aquila-js-timeline": "*",
-    "@pearson-incubator/aquila-js-quiz": "*",
     "@pearson-incubator/aquila-js-graph": "^0.0.39",
+    "@pearson-incubator/aquila-js-media": "*",
+    "@pearson-incubator/aquila-js-quiz": "*",
+    "@pearson-incubator/aquila-js-timeline": "*",
     "@pearson-incubator/bookmark-icon": "0.1.30",
     "@pearson-incubator/bookmarks": "^0.1.32",
     "@pearson-incubator/bookshelf": "^0.1.36",
@@ -142,6 +143,7 @@
     "material-ui": "^0.16.3",
     "node-sass": "^3.7.0",
     "normalize.css": "^4.1.1",
+    "pearson-compounds": "^0.13.6",
     "postcss-loader": "^0.13.0",
     "prop-types": "^15.5.10",
     "pxe-annotation": "*",

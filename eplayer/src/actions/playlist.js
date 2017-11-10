@@ -18,6 +18,7 @@ import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import { browserHistory } from 'react-router';
+
 // GET Book Details
 export const getPlaylistCompleteDetails = json => ({
   type: typeConstants.GET_PLAYLIST,
@@ -42,6 +43,12 @@ const updateToc = tocContents => ({
   data:tocContents,
   updatedToc:true
 });
+
+const tocResponse = json =>({
+  type:typeConstants.GET_TOC_RESPONSE,
+  data:json,
+  updatedToc:true
+})
 
  var tocUrl = '';
  var piToken = '';
@@ -98,7 +105,7 @@ export const getBookTocCallService  = data => dispatch =>
                 urn: n.id,
               href: n.href,
               id: n.id,
-              playorder: n.playorder,
+              playOrder: n.playOrder,
               title: n.title
             }));
           }
@@ -119,7 +126,10 @@ export const getBookTocCallService  = data => dispatch =>
 
 export const putCustomTocCallService  = data => dispatch => 
   PlaylistApi.doPutCustomTocDetails(data , piToken, bookId).then(response => response.json())
-      .then((response) => {});
+      .then((response) => {
+        dispatch(tocResponse(response));
+          
+      });
 
 export const getCourseCallService = data => dispatch => PlaylistApi.doGetCourseDetails(data)
    .then(response => response.json())
