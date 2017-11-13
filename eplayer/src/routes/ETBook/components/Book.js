@@ -23,7 +23,7 @@
   import './Book.scss';
   import { browserHistory } from 'react-router';
   import { getTotalAnnCallService, getAnnCallService, postAnnCallService, putAnnCallService, deleteAnnCallService, getTotalAnnotationData, deleteAnnotationData, annStructureChange } from '../../../actions/annotation';
-  import { getBookPlayListCallService, getPlaylistCallService, getBookTocCallService, getCourseCallService } from '../../../actions/playlist';
+  import { getBookPlayListCallService, getPlaylistCallService, getBookTocCallService, getCourseCallService, putCustomTocCallService } from '../../../actions/playlist';
   import { getGotoPageCall } from '../../../actions/gotopage';
   import { getPreferenceCallService, postPreferenceCallService } from '../../../actions/preference';
   import { loadPageEvent, unLoadPageEvent } from '../../../api/loadunloadApi';
@@ -38,6 +38,7 @@
   import { resources, domain, typeConstants } from '../../../../const/Settings';
   import Search from '../../../components/search/containers/searchContainer';
   import Utils from '../../../components/utils';
+  import { StaticAlert } from 'pearson-compounds';
 
   export class Book extends Component {
     constructor(props) {
@@ -778,7 +779,7 @@
     render() {
       const callbacks = {};
       let annJsPath,annCssPath,productData;
-      const { annotationData, annDataloaded, annotationTotalData, playlistData, playlistReceived, bookMarkData, tocData, tocReceived, bookdetailsdata } = this.props; // eslint-disable-line react/prop-types
+      const { annotationData, annDataloaded, annotationTotalData, playlistData, playlistReceived, bookMarkData, tocData, tocReceived, bookdetailsdata, tocResponse, updatedToc } = this.props; // eslint-disable-line react/prop-types
       // const annData  = annotationData.rows;
       this.props.book.annTotalData = annotationTotalData;
       this.props.book.toc = tocData;
@@ -827,6 +828,90 @@
         isTocWrapperRequired: false
       };
 
+      let configTocData = {
+        dropLevelType: 'WITH_IN_SAME_LEVEL',
+        tocContents: tocCompData.data.content.list,
+        tocLevel: 3,
+        dndType: 'TableOfContents',
+        handlePublish: (changedTocContent) => {
+        //console.log("changedTocContent---------", changedTocContent);
+          let tocPayload=[];
+          let i=0;
+          for (const prop in changedTocContent) {
+            if (changedTocContent.hasOwnProperty(prop)) {
+              tocPayload[i]=changedTocContent[prop];
+              i++;        
+            }
+          }
+          const tocItems = tocPayload;
+          let subItems = [];
+          const listData = tocItems.map((itemObj) => {
+            if (itemObj.children) {
+              subItems = itemObj.children.map(n => ({
+              urn: n.id,
+              href: n.href,
+              id: n.id,
+               playOrder: n.playOrder,
+              title: n.title
+              }));
+            }
+          return {
+            id: itemObj.id,
+            urn: itemObj.id,
+            title: itemObj.title,
+            coPage: itemObj.coPage,
+            playOrder: itemObj.playOrder,
+            children: subItems
+            };
+          });
+          const tocResponseData={tocContents:listData};
+          this.props.dispatch(putCustomTocCallService(tocResponseData));
+        },
+        handleDashBoard: () => {
+          if (this.props.book.toc.content !== undefined) {
+          this.props.book.toc.content = {list:[]};
+          this.props.book.bookmarks = [];
+          this.props.book.bookinfo = [];
+          this.props.book.annTotalData = [];
+        }
+        if (window.location.pathname.indexOf('/eplayer/Course/')>-1){
+          let originurl = localStorage.getItem('sourceUrl');       
+          if (originurl != null) {
+            const langQuery = localStorage.getItem('bookshelfLang');
+            if (langQuery && langQuery !== '?languageid=1') {
+              browserHistory.push(`/eplayer/bookshelf${langQuery}`);
+            } else {
+              browserHistory.push('/eplayer/bookshelf');
+            }
+          } else {
+            let redirectConsoleUrl   = resources.links.consoleUrl[domain.getEnvType()];
+            window.location.href = redirectConsoleUrl;
+          }  
+        } else {
+          const langQuery = localStorage.getItem('bookshelfLang');
+            if (langQuery && langQuery !== '?languageid=1') {
+              browserHistory.push(`/eplayer/bookshelf${langQuery}`);
+            } else {
+              browserHistory.push('/eplayer/bookshelf');
+            }
+        }
+      this.setState({ open: false });
+        }
+      };
+
+      let type='';
+      let  message ='';
+      const title = 'Status';
+      if(tocResponse)
+      {
+      if(tocResponse.status==='Success')
+        type= tocResponse.status;
+      else
+      {
+        type='Error';
+      }
+      message = tocResponse.message;
+      }
       const pages = bootstrapParams.pageDetails.playListURL || [];
       const bookmarArr = this.props.book.bookmarks ? this.props.book.bookmarks : [];
       const bookmarkCompData = {
@@ -853,9 +938,11 @@
           user: this.state.urlParams.user
         }
       });
+       
+      let userType;
       if (playlistReceived && bookdetailsdata) {
         const getMathjaxJs = this.loadMathjax();
-        let userType,i;
+        let i;
         if( bookdetailsdata.roles === undefined )
           userType = bookdetailsdata.userCourseSectionDetail.authgrouptype;
         else {
@@ -919,6 +1006,12 @@
         }
       };
       }
+    const isInstructor = userType === 'instructor' ? true : false;
+        let isconfigTocData=false;
+        if (isInstructor) {
+          isconfigTocData = true;
+        }
+
       const locale = bootstrapParams.pageDetails.locale ? bootstrapParams.pageDetails.locale : 'en';
       const headerTitleData = {
         params: this.props.params,
@@ -936,6 +1029,7 @@
         audio: true,
         moreIcon: true
       };
+     
       return ( 
         <div onClick={this.closeHeaderPopups}>
         { playlistReceived && 
@@ -977,6 +1071,8 @@
                   currentPageId={this.state.currentPageId}
                   bookCallbacks={callbacks}
                   intl={this.props.intl}
+                    configureTocData={configTocData}
+                  isConfigurableToc={isconfigTocData}
                 />
               }
 
@@ -1020,7 +1116,14 @@
           </div> : <div></div>
         }
         </div> 
-        </LearningContextProvider> } </div>
+        </LearningContextProvider> }
+         {
+          updatedToc?
+          <div>
+          <StaticAlert type={type} title={title} message={message} />
+          </div>:<div></div>
+        }
+        </div>
         );
       }
     }
@@ -1054,6 +1157,8 @@
         playlistData: state.playlistReducer.data,
         playlistReceived: state.playlistReducer.playlistReceived,
         tocData: state.playlistReducer.tocdata,
+         tocResponse: state.playlistReducer.tocresponse,
+        updatedToc: state.playlistReducer.updatedToc,
         tocReceived: state.playlistReducer.tocReceived,
         isBookmarked: state.bookmarkReducer.data.isBookmarked,
         bookMarkData: state.bookmarkReducer.bookmarksData,

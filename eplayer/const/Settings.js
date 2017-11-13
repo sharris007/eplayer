@@ -115,6 +115,13 @@ export const resources = {
       qa           :"https://idc-web-ar-qa.dev-prsn.com",
       stage        :"https://idc-web-ar.stg-prsn.com",
       prod         :"https://idc-web-ar.stg-prsn.com",
+    },
+     updateCustomTocUrl : {
+      local        :"https://etext-instructor-qa.pearson.com/idc-api/course",
+      dev          :"https://etext-instructor-qa.pearson.com/idc-api/course",
+      qa           :"https://etext-instructor-qa.pearson.com/idc-api/course",
+      stage        :"https://etext-instructor-stg.pearson.com/idc-api/course",
+      prod         :"",
     }
   }
 };
@@ -138,7 +145,8 @@ export const typeConstants = {
   ANNOTATION_DELETED     : 'ANNOTATION_DELETED',
   BOOK_DETAILS           : 'BOOK_DETAILS',
   GET_PREFERENCE         : 'GET_PREFERENCE',
-  POST_PREFERENCE        : 'POST_PREFERENCE'
+  POST_PREFERENCE        : 'POST_PREFERENCE',
+  GET_TOC_RESPONSE       : 'GET_TOC_RESPONSE'
 };
 
 export const domain = {

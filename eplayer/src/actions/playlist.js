@@ -34,6 +34,18 @@ export const getBookDetails = json => ({
   bookDetailsRecived: true
 });
 
+const updateToc = tocContents => ({
+  type:typeConstants.PUT_CUSTOM_TOC,
+  data:tocContents,
+  updatedToc:true
+});
+
+const tocResponse = json =>({
+  type:typeConstants.GET_TOC_RESPONSE,
+  data:json,
+  updatedToc:true
+})
+
 let tocUrl = '';
 let piToken = '';
 let bookId = '';
@@ -88,7 +100,7 @@ export const getBookTocCallService = data => dispatch =>
               urn: n.id,
               href: n.href,
               id: n.id,
-              playorder: n.playorder,
+              playOrder: n.playOrder,
               title: n.title
             }));
           }
@@ -107,6 +119,11 @@ export const getBookTocCallService = data => dispatch =>
         dispatch(getTocCompleteDetails(tocFinalModifiedData));
       });
 
+      export const putCustomTocCallService  = data => dispatch => 
+  PlaylistApi.doPutCustomTocDetails(data , piToken, bookId).then(response => response.json())
+      .then((response) => { 
+        dispatch(tocResponse(response));          
+      });
 
 export const getCourseCallService = data => dispatch => PlaylistApi.doGetCourseDetails(data)
    .then(response => response.json())

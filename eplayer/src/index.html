@@ -65,7 +65,22 @@
     </script>
   <script>
     var __pdfInstance = pdfWrapper();
-  </script>
+</script>
+<!-- Icons -->
+    <script>
+      if (document.body.children[0].nodeName !== 'svg') {
+        var pe_ajax = new XMLHttpRequest();
+        pe_ajax.open("GET", "https://unpkg.com/pearson-elements@1.14.9/dist/icons/p-icons-sprite-1.1.svg", true);
+        pe_ajax.responseType = "document";
+        pe_ajax.onload = function(e) {
+          document.body.insertBefore(
+            pe_ajax.responseXML.documentElement,
+            document.body.childNodes[0]
+          );
+        }
+        pe_ajax.send();
+      }
+    </script>
   <div id="root" style="height: 100%"></div>
 </body>
 <script src="/eplayer/annotation-lib/annotator.js"></script>
