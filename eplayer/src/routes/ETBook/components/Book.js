@@ -38,10 +38,7 @@ import { getBookPlayListCallService, getPlaylistCallService, getBookTocCallServi
   import { resources, domain, typeConstants } from '../../../../const/Settings';
   import Search from '../../../components/search/containers/searchContainer';
   import Utils from '../../../components/utils';
-  //import {StaticAlert, Icon.js} from 'pearson-compounds';
-  import * as Compounds from 'pearson-compounds';
-  //import {Icon} from '../pearson-compounds/src/Icon.js';
-  import * as Element from '@pearson-components/elements-sdk';
+ import { StaticAlert } from 'pearson-compounds';
 
   export class Book extends Component {
     constructor(props) {
@@ -1128,7 +1125,7 @@ import { getBookPlayListCallService, getPlaylistCallService, getBookTocCallServi
         {
           updatedToc?
           <div>
-          <Element.StaticAlert type={type} title={title} message={message} />
+          <StaticAlert type={type} title={title} message={message} />
           </div>:<div></div>
         }
         </div>
