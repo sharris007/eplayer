@@ -92,7 +92,6 @@
   "author": "David Zukowski <david@zuko.me> (http://zuko.me)",
   "license": "MIT",
   "dependencies": {
-    "@pearson-components/elements-sdk": "^1.4.1",
     "@pearson-incubator/aquila-js-basics": "*",
     "@pearson-incubator/aquila-js-core": "0.2.92",
     "@pearson-incubator/aquila-js-flashcards": "*",
@@ -143,7 +142,8 @@
     "material-ui": "^0.16.3",
     "node-sass": "^3.7.0",
     "normalize.css": "^4.1.1",
-    "pearson-compounds": "^0.13.6",
+    "pearson-compounds": "0.12.x",
+    "pearson-elements": "^1.14.2",
     "postcss-loader": "^0.13.0",
     "prop-types": "^15.5.10",
     "pxe-annotation": "*",
