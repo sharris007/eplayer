@@ -38,7 +38,7 @@ import { getBookPlayListCallService, getPlaylistCallService, getBookTocCallServi
   import { resources, domain, typeConstants } from '../../../../const/Settings';
   import Search from '../../../components/search/containers/searchContainer';
   import Utils from '../../../components/utils';
-  import StaticAlert from 'pearson-compounds';
+  import { StaticAlert } from 'pearson-compounds';
 
   export class Book extends Component {
     constructor(props) {
