@@ -102,7 +102,7 @@ export const getBookTocCallService  = data => dispatch =>
         const listData = tocItems.map((itemObj) => {
           if (itemObj.items) {
             subItems = itemObj.items.map(n => ({
-                urn: n.id,
+              urn: n.id,
               href: n.href,
               id: n.id,
               playOrder: n.playOrder,
@@ -124,7 +124,7 @@ export const getBookTocCallService  = data => dispatch =>
         dispatch(getTocCompleteDetails(tocFinalModifiedData));
       });
 
-export const putCustomTocCallService  = data => dispatch => 
+export const putCustomTocCallService  = data => dispatch =>
   PlaylistApi.doPutCustomTocDetails(data , piToken, bookId).then(response => response.json())
       .then((response) => {
         dispatch(tocResponse(response));

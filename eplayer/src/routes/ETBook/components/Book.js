@@ -38,10 +38,7 @@ import { getBookPlayListCallService, getPlaylistCallService, getBookTocCallServi
   import { resources, domain, typeConstants } from '../../../../const/Settings';
   import Search from '../../../components/search/containers/searchContainer';
   import Utils from '../../../components/utils';
-  //import {StaticAlert, Icon.js} from 'pearson-compounds';
-  import * as Compounds from 'pearson-compounds';
-  //import {Icon} from '../pearson-compounds/src/Icon.js';
-  import * as Element from '@pearson-components/elements-sdk';
+  import StaticAlert from 'pearson-compounds';
 
   export class Book extends Component {
     constructor(props) {
@@ -655,30 +652,7 @@ import { getBookPlayListCallService, getPlaylistCallService, getBookTocCallServi
         this.props.book.bookinfo = [];
         this.props.book.annTotalData = [];
       }
-      if(window.location.pathname.indexOf('/eplayer/Course/')>-1){
-         let originurl = localStorage.getItem('sourceUrl');       
-        if(originurl != null)
-          {
-            const langQuery = localStorage.getItem('bookshelfLang');
-            if (langQuery && langQuery !== '?languageid=1') {
-              browserHistory.push(`/eplayer/bookshelf${langQuery}`);
-            } else {
-              browserHistory.push('/eplayer/bookshelf');
-            }
-          }
-          else
-            {
-                let redirectConsoleUrl   = resources.links.consoleUrl[domain.getEnvType()];
-        window.location.href = redirectConsoleUrl;
-            }  
-      }else {
-        const langQuery = localStorage.getItem('bookshelfLang');
-        if (langQuery && langQuery !== '?languageid=1') {
-          browserHistory.push(`/eplayer/bookshelf${langQuery}`);
-        } else {
-          browserHistory.push('/eplayer/bookshelf');
-        }
-      }
+      window.history.back();
       this.setState({ open: false });
     }
 
@@ -838,7 +812,7 @@ import { getBookPlayListCallService, getPlaylistCallService, getBookTocCallServi
       let configTocData = {
         dropLevelType: 'WITH_IN_SAME_LEVEL',
         tocContents: tocCompData.data.content.list,
-        tocLevel: 3,
+        tocLevel: 2,
         dndType: 'TableOfContents',
         handlePublish: (changedTocContent) => {
         //console.log("changedTocContent---------", changedTocContent);
@@ -881,27 +855,7 @@ import { getBookPlayListCallService, getPlaylistCallService, getBookTocCallServi
           this.props.book.bookinfo = [];
           this.props.book.annTotalData = [];
         }
-        if (window.location.pathname.indexOf('/eplayer/Course/')>-1){
-          let originurl = localStorage.getItem('sourceUrl');       
-          if (originurl != null) {
-            const langQuery = localStorage.getItem('bookshelfLang');
-            if (langQuery && langQuery !== '?languageid=1') {
-              browserHistory.push(`/eplayer/bookshelf${langQuery}`);
-            } else {
-              browserHistory.push('/eplayer/bookshelf');
-            }
-          } else {
-            let redirectConsoleUrl   = resources.links.consoleUrl[domain.getEnvType()];
-            window.location.href = redirectConsoleUrl;
-          }  
-        } else {
-          const langQuery = localStorage.getItem('bookshelfLang');
-            if (langQuery && langQuery !== '?languageid=1') {
-              browserHistory.push(`/eplayer/bookshelf${langQuery}`);
-            } else {
-              browserHistory.push('/eplayer/bookshelf');
-            }
-        }
+        window.history.back();
       this.setState({ open: false });
         }
       };
@@ -958,12 +912,12 @@ import { getBookPlayListCallService, getPlaylistCallService, getBookTocCallServi
           }
         }
         if (userType === 'instructor') {
-           annJsPath = 'annotation-lib/instructor-annotator/instructor-annotator.js';
-           annCssPath = 'annotation-lib/instructor-annotator/instructor-annotator.css';
+           annJsPath = 'eplayer/annotation-lib/instructor-annotator/instructor-annotator.js';
+           annCssPath = 'eplayer/annotation-lib/instructor-annotator/instructor-annotator.css';
         }
         else {
-          annJsPath = 'annotation-lib/annotator.js';
-          annCssPath = 'annotation-lib/annotator.css';
+          annJsPath = 'eplayer/annotation-lib/annotator.js';
+          annCssPath = 'eplayer/annotation-lib/annotator.css';
         }
         productData = {
         product: 'PXE',
@@ -986,22 +940,22 @@ import { getBookPlayListCallService, getPlaylistCallService, getBookTocCallServi
           }
         },
         pxeOptions:{
-          script: `${window.location.origin}/pxe_scripts/bundle.js`,
-          style: `${window.location.origin}/pxe_scripts/style.css`,
+          script: `${window.location.origin}/eplayer/pxe_scripts/bundle.js`,
+          style: `${window.location.origin}/eplayer/pxe_scripts/style.css`,
           scriptsToReplace: [
             {
               old: 'https://revel-content.openclass.com/content/amc/amc-bootstrap.js',
-              new: `${window.location.origin}/bxix_scripts/brix.js`
+              new: `${window.location.origin}/eplayer/bxix_scripts/brix.js`
             }
           ],
-          scriptsToAdd:[`${window.location.origin}/annotation-lib/jquery.min.js`,
+          scriptsToAdd:[`${window.location.origin}/eplayer/annotation-lib/jquery.min.js`,
           `${window.location.origin}/${annJsPath}`,
           getMathjaxJs],
           stylesToAdd:[`${window.location.origin}/${annCssPath}`]
         },
         metaData: {
           brixClient: 'https://grid-static-dev.pearson.com/11-thinclient/0.0.0/js/brixClient-3.6.1-exp.5129.0.js',
-          brixCss: `${window.location.origin}/bxix_scripts/brix.css`,
+          brixCss: `${window.location.origin}/eplayer/bxix_scripts/brix.css`,
           environment: 'LOCAL', 
           pxeUserPreference:{
             theme:bootstrapParams.pageDetails.bgColor, 
@@ -1065,7 +1019,7 @@ import { getBookPlayListCallService, getPlaylistCallService, getBookTocCallServi
               searchOpen={this.state.searchOpen}
               />
               {
-              this.props.book.tocReceived &&
+              this.props.book.tocReceived && 
                 <Drawer
                   isDocked={false}
                   drawerWidth={400}
@@ -1128,7 +1082,7 @@ import { getBookPlayListCallService, getPlaylistCallService, getBookTocCallServi
         {
           updatedToc?
           <div>
-          <Element.StaticAlert type={type} title={title} message={message} />
+          <StaticAlert type={type} title={title} message={message} />
           </div>:<div></div>
         }
         </div>
