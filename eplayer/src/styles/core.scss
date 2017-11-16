@@ -182,8 +182,13 @@ svg[class$="-24"] {
   #pxe-viewer .book-container {
       margin-top: 66px;
   }
+  
   .hotspot {
   position: absolute;
+  }
+
+  .hotspotIcon {
+    position: absolute;
   }
 
   .hotspot .tooltiptext {

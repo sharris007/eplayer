@@ -1029,6 +1029,36 @@ handleRegionClick(hotspotID) {
       this.displayHighlight();
     });
   }
+  /* Method to show or hide hotspots. */
+  showHideRegions = () => {
+    let regionElementList = document.getElementsByClassName('hotspotIcon');
+    if(regionElementList.length > 0 && regionElementList[0].style.display !== "none")
+    {
+      $(".hotspot").hide();
+      $(".hotspotIcon").hide();
+    }
+    else
+    {
+      $(".hotspot").show();
+      $(".hotspotIcon").show();
+    }
+  }
+  /* Method show or hide highlights/notes. */
+  showHideHighlights = () => {
+    let highlightList = document.getElementsByClassName('fwr-highlight-annot');
+    if(highlightList.length > 0 && highlightList[0].style.display !== "none")
+    {
+      $(".fwr-highlight-annot").hide();
+      $(".annotator-handle").hide();
+      // $(".fwr-highlight-annot").remove();
+      // $(".annotator-handle").remove();
+    }
+    else
+    {
+      $(".fwr-highlight-annot").show();
+      $(".annotator-handle").show();
+    }
+  }
 
   viewerContentCallBack = (viewerCallBack) => {
     if (viewerCallBack === false) {
@@ -1114,6 +1144,8 @@ handleRegionClick(hotspotID) {
             currentScenario = {this.props.currentbook.scenario}
             globaluserid = {this.props.currentbook.globaluserid}
             invoketype ={this.props.data.location.query.invoketype}
+            showHideRegions = {this.showHideRegions} 
+            showHideHighlights = {this.showHideHighlights}
           />
 
           <div className="eT1viewerContent">

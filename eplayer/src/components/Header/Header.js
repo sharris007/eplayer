@@ -144,6 +144,8 @@ export class Header extends React.Component {
     }
   }
   handlePreferenceClick = () => {
+    // this.props.showHideRegions();
+    // this.props.showHideHighlights();
     try{
       Popup.close();
     }
