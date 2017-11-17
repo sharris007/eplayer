@@ -71,7 +71,7 @@ export const getBookPlayListCallService = data => dispatch =>
   PlaylistApi.doGetPiUserDetails(data).then(response => response.json())
     .then((response) => {
       data.userName = response.UserName;
-      const bookshelfUrl = resources.links.authDomainUrl[domain.getEnvType()] +'/eplayer';
+      const bookshelfUrl = resources.links.authDomainUrl[domain.getEnvType()] + '/eplayer';
       localStorage.setItem('backUrl', bookshelfUrl);
       PlaylistApi.doGetBookDetails(data)
         .then(response => response.json())
@@ -177,21 +177,21 @@ export const getCourseCallService = data => dispatch => PlaylistApi.doGetCourseD
       redirectToIDCDashboard(prodType, courseId);
       return false;
     }
-    
+
     const getsourceUrl = localStorage.getItem('sourceUrl');
     let getOriginUrl;
-    if( getsourceUrl === 'bookshelf'){
-      getOriginUrl = resources.links.authDomainUrl[domain.getEnvType()]+'/eplayer';
+    if (getsourceUrl === 'bookshelf') {
+      getOriginUrl = resources.links.authDomainUrl[domain.getEnvType()] + '/eplayer';
     }
-    else if ( getsourceUrl === '' ){
+    else if (getsourceUrl === '') {
       getOriginUrl = resources.links.consoleUrl[domain.getEnvType()];
     }
     localStorage.setItem('sourceUrl', '');
-    localStorage.setItem('backUrl',getOriginUrl);
+    localStorage.setItem('backUrl', getOriginUrl);
     const checkIDCreturnUrl = url.search('returnurl=');
-    if(checkIDCreturnUrl > 0){
+    if (checkIDCreturnUrl > 0) {
       const IDCreturnUrl = url.split('returnurl=')[1];
-      localStorage.setItem('backUrl',decodeURIComponent(IDCreturnUrl));
+      localStorage.setItem('backUrl', decodeURIComponent(IDCreturnUrl));
     }
     PlaylistApi.doGetPlaylistDetails(bookId, tocUrl, piToken).then(response => response.json())
       .then(response => {
@@ -218,13 +218,20 @@ function redirectToZeppelin(bookDetails, passportDetails) {
     productId: passportDetails.productId,
     appAccess: passportDetails.access,
     launchUrl: bookDetails.section.extras.metadata.launchUrl
-  }
+  } 
+
   if (window.location.pathname.indexOf('/eplayer/Course/') > -1) {
-    successOriginUrl = resources.links.consoleUrl[domain.getEnvType()];
-    errOriginUrl = resources.links.consoleUrl[domain.getEnvType()];
-    localStorage.setItem('backUrl',errOriginUrl);
-    // successOriginUrl = window.location.href;
-    // errOriginUrl= window.location.origin+'/eplayer'; 
+    const getsourceUrl = localStorage.getItem('sourceUrl');
+    if (getsourceUrl === 'bookshelf') {
+      successOriginUrl = window.location.href;
+      errOriginUrl = window.location.origin + '/eplayer'; 
+    }
+    else if (getsourceUrl === '') {
+      successOriginUrl = resources.links.consoleUrl[domain.getEnvType()];
+      errOriginUrl = resources.links.consoleUrl[domain.getEnvType()];
+    }
+    localStorage.setItem('backUrl', errOriginUrl);
+    localStorage.setItem('sourceUrl', '');  
 
   }
   const productId = userAccess.productId,
