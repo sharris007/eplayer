@@ -23,7 +23,7 @@ import { pageDetails, customAttributes, pageLoadData, pageUnLoadData, mathJaxVer
 import './Book.scss';
 import { browserHistory } from 'react-router';
 import { getTotalAnnCallService, getAnnCallService, postAnnCallService, putAnnCallService, deleteAnnCallService, getTotalAnnotationData, deleteAnnotationData, annStructureChange } from '../../../actions/annotation';
-import { getBookPlayListCallService, getPlaylistCallService, getBookTocCallService, getCourseCallService, putCustomTocCallService, gotCustomPlaylistCompleteDetails } from '../../../actions/playlist';
+import { getBookPlayListCallService, getPlaylistCallService, getBookTocCallService, getCourseCallService, putCustomTocCallService, gotCustomPlaylistCompleteDetails, getAuthToken } from '../../../actions/playlist';
 import { getGotoPageCall } from '../../../actions/gotopage';
 import { getPreferenceCallService, postPreferenceCallService } from '../../../actions/preference';
 import { loadPageEvent, unLoadPageEvent } from '../../../api/loadunloadApi';
@@ -39,6 +39,7 @@ import { resources, domain, typeConstants } from '../../../../const/Settings';
 import Search from '../../../components/search/containers/searchContainer';
 import Utils from '../../../components/utils';
 import { StaticAlert } from 'pearson-compounds';
+import Cookies from 'universal-cookie';
 
 export class Book extends Component {
   constructor(props) {
@@ -132,6 +133,7 @@ export class Book extends Component {
           piToken: getSecureToken,
           bookId: this.props.params.bookId
         }
+        this.props.dispatch(getAuthToken(getSecureToken));
         if (window.location.pathname.indexOf('/eplayer/Course/') > -1) {
           this.bookDetailsData.courseId = this.props.params.bookId;
           this.courseBook = true;
@@ -968,11 +970,15 @@ export class Book extends Component {
     const notesCompData = {
       notes: this.props.book.annotations ? this.props.book.annTotalData : []
     };
-
+    const cdnToken = this.props.authData;
+    var d = new Date();
+    d.setTime(d.getTime() + (365*24*60*60*1000));
+    var expires = "expires="+ d.toUTCString();
+    document.cookie = this.props.authData; 
     const pxeClient = axios.create({
       baseURL: bootstrapParams.pageDetails.baseUrl,
       timeout: 5000,
-      headers: {}
+      withCredentials: true
     });
     this.annHeaders = this.courseBook ? {
       Accept: 'application/json',
@@ -1218,7 +1224,8 @@ const mapStateToProps = state => {
     isGoToPageRecived: state.gotopageReducer.isGoToPageRecived,
     bookdetailsdata: state.playlistReducer.bookdetailsdata,
     getPreferenceData: state.preferenceReducer.preferenceObj,
-    customTocPlaylistReceived: state.playlistReducer.customTocPlaylistReceived
+    customTocPlaylistReceived: state.playlistReducer.customTocPlaylistReceived,
+    authData: state.authData
   }
 }; // eslint-disable-line max-len
 Book = connect(mapStateToProps)(Book); // eslint-disable-line no-class-assign

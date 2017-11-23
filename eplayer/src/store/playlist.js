@@ -20,11 +20,14 @@ const initalData = {
   tocReceived: false,
   bookDetailsRecived: false,
   updatedToc: false,
-  customTocPlaylistReceived:false
+  customTocPlaylistReceived:false,
+  authData: {}
 };
 export default (state = initalData, action) => {
   switch (action.type) {
     case 'GET_PLAYLIST': {
+      debugger;
+      action.data.baseUrl="https://etext-dev.pearson.com/eps/pearson-reader/api/item/944cf96e-39c8-42d0-9941-3abe8ca03168/1/file/appling_jh_01-15-16_post/"
       if (action.data.content[0].playOrder === 0) {
         action.data.content.splice(0, 1);
       }
@@ -85,6 +88,12 @@ export default (state = initalData, action) => {
       return {
         ...state,
         customTocPlaylistReceived: action.customTocPlaylistReceived
+      };
+    }
+    case 'AUTH_DATA':{
+      return {
+        ...state,
+        authData: action.data
       };
     }
     default:

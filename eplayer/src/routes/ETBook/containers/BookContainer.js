@@ -15,7 +15,7 @@ import { connect } from 'react-redux';
 import { fetchAnnotations, addAnnotation, removeAnnotation,
          fetchBookmarks, addBookmark, removeBookmark,
          fetchPreferences,
-         fetchTocAndViewer, goToPage, fetchBookDetails } from '../modules/book';
+         fetchTocAndViewer, goToPage, fetchBookDetails , getAuthToken} from '../modules/book';
 
 /*  This is a container component. Notice it does not contain any JSX,
     nor does it import React. This component is **only** responsible for
@@ -38,11 +38,12 @@ const mapDispatchToProps = {
   fetchPreferences,
   fetchTocAndViewer,
   goToPage,
-  fetchBookDetails
+  fetchBookDetails,
+  getAuthToken
 };
 
 const mapStateToProps = state => ({
-  book: state.book
+  book: state.book,
 });
 
 /*  Note: mapStateToProps is where you should use `reselect` to create selectors, ie:

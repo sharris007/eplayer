@@ -58,6 +58,13 @@ const gettingTocResponse = () => ({
   updatedToc: false
 });
 
+export const getAuthTokenResponse = json => ({
+  type: 'AUTH_DATA',
+  data: json
+});
+
+
+
 let tocUrl = '';
 let piToken = '';
 let bookId = '';
@@ -163,6 +170,16 @@ export const putCustomTocCallService = (data, bookDetailsData) => dispatch =>
       }
     });
 
+export const getAuthToken = (webToken) => dispatch =>
+   PlaylistApi.doGetAuthToken(webToken).then(response => response.json())
+    .then((response) => {
+        debugger;
+        if(response.name && response.value) {
+          const authToken = response.name+"="+response.value;
+          dispatch(getAuthTokenResponse(authToken));
+        }
+        console.log("REsponse Succcess --- AUTHTOKEN")
+    });
 
 export const getCourseCallService = (data, isFromCustomToc) => dispatch => PlaylistApi.doGetCourseDetails(data)
   .then(response => response.json())
