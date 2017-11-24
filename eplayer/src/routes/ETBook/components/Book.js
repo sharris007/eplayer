@@ -107,7 +107,8 @@ export class Book extends Component {
       const userId = piSession.userId();
       this.state.urlParams.user = userId;
     }
-    document.cookie = "test1" + "=" + 'machi' + ";path=/"; 
+    //document.cookie = "test1" + "=" + 'machi' + ";path=/"; 
+    document.cookie = "etext-cdn-token=exp=1511592502~acl=%2feps%2fpearson-reader%2f%2a~hmac=e30ff2c0345405b27726fbf6c4f3a4bc36c6bc54fcaa149b5c37d5852dc6d4fc;"+";path=/";
     this.closeHeaderPopups = this.closeHeaderPopups.bind(this);
   }
   componentWillMount = () => {
@@ -976,7 +977,7 @@ export class Book extends Component {
     const cdnToken = this.props.authData;
     
     if (!this.flag && this.props.authData.length > 0) {
-      document.cookie = this.props.authData;
+     // document.cookie = this.props.authData;
       this.flag = true;
     }
     const pxeClient = axios.create({
@@ -984,6 +985,7 @@ export class Book extends Component {
     timeout: 5000,
     withCredentials: true
     });
+
     this.annHeaders = this.courseBook ? {
       Accept: 'application/json',
       'Content-Type': 'application/json',
