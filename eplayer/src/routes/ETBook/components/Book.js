@@ -107,7 +107,7 @@ export class Book extends Component {
       const userId = piSession.userId();
       this.state.urlParams.user = userId;
     }
-    //document.cookie = "test1" + "=" + 'machi' + ";path=/"; 
+    document.cookie = "test1" + "=" + 'constructor'; 
     this.closeHeaderPopups = this.closeHeaderPopups.bind(this);
   }
   componentWillMount = () => {
@@ -976,15 +976,17 @@ export class Book extends Component {
     const cdnToken = this.props.authData;
     let pxeClient;
     
-    if (!this.flag && this.props.authData.length > 0) {
+   /* if (!this.flag && this.props.authData.length > 0) {
       document.cookie = this.props.authData;
+      document.cookie = 'cookir=tteest';
       this.flag = true;
-    }
+    }*/
      pxeClient = axios.create({
       baseURL: bootstrapParams.pageDetails.baseUrl,
+      //baseURL: "http://eplayer-dev.pearson.com:3000/eplayer",
       timeout: 5000,
       headers: {
-        'X-Authorization': ''
+        'X-Authorization': '123'
       },
       withCredentials: true
     });
