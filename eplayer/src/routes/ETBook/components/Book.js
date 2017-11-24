@@ -984,8 +984,8 @@ export class Book extends Component {
       baseURL: bootstrapParams.pageDetails.baseUrl,
       timeout: 5000,
       headers: {
-        X-Authorization: ''
-      }
+        'X-Authorization': ''
+      },
       withCredentials: true
     });
     
