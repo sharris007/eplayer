@@ -145,6 +145,32 @@ export class PdfBookReader extends Component {
     data.isLastPage = false;
     data.currentPageNo = currentPageIndex;
     this.setState({data});
+    this.loadPageviaPDFJS(PDFassetURL, this.pageLoadedComplete.bind(this));
+  }
+  pageLoadedComplete = () =>
+  {
+    this.setState({ pageLoaded: true });
+    if (this.state.isFirstPageBeingLoad === true) {
+      this.setState({ isFirstPageBeingLoad: false });
+    }
+  }
+  loadPageviaPDFJS = (PDFassetURL, pageLoadedComplete) => {
+      PDFJS.getDocument(PDFassetURL).then(function(pdf) {
+      pdf.getPage(1).then(function(page) {
+      var scale = 1.5;
+      var viewport = page.getViewport(scale);
+      var canvas = document.getElementById('the-canvas');
+      var context = canvas.getContext('2d');
+      canvas.height = viewport.height;
+      canvas.width = viewport.width;
+      var renderContext = {
+        canvasContext: context,
+        viewport: viewport
+      };
+      page.render(renderContext);
+      pageLoadedComplete();
+      });
+   });
   }
   /*  Method for loading the pdfpage for particular book by passing the pageIndex. */
   loadPdfPage = (currentPageIndex) => {
@@ -153,6 +179,7 @@ export class PdfBookReader extends Component {
     const PDFassetURL = `${serverDetails}/ebookassets`
                 + `/ebook${this.props.data.book.bookinfo.book.globalbookid}/ipadpdfs/${pdfPath}`;
     this.props.data.actions.loadcurrentPage(this.props.data.location.query.bookid,currentPageIndex,PDFassetURL,'BookPage');
+    
     this.setState({ currPageIndex: currentPageIndex });
     sessionStorage.setItem("currentPageOrder",currentPageIndex);
     const data = this.state.data;
@@ -174,6 +201,7 @@ export class PdfBookReader extends Component {
     }
     data.currentPageNo = currentPageIndex;
     this.setState({ data });
+    this.loadPageviaPDFJS(PDFassetURL, this.pageLoadedComplete.bind(this));
     const viewer = this;
     $(document).on('keyup',function(evt) {
       if (evt.keyCode === 27 && $('#hotspot'))
@@ -1132,7 +1160,6 @@ printFunc = () => {
     win.focus();
   }
 
-
 /* Method for render the component and any change in store data, reload the changes. */
   render() {
     const callbacks = {};
@@ -1178,6 +1205,12 @@ printFunc = () => {
         bookFeatures : (this.props.data.book.bookFeatures ? this.props.data.book.bookFeatures : {})
       }
     };
+    let viewerClassName;
+    if (this.state.pageLoaded !== true) {
+      viewerClassName = 'hideViewerContent';
+    } else {
+      viewerClassName = '';
+    }
     /* Here we are passing data, pages, goToPageCallback,
        getPrevNextPage method and isET1 flag in ViewerComponent
        which is defined in @pearson-incubator/viewer . */
@@ -1223,18 +1256,10 @@ printFunc = () => {
         <div>
         <div id='sppDiv' className='sppContent' />
         {this.state.regionData ? <div id="hotspot" className='hotspotContent'>{this.renderHotspot(this.state.regionData)}</div> : null }
-        <LearningContextProvider 
-          contextId = {this.props.data.location.query.bookid}
-          contentType = "PDF"
-          metadata = {productData.metaData}
-        >
-        <PdfViewer
-          isPageLoaded = {this.state.pageLoaded}
-          currentPage = {this.props.data.book.currentPageInfo}
-          onPageLoadComplete = {this.pdfBookCallback}
-          viewerCallBacks = {viewerCallBacks}
-        />
-        </LearningContextProvider>
+        <div className ='pdfContainer'>
+        <canvas id="the-canvas" className ={viewerClassName}></canvas>
+        </div> 
+
         {this.state.popUpCollection.length ? <PopUpInfo bookContainerId='docViewer_ViewContainer_PageContainer_0' popUpCollection={this.state.popUpCollection} isET1='Y'/> : null }
         </div>
         {this.state.pageLoaded !== true ?
