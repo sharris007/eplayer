@@ -107,6 +107,7 @@ export class Book extends Component {
       const userId = piSession.userId();
       this.state.urlParams.user = userId;
     }
+    //document.cookie = "test1" + "=" + 'machi' + ";path=/"; 
     this.closeHeaderPopups = this.closeHeaderPopups.bind(this);
   }
   componentWillMount = () => {
@@ -973,17 +974,21 @@ export class Book extends Component {
       notes: this.props.book.annotations ? this.props.book.annTotalData : []
     };
     const cdnToken = this.props.authData;
+    let pxeClient;
     
     if (!this.flag && this.props.authData.length > 0) {
       document.cookie = this.props.authData;
       this.flag = true;
     }
-    const pxeClient = axios.create({
-    baseURL: bootstrapParams.pageDetails.baseUrl,
-    timeout: 5000,
-    withCredentials: true
+     pxeClient = axios.create({
+      baseURL: bootstrapParams.pageDetails.baseUrl,
+      timeout: 5000,
+      headers: {
+        X-Authorization: ''
+      }
+      withCredentials: true
     });
-
+    
     this.annHeaders = this.courseBook ? {
       Accept: 'application/json',
       'Content-Type': 'application/json',
