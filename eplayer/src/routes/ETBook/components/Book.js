@@ -58,6 +58,7 @@ export class Book extends Component {
     this.environmentCode = '';
     this.personRoleCode = '';
     this.isTOCUpdated = false;
+    this.cookies = new Cookies();
     this.state = {
       classname: 'headerBar visible',
       viewerContent: true,
@@ -106,6 +107,7 @@ export class Book extends Component {
       const userId = piSession.userId();
       this.state.urlParams.user = userId;
     }
+    document.cookie = "test1" + "=" + 'machi' + ";path=/"; 
     this.closeHeaderPopups = this.closeHeaderPopups.bind(this);
   }
   componentWillMount = () => {
@@ -489,6 +491,7 @@ export class Book extends Component {
       id = pageId.substring(0, pageId.indexOf('-'))
       currentData = find(this.state.pageDetails.playListURL, list => list.id === id);
     }
+    console.log(this.state.pageDetails.playListURL)
     currentData.uri = currentData.href;
     currentData.label = currentData.title;
     document.title = currentData.title;
@@ -971,14 +974,15 @@ export class Book extends Component {
       notes: this.props.book.annotations ? this.props.book.annTotalData : []
     };
     const cdnToken = this.props.authData;
-    var d = new Date();
-    d.setTime(d.getTime() + (365*24*60*60*1000));
-    var expires = "expires="+ d.toUTCString();
-    document.cookie = this.props.authData; 
+    
+    if (!this.flag && this.props.authData.length > 0) {
+      document.cookie = this.props.authData;
+      this.flag = true;
+    }
     const pxeClient = axios.create({
-      baseURL: bootstrapParams.pageDetails.baseUrl,
-      timeout: 5000,
-      withCredentials: true
+    baseURL: bootstrapParams.pageDetails.baseUrl,
+    timeout: 5000,
+    withCredentials: true
     });
     this.annHeaders = this.courseBook ? {
       Accept: 'application/json',
@@ -1225,7 +1229,7 @@ const mapStateToProps = state => {
     bookdetailsdata: state.playlistReducer.bookdetailsdata,
     getPreferenceData: state.preferenceReducer.preferenceObj,
     customTocPlaylistReceived: state.playlistReducer.customTocPlaylistReceived,
-    authData: state.authData
+    authData: state.playlistReducer.authData
   }
 }; // eslint-disable-line max-len
 Book = connect(mapStateToProps)(Book); // eslint-disable-line no-class-assign
