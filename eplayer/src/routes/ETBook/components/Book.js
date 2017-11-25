@@ -107,7 +107,7 @@ export class Book extends Component {
       const userId = piSession.userId();
       this.state.urlParams.user = userId;
     }
-    document.cookie = "test1" + "=" + 'constructor'; 
+    document.cookie = "cookieTest1" + "=" + 'contructor' + ";path=/"; 
     this.closeHeaderPopups = this.closeHeaderPopups.bind(this);
   }
   componentWillMount = () => {
@@ -985,10 +985,10 @@ export class Book extends Component {
       baseURL: bootstrapParams.pageDetails.baseUrl,
       //baseURL: "http://eplayer-dev.pearson.com:3000/eplayer",
       timeout: 5000,
+      withCredentials: true,
       headers: {
         'X-Authorization': '123'
-      },
-      withCredentials: true
+      }
     });
     
     this.annHeaders = this.courseBook ? {

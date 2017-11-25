@@ -175,9 +175,10 @@ export const getAuthToken = (webToken) => dispatch =>
     .then((response) => {
         debugger;
         if(response.name && response.value) {
-          const authToken = response.name+"="+response.value;
+          const authToken = response.name+"="+response.value+ ";path=/";
           document.cookie = authToken;
-          document.cookie = 'cookir1=tteest1';
+          document.cookie = 'cookir3=tteest3';
+          document.cookie = "cookieTest2" + "=" + 'playlist' + ";path=/";
           dispatch(getAuthTokenResponse(authToken));
         }
         console.log("REsponse Succcess --- AUTHTOKEN")
