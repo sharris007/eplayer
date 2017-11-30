@@ -194,6 +194,7 @@ export class Book extends Component {
       this.bookIndexId = nextProps.bookdetailsdata.userCourseSectionDetail.indexId;
       this.searchUrl = resources.links.etextSearchUrl[domain.getEnvType()] + '/search?indexId=' + this.bookIndexId + '&q=searchText&s=0&n=' + resources.constants.TextSearchLimit;
     }
+    window.localStorage.setItem('searchIndexId', this.bookIndexId);
     if (nextProps.isGoToPageRecived) {
       if (nextProps.gotoPageObj.page && nextProps.gotoPageObj.page.href) {
         const goToHref = nextProps.gotoPageObj.page.href.split('#')[0];
@@ -1176,6 +1177,8 @@ export class Book extends Component {
                   hideIcons={hideIcons}
                   prefOpen={this.state.prefOpen}
                   searchOpen={this.state.searchOpen}
+                  autoComplete={this.props.autoComplete}
+                  search={this.props.search}
                 />
                 {
                   this.props.book.tocReceived &&
