@@ -6408,7 +6408,7 @@ define("core/Viewer", ["./WebPDF", "./Config", "./ReaderApp", "./Cavans/uupaa-co
             var i = {
                 password: a.getPDFPassword()
             };
-            $.ajax({
+            /*$.ajax({
                 url: h,
                 dataType: "json",
                 data: i,
@@ -6436,7 +6436,7 @@ define("core/Viewer", ["./WebPDF", "./Config", "./ReaderApp", "./Cavans/uupaa-co
                 error: function() {
                     e(null)
                 }
-            })
+            })*/
         }, this.asyncLoadPDFAnnotation = function(a, b, c, e, f) {
             d(!0, a, b, c, e, f)
         }, this.syncLoadPDFAnnotation = function(a, b, c, e, f) {
@@ -17541,7 +17541,7 @@ define("core/Viewer", ["./WebPDF", "./Config", "./ReaderApp", "./Cavans/uupaa-co
                         n = m.getVisiblePageRange();
                     if (c <= n.begin - l || c >= n.end + l) return;
                     g[k] = a;
-                    var o = j.getPageImgUrl(c, a.getScale(), a.isThumb() || !a.isThumbnailLoaded());
+                    var o = j.getPageImgUrl(c, a.getScale(), false);
                     new e(o, i, a, function(a, c) {
                         var e = !1,
                             l = c == f.GetImageErrorCode.ERROR_CREATE_IMG_FAILED,
@@ -17560,9 +17560,7 @@ define("core/Viewer", ["./WebPDF", "./Config", "./ReaderApp", "./Cavans/uupaa-co
                             var q = "";
                             q = l ? i.getBaseUrl() + "images/reader/imgFailed.png" : i.getBaseUrl() + "images/reader/imgLimit.png", a.showErrorPage(q)
                         } else{
-                            $("#" + a.getPageBackgroundImgID()).attr("src", o), a.show(), a.isThumb() ? a.setPageLoaded(!0) : a.isThumbnailLoaded() ? a.setPageLoaded(!0) : (a.setThumbnailLoaded(!0), setTimeout(function() {
-                            j.renderPage(a, d.defaults.requestRetryCount)
-                            }, 50));    
+                            $("#" + a.getPageBackgroundImgID()).attr("src", o), a.show(), a.setPageLoaded(!0)   
                         } 
                         
                         !a.isThumb() && a.isPageLoaded() && (a.setPageLoadError(e), $(i).trigger(WebPDF.EventList.PAGE_SHOW_COMPLETE, {
