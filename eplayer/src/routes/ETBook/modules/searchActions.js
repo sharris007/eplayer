@@ -22,28 +22,30 @@ function keyIndex(arr, key) {
   return arr.findIndex(item => (key === item.category));
 }
 function searchTitle(titles, key) {
-  return titles[key.toLocaleLowerCase()].id === key ? titles[key.toLocaleLowerCase()].defaultMessage : key;
+  return titles[key].id === key ? titles[key].defaultMessage : key;
 }
-function getSearchFormat(response) {
+function getSearchFormat(respons) {
   const searchResults = [];
-  if (response) {
-    response.forEach((result) => {
-      searchFilters.fields.forEach((key) => {
-        const titles = message;
-        if (key in result.matchedFields) {
-          let obj = {};
-          const title = key in titles ? searchTitle(titles, key) : key;
-          const categoryIndex = keyIndex(searchResults, title);
-          if (categoryIndex < 0) {
-            obj.category = title;
-            obj.results = [{ id: result.id, content: result.matchedFields[key].replace('[', '').replace(']', '') }];
-            searchResults.push(obj);
-          } else {
-            obj = searchResults[categoryIndex];
-            obj.results.push({ id: result.id, content: result.matchedFields[key].replace('[', '').replace(']', '') });
-          }
-        }
+  let response = JSON.parse(localStorage.searchData);
+  const titles = message;
+  console.clear();
+  console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>", response)
+  if (response.searchResults && response.searchResults.length > 0) {
+    response.searchResults.forEach((result) => {
+      let results = [];
+      result.productsList.forEach((product) => {
+        let obj = {
+          content : product.matchedFields['term'] || product.matchedFields['chaptertitle'],
+          id: product.productId
+        };
+        obj.content = obj.content.replace('[', '').replace(']', '');
+        results.push(obj);
       });
+      let searchObj = {
+        category : result.key in titles ? searchTitle(titles, result.key) : result.key,
+        results
+      }
+      searchResults.push(searchObj);
     });
     return searchResults;
   }
@@ -64,13 +66,15 @@ const searchActions = {
     };*/
   },
   autoComplete(searchcontent, handleResults) {
-    /*searchFilters.filter = [window.localStorage.getItem('searchIndexId')];
+    searchFilters.filter = [window.localStorage.getItem('searchIndexId')];
     searchFilters.queryString = searchcontent;
-    searchFilters.responseSize = 6;*/
-    payLoad.queryString = searchcontent;
+    searchFilters.responseSize = 6;
+    //payLoad.queryString = "st";
     payLoad.filter[0] += window.localStorage.getItem('searchIndexId');
+    //payLoad.filter[0] = 'indexid:fbc4b33e53c3716e93fc56431f5e3b4c';
     console.log(resources.links.etextSearchUrl[domain.getEnvType()]);
-    fetch(resources.links.etextSearchUrl[domain.getEnvType()], 
+    //handleResults(getSearchFormat(""))
+    fetch("https://content-service-qa.stg-prsn.com/csg/api/v3/autoComplete", 
       {
         method: 'POST',
         headers: {
@@ -83,12 +87,6 @@ const searchActions = {
      .then((response) => {
        handleResults((getSearchFormat(response)));
      })
-    /*return {
-      type: 'SEARCH',
-      payload: clients.search.post('/autoComplete', searchFilters)
-      .then(response => handleResults(getSearchFormat(response.data.searchResults)))
-      .catch(error => error.response)
-    };*/
   }
 };
 

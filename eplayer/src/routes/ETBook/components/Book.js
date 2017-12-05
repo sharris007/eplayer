@@ -897,6 +897,10 @@ export class Book extends Component {
   onPageClick = () => {
     this.setState({ searchOpen: false, prefOpen: false });
   };
+
+  onPageRequest = (pageInfo) => {
+    console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<", pageInfo);
+  }
   render() {
     const callbacks = {};
     let annJsPath, annCssPath, productData;
@@ -1179,6 +1183,7 @@ export class Book extends Component {
                   searchOpen={this.state.searchOpen}
                   autoComplete={this.props.autoComplete}
                   search={this.props.search}
+                  onSearchResultClick={this.onPageRequest}
                 />
                 {
                   this.props.book.tocReceived &&
