@@ -20,6 +20,7 @@ import { PopUpInfo } from '@pearson-incubator/popup-info';
 import {convertHexToRgba} from '../../../components/Utility/Util';
 import { LearningContextProvider } from '@pearson-incubator/vega-viewer';
 import { PdfViewer } from '@pearson-incubator/vega-viewer';
+import { TextLayerBuilder } from '../../../../pdf_reader_lib/pdfjs/web/text_layer_builder';
 
 const envType = domain.getEnvType();
 const foxiturl = eT1Contants.FoxitUrls[envType];
@@ -157,7 +158,7 @@ export class PdfBookReader extends Component {
   loadPageviaPDFJS = (PDFassetURL, pageLoadedComplete) => {
       PDFJS.getDocument(PDFassetURL).then(function(pdf) {
       pdf.getPage(1).then(function(page) {
-      var scale = 1.5;
+      var scale = 1;
       var viewport = page.getViewport(scale);
       var canvas = document.getElementById('the-canvas');
       var context = canvas.getContext('2d');
@@ -167,7 +168,30 @@ export class PdfBookReader extends Component {
         canvasContext: context,
         viewport: viewport
       };
+      var canvasOffset = $(canvas).offset();
+      var pdfjsViewer = document.getElementById('pdfjsviewer');
+      $('#text-layer').remove();
+      var textLayerElement = document.createElement('div');
+      textLayerElement.setAttribute("id","text-layer");
+      textLayerElement.classList.add('textLayer');
+      pdfjsViewer.appendChild(textLayerElement);
+      var $textLayerDiv = $('#text-layer').css({
+            height : viewport.height+'px',
+            width : viewport.width+'px',
+            top : canvasOffset.top,
+            left : canvasOffset.left
+      });
       page.render(renderContext);
+      page.getTextContent().then(function(textContent){
+            var textLayer = new TextLayerBuilder({
+                textLayerDiv : $textLayerDiv.get(0),
+                pageIndex : 0,
+                viewport : viewport
+            });
+ 
+            textLayer.setTextContent(textContent);
+            textLayer.render();
+      });
       pageLoadedComplete();
       });
    });
@@ -1256,8 +1280,9 @@ printFunc = () => {
         <div>
         <div id='sppDiv' className='sppContent' />
         {this.state.regionData ? <div id="hotspot" className='hotspotContent'>{this.renderHotspot(this.state.regionData)}</div> : null }
-        <div className ='pdfContainer'>
-        <canvas id="the-canvas" className ={viewerClassName}></canvas>
+        <div id="pdfjsviewer">
+        <canvas id="the-canvas"></canvas>
+        <div id="text-layer" className="textLayer"></div>
         </div> 
 
         {this.state.popUpCollection.length ? <PopUpInfo bookContainerId='docViewer_ViewContainer_PageContainer_0' popUpCollection={this.state.popUpCollection} isET1='Y'/> : null }
