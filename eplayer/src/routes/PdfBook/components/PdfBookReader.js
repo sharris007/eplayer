@@ -1074,6 +1074,15 @@ handleRegionClick(hotspotID) {
     __pdfInstance.restoreHighlights(highlightList, this.deleteHighlight);
     __pdfInstance.reRenderHighlightCornerImages(noteIconsList);
     this.setState({ highlightList:highlightList });
+    if(this.state.showHighlight == false)
+    {
+      try
+      {
+        $(".fwr-highlight-annot").hide();
+        this.setState({showHighlight : false});
+      }
+      catch(e){}
+    }
   }
   /* Method for delete Highlight via passing the id of selected area. */
   deleteHighlight = (id) => {
@@ -1098,30 +1107,45 @@ handleRegionClick(hotspotID) {
       this.setState({showHotspot:true})
     }
   }
-  /* Method show or hide highlights/notes. */
-  showHideHighlights = () => {
+
+/*To show hide highlights*/
+  showHideHighlights = (prefObject) => {
     let highlightList = document.getElementsByClassName('fwr-highlight-annot');
-    if(highlightList.length > 0 && highlightList[0].style.display !== "none")
+    if(prefObject.isAnnotationHide == false)
     {
-      $(".fwr-highlight-annot").hide();
-      $(".annotator-handle").hide();
-      this.setState({showHighlight : false})
-      // $(".fwr-highlight-annot").remove();
-      // $(".annotator-handle").remove();
+      if(highlightList.length > 0 && highlightList[0].style.display !== "none")
+      {
+        $(".fwr-highlight-annot").hide();
+        this.setState({showHighlight : false})
+      }
     }
     else
     {
       $(".fwr-highlight-annot").show();
-      $(".annotator-handle").show();
       this.setState({showHighlight : true})
     }
   }
-  viewerContentCallBack = (viewerCallBack) => {
+
+viewerContentCallBack = (viewerCallBack) => {
     if (viewerCallBack === false) {
       this.setState({ drawerOpen: true });
     } else {
       this.setState({ drawerOpen: false });
     }
+  }
+getPreference = () => {
+    let isAnnHide = this.state.showHighlight;
+    const prefData = {
+      'value': {
+        theme: 'White',
+        orientation: 'horizontal',
+        zoom: this.state.currZoomLevel,
+        isAnnotationHide: isAnnHide,
+        enableShowHide: true
+      }
+    };
+    const promiseVal = Promise.resolve(prefData);
+    return promiseVal;
   }
 
 printFunc = () => {
@@ -1180,13 +1204,7 @@ printFunc = () => {
     };
     /*Creating array of objects containing options info for moreMenu*/
     let moreMenuData = [];
-    let showHideHighlights = {
-      type : 'menuItem',
-      value : 'showHideHighlights',
-      text : this.state.showHighlight ? messages.hideHighlights ? messages.hideHighlights :'Hide Highlights' 
-                  : messages.showHighlights ? messages.showHighlights : 'Show Highlights',
-      onClick : this.showHideHighlights
-    }
+
     let showHideHotspots = {
       type : 'menuItem',
       value : 'showHideHotspots',
@@ -1205,7 +1223,6 @@ printFunc = () => {
       value : 'signOut',
       text : messages.signOut ? messages.signOut : 'Sign Out',
     }
-    moreMenuData.push(showHideHighlights);
     moreMenuData.push(showHideHotspots);
     moreMenuData.push({type : 'divider'});
     moreMenuData.push(printData);
@@ -1244,6 +1261,8 @@ printFunc = () => {
             globaluserid = {this.props.currentbook.globaluserid}
             invoketype ={this.props.data.location.query.invoketype}
             moreMenuData = {moreMenuData}
+            preferenceUpdate = {this.showHideHighlights}
+            getPreference = {this.getPreference}
           />
 
           <div className="eT1viewerContent">
