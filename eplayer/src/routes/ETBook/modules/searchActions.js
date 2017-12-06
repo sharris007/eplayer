@@ -28,8 +28,6 @@ function getSearchFormat(respons) {
   const searchResults = [];
   let response = JSON.parse(localStorage.searchData);
   const titles = message;
-  console.clear();
-  console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>", response)
   if (response.searchResults && response.searchResults.length > 0) {
     response.searchResults.forEach((result) => {
       let results = [];
@@ -66,15 +64,10 @@ const searchActions = {
     };*/
   },
   autoComplete(searchcontent, handleResults) {
-    searchFilters.filter = [window.localStorage.getItem('searchIndexId')];
-    searchFilters.queryString = searchcontent;
-    searchFilters.responseSize = 6;
-    //payLoad.queryString = "st";
+    payLoad.queryString = searchcontent;
+    payLoad.responseSize = 6;
     payLoad.filter[0] += window.localStorage.getItem('searchIndexId');
-    //payLoad.filter[0] = 'indexid:fbc4b33e53c3716e93fc56431f5e3b4c';
-    console.log(resources.links.etextSearchUrl[domain.getEnvType()]);
-    //handleResults(getSearchFormat(""))
-    fetch("https://content-service-qa.stg-prsn.com/csg/api/v3/autoComplete", 
+    fetch(resources.links.etextSearchUrl[domain.getEnvType()], 
       {
         method: 'POST',
         headers: {
