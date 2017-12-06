@@ -146,7 +146,7 @@ export class PdfBookReader extends Component {
     data.isLastPage = false;
     data.currentPageNo = currentPageIndex;
     this.setState({data});
-    this.loadPageviaPDFJS(PDFassetURL, this.pageLoadedComplete.bind(this));
+    this.loadPageviaPDFJS(PDFassetURL, this.pageLoadedComplete.bind(this),1);
   }
   pageLoadedComplete = () =>
   {
@@ -155,11 +155,16 @@ export class PdfBookReader extends Component {
       this.setState({ isFirstPageBeingLoad: false });
     }
   }
-  loadPageviaPDFJS = (PDFassetURL, pageLoadedComplete) => {
+  loadPageviaPDFJS = (PDFassetURL, pageLoadedComplete,scaleValue) => {
       PDFJS.getDocument(PDFassetURL).then(function(pdf) {
       pdf.getPage(1).then(function(page) {
-      var scale = 1;
+      var scale = scaleValue;
       var viewport = page.getViewport(scale);
+      var pdfjsViewer = document.getElementById('pdfjsviewer');
+       $('#the-canvas').remove();
+      var canvasElement = document.createElement('canvas');
+      canvasElement.setAttribute("id","the-canvas");
+      pdfjsViewer.appendChild(canvasElement);
       var canvas = document.getElementById('the-canvas');
       var context = canvas.getContext('2d');
       canvas.height = viewport.height;
@@ -169,7 +174,7 @@ export class PdfBookReader extends Component {
         viewport: viewport
       };
       var canvasOffset = $(canvas).offset();
-      var pdfjsViewer = document.getElementById('pdfjsviewer');
+      
       $('#text-layer').remove();
       var textLayerElement = document.createElement('div');
       textLayerElement.setAttribute("id","text-layer");
@@ -225,7 +230,7 @@ export class PdfBookReader extends Component {
     }
     data.currentPageNo = currentPageIndex;
     this.setState({ data });
-    this.loadPageviaPDFJS(PDFassetURL, this.pageLoadedComplete.bind(this));
+    this.loadPageviaPDFJS(PDFassetURL, this.pageLoadedComplete.bind(this),1);
     const viewer = this;
     $(document).on('keyup',function(evt) {
       if (evt.keyCode === 27 && $('#hotspot'))
@@ -494,7 +499,8 @@ export class PdfBookReader extends Component {
     }else{
       currZoomLevel = level;
     }
-    __pdfInstance.setCurrentZoomLevel(currZoomLevel);
+    // __pdfInstance.setCurrentZoomLevel(currZoomLevel);
+    this.loadPageviaPDFJS(this.props.data.book.currentPageInfo.pdfpath,this.pageLoadedComplete.bind(this),currZoomLevel);
     this.displayHighlight();
     if(this.props.data.book.regions.length > 0 )
     {
@@ -1280,8 +1286,8 @@ printFunc = () => {
         <div>
         <div id='sppDiv' className='sppContent' />
         {this.state.regionData ? <div id="hotspot" className='hotspotContent'>{this.renderHotspot(this.state.regionData)}</div> : null }
-        <div id="pdfjsviewer">
-        <canvas id="the-canvas"></canvas>
+        <div id="pdfjsviewer" className ={viewerClassName}>
+        <canvas id="the-canvas" ></canvas>
         <div id="text-layer" className="textLayer"></div>
         </div> 
 
