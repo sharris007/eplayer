@@ -24,9 +24,8 @@ function keyIndex(arr, key) {
 function searchTitle(titles, key) {
   return titles[key].id === key ? titles[key].defaultMessage : key;
 }
-function getSearchFormat(respons) {
+function getSearchFormat(response) {
   const searchResults = [];
-  let response = JSON.parse(localStorage.searchData);
   const titles = message;
   if (response.searchResults && response.searchResults.length > 0) {
     response.searchResults.forEach((result) => {
@@ -34,7 +33,7 @@ function getSearchFormat(respons) {
       result.productsList.forEach((product) => {
         let obj = {
           content : product.matchedFields['term'] || product.matchedFields['chaptertitle'],
-          id: product.productId
+          id: product.source && product.source.url ? product.source.url.split("OPS")[1] : '' 
         };
         obj.content = obj.content.replace('[', '').replace(']', '');
         results.push(obj);

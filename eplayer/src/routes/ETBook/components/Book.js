@@ -898,8 +898,14 @@ export class Book extends Component {
     this.setState({ searchOpen: false, prefOpen: false });
   };
 
-  onPageRequest = (pageInfo) => {
-    console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<", pageInfo);
+  onSearchResultClick = (searchHref) => {
+    let bookObj = {};
+    this.state.pageDetails.playListURL.forEach(function(page) {
+      if(page.href && page.href.match(searchHref)) {
+        bookObj = page;
+      }
+    });
+    this.goToPageCallback(bookObj.id, '', searchHref)
   }
   render() {
     const callbacks = {};
@@ -1183,7 +1189,7 @@ export class Book extends Component {
                   searchOpen={this.state.searchOpen}
                   autoComplete={this.props.autoComplete}
                   search={this.props.search}
-                  onSearchResultClick={this.onPageRequest}
+                  onSearchResultClick={this.onSearchResultClick.bind(this)}
                 />
                 {
                   this.props.book.tocReceived &&
