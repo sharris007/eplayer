@@ -31,14 +31,16 @@ export const annStructureChange = (annTotalList) => {
   const annListArray = [];
   if (annTotalList && annTotalList.length > 0) {
     for (let i = 0; i < annTotalList.length; i++) {
+      let comments = annTotalList[i].data ? ( annTotalList[i].data.text ? annTotalList[i].data.text : annTotalList[i].data ) : '';
+      let colorCode = annTotalList[i].colorCode ? annTotalList[i].colorCode : annTotalList[i].data.colorCode;
       const setArray = {
-        pageId: annTotalList[i].data.source.id,
+        pageId: annTotalList[i].source.id || annTotalList[i].data.source.id,
         id: annTotalList[i].id,
-        author: annTotalList[i].data.user,
-        time: annTotalList[i].createdTime,
-        text: annTotalList[i].data.quote,
-        comment: annTotalList[i].data.text || '',
-        color: colorArr[annTotalList[i].data.colorCode] || 'Green'
+        author: annTotalList[i].user || annTotalList[i].data.user,
+        time: annTotalList[i].createdTimestamp || annTotalList[i].createdTime,
+        text: annTotalList[i].quote || annTotalList[i].data.quote,
+        comment: annTotalList[i].data || annTotalList[i].data.text || '',
+        color: colorArr[colorCode] || 'Green'
       };
       annListArray.push(setArray);
     }
@@ -51,6 +53,16 @@ export const getTotalAnnCallService = filterData => dispatch => AnnotationApi.do
     .then((json) => {
       if (json.response && json.response.length > 0) {
         const annTotalList = json.response;
+        const annListArray = annStructureChange(annTotalList);
+        dispatch(getTotalAnnotationData(annListArray));
+      }
+    });
+
+export const getTotalAnnCallPxeService = filterData => dispatch => AnnotationApi.dogetTotalAnnotation(filterData)
+    .then(response => response.json())
+    .then((json) => {
+       if (json.rows && json.rows.length > 0) {
+        const annTotalList = json.rows;
         const annListArray = annStructureChange(annTotalList);
         dispatch(getTotalAnnotationData(annListArray));
       }

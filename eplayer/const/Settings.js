@@ -19,7 +19,8 @@ export const resources = {
     PiTokenRefreshTimeout:1800,
     secureApi      : true,
     idcDashboardEnabled : true,
-    zeppelinEnabled     : true
+    zeppelinEnabled     : true,
+    annotationServiceType: 'PXE'       // 'PXE' or 'SPECTRUM' -- either 3.2 or spectrum api  
   },
   links: {
     legalNotice    : 'https://media.pearsoncmg.com/cmg/NexText/about/legalnotice/index.html',

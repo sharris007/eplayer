@@ -29,6 +29,11 @@ export const getTotalAnndata = data => fetch(`${spectrumService[envType]}/${data
   headers: data.annHeaders
 });
 
+export const getPxeTotalAnndata = data => fetch(`${pxeService[envType]}/context/${data.context}/annotations?withShared=true`, {
+  method: 'GET',
+  headers: data.annHeaders
+});
+
 export const getAnndata = data => fetch(`${pxeService[envType]}/context/${data.context}/annotations?uri=${data.uri}`, {
   method: 'GET',
   headers: {
@@ -71,6 +76,12 @@ export const deleteAnnData = data =>
    method: 'DELETE',
    headers: data.annHeaders,
    body: JSON.stringify(data.body)
+ });
+
+export const deletePxeAnnData = data =>
+ fetch(`${pxeService[envType]}/context/${data.context}/annotations/${data.annId}`, {// eslint-disable-line no-undef
+   method: 'DELETE',
+   headers: data.annHeaders
  });
 
 // ----Play list toc----------------------------------
@@ -125,12 +136,33 @@ export const getTotalBookmarkData = data => fetch(`${spectrumService[envType]}/$
   }
 });
 
+export const getPxeTotalBookmarkData = data => fetch(`${pxeService[envType]}/context/${data.context}/identities/${data.user}/bookmarks`, {  // eslint-disable-line max-len
+  method: 'GET',
+  headers: {
+    Accept: 'application/json',
+    'Content-Type': 'application/json',
+    'Identity-Id': data.user,
+    'X-Authorization': data.xAuth
+  }
+});
+
+
 // Bookmark Api GET Call,
 export const getBookmarkData = data => fetch(`${spectrumService[envType]}/${data.context}/identities/${data.user}/notesX?pageId=${data.id}&isBookMark=true`, {  // eslint-disable-line max-len
   method: 'GET',
   headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json',
+    'X-Authorization': data.xAuth
+  }
+});
+
+export const getPxeBookmarkData = data => fetch(`${pxeService[envType]}/context/${data.context}/identities/${data.user}/bookmarks?uri=${data.id}`, {  // eslint-disable-line max-len
+  method: 'GET',
+  headers: {
+    Accept: 'application/json',
+    'Content-Type': 'application/json',
+    'Identity-Id': data.user,
     'X-Authorization': data.xAuth
   }
 });
@@ -149,6 +181,21 @@ export const postBookmarkData = postData => {
     body: Utilities.formBookmarkPayload(payload)
   });
 }
+
+export const postPxeBookmarkData = postData => {
+  let payload = Object.assign({},postData);
+  delete payload.xAuth;
+  return fetch(`${pxeService[envType]}/context/${postData.context}/identities/${postData.user}/bookmarks`, {  // eslint-disable-line max-len
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      'Identity-Id': postData.user,
+      'X-Authorization': postData.xAuth
+    },
+    body: JSON.stringify(payload)
+  });
+}
 // Bookmark Api Delete Call,
 
 export const deleteBookmarkData = deleteData => fetch(`${spectrumService[envType]}/${deleteData.context}/identities/${deleteData.user}/notesX?pageId=${deleteData.uri}&isBookMark=true`, {  // eslint-disable-line max-len
@@ -161,6 +208,14 @@ export const deleteBookmarkData = deleteData => fetch(`${spectrumService[envType
   body: JSON.stringify(deleteData.body)
 });
 
+export const deletePxeBookmarkData = deleteData => fetch(`${pxeService[envType]}/context/${deleteData.context}/identities/${deleteData.user}/bookmarks?uri=${deleteData.uri}`, {  // eslint-disable-line max-len
+  method: 'DELETE',
+  headers: {
+    Accept: 'application/json',
+    'Content-Type': 'application/json',
+    'X-Authorization': deleteData.xAuth
+  }
+});
 // Go to page Get call
 export const getGotoPage = data => fetch(`${pxeService[envType]}/context/${data.context}/navigation/?pageNumber=${data.pagenumber}&provider=${data.baseurl}`, {  // eslint-disable-line max-len
   method: 'GET',

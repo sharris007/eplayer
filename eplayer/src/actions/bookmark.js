@@ -32,6 +32,13 @@ export const getBookmarkCallService = filterData => dispatch => BookmarkApi.doGe
         }
     );
 
+export const getBookmarkCallPxeService = filterData => dispatch => BookmarkApi.doGetBookmark(filterData)
+    .then(
+        response => response.json()
+      )
+    .then(
+        json => dispatch(getBookmarkData(json))
+    );
 
  // POST call for Bookmark
 export const postBookmarkData = json => ({
@@ -57,6 +64,21 @@ export const postBookmarkCallService = filterData => dispatch => BookmarkApi.doP
         const bookmarks = [];
         bookmarks.push(resp[0].data);
         dispatch(getTotalBookmarkData(bookmarks));
+      }
+    });
+
+
+export const postBookmarkCallPxeService = filterData => dispatch => BookmarkApi.doPostBookmark(filterData)
+    .then(response => response.json())
+    .then((json) => {
+      dispatch(postBookmarkData(json));
+      const bookmarks = [];
+      bookmarks.push(json);
+      const bdata = {
+        bookmarks
+      };
+      const bookmarksDataMap = bookmarkStructureChange(bdata);
+      dispatch(getTotalBookmarkData(bookmarksDataMap));
       }
     });
 
@@ -90,3 +112,24 @@ export const getTotalBookmarkCallService = filterData => dispatch =>
       }
     }
     );
+
+export const getTotalBookmarkCallPxeService = filterData => dispatch =>
+    BookmarkApi.doTotalBookmark(filterData)
+    .then(response => response.json())
+    .then((json) => {
+      if (json.bookmarks && json.bookmarks.length) {
+        const bookmarksDataMap = bookmarkStructureChange(json);
+        dispatch(getTotalBookmarkData(bookmarksDataMap));
+      }
+    }
+    );
+
+  const bookmarkStructureChange = (blist) => {
+  const bookmarksDataMap = blist.bookmarks;
+  if (bookmarksDataMap && bookmarksDataMap.length > 0) {
+    for (let i = 0; i < bookmarksDataMap.length; i++) {
+      bookmarksDataMap[i].id = bookmarksDataMap[i].uri;
+    }
+  }
+  return bookmarksDataMap;
+};
