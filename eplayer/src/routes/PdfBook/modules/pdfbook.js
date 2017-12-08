@@ -1087,6 +1087,16 @@ export function loadcurrentPage(bookId,currentPageOrder,pdfpath,pagetype)
   };
 }
 
+export function fetchPdf(pdfAssetUrl)
+{
+  return dispatch =>
+     axios.get(pdfAssetUrl).then((response) => {
+      if (response.status >= 400) {
+        console.log(`Pdf Load Error`);
+      } 
+    });
+}
+
 // ------------------------------------
 // Action Handlers for every action type which is used above.
 // ------------------------------------

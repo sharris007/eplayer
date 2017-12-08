@@ -154,7 +154,35 @@ export class PdfBookReader extends Component {
     if (this.state.isFirstPageBeingLoad === true) {
       this.setState({ isFirstPageBeingLoad: false });
     }
+    const currPageIndex = this.state.currPageIndex;
+    let listOfPagesToLoad = [];
+    if(currPageIndex == 0)
+    {
+      listOfPagesToLoad.push(1);
+    }
+    else
+    {
+      listOfPagesToLoad.push(currPageIndex + 1);
+      if(currPageIndex !== 1)
+      {
+        listOfPagesToLoad.push(currPageIndex - 1);
+      }
+    }
+    listOfPagesToLoad.forEach((pageIndex) => {
+      this.loadPdfPath(pageIndex);
+    });
   }
+
+  loadPdfPath = (pageIndex) => {
+    const currentPage = find(pages, page => page.pageorder === pageIndex);
+    if(currentPage !== undefined) {
+      const pdfPath = currentPage.pdfPath;
+      const PDFassetURL = `${serverDetails}/ebookassets`
+                + `/ebook${this.props.data.book.bookinfo.book.globalbookid}/ipadpdfs/${pdfPath}`;
+      this.props.data.actions.fetchPdf(PDFassetURL);
+    }
+  }
+
   loadPageviaPDFJS = (PDFassetURL, pageLoadedComplete,scaleValue) => {
       PDFJS.getDocument(PDFassetURL).then(function(pdf) {
       pdf.getPage(1).then(function(page) {
