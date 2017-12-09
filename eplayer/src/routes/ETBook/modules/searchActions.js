@@ -11,7 +11,7 @@ const searchFilters = {
 const payLoad = { 
   "queryString":"",
   "indexType":"nextcontent",
-  "filter":["indexid:"], 
+  "filter":[], 
   "responseSize":50,
   "searchOnMultipleIndexes":"true",
   "searchType":"FACET",
@@ -26,14 +26,22 @@ function searchTitle(titles, key) {
 }
 function getSearchFormat(response) {
   const searchResults = [];
+  //const response = JSON.parse(localStorage.searchData);
   const titles = message;
   if (response.searchResults && response.searchResults.length > 0) {
     response.searchResults.forEach((result) => {
       let results = [];
       result.productsList.forEach((product) => {
+        let boldTxt = ''
+        if(product.source && product.source.url) {
+          let searchContent = product.matchedFields['term'] || product.matchedFields['chaptertitle'];
+          const startPos = searchContent.indexOf('<em>') +4;
+          boldTxt = searchContent.substring(startPos, searchContent.indexOf('</em>',startPos));
+        }
+        
         let obj = {
           content : product.matchedFields['term'] || product.matchedFields['chaptertitle'],
-          id: product.source && product.source.url ? product.source.url.split("OPS")[1] : '' 
+          id: product.source && product.source.url ? product.source.url.split("OPS")[1] + '*' + boldTxt : '' 
         };
         obj.content = obj.content.replace('[', '').replace(']', '');
         results.push(obj);
@@ -49,36 +57,34 @@ function getSearchFormat(response) {
   return searchResults;
 }
 
+function fetchSearchInfo(searchcontent, handleResults, payLoad) {
+  payLoad.queryString = searchcontent;
+  payLoad.filter=[];
+  payLoad.filter.push("indexid:"+window.localStorage.getItem('searchIndexId'));
+  fetch(resources.links.etextSearchUrl[domain.getEnvType()], 
+    {
+      method: 'POST',
+      headers: {
+        'application-id': 'ereader',
+        'Content-Type': 'application/json',
+        'X-Authorization': localStorage.getItem('secureToken')
+      },
+      body: JSON.stringify(payLoad)
+    }).then(response => response.json())
+   .then((response) => {
+     handleResults((getSearchFormat(response)));
+   });
+}
+
 const searchActions = {
 
   search(searchcontent, handleResults) {
-    /*searchFilters.filter = [window.localStorage.getItem('indexid')];
-    searchFilters.queryString = searchcontent;
-    searchFilters.responseSize = 100;
-    return {
-      type: 'SEARCH',
-      payload: clients.search.post('/search', searchFilters)
-      .then(response => handleResults(getSearchFormat(response.data.searchResults)))
-      .catch(error => error.response)
-    };*/
+    payLoad.responseSize = 100;
+    fetchSearchInfo(searchcontent, handleResults, payLoad);
   },
   autoComplete(searchcontent, handleResults) {
-    payLoad.queryString = searchcontent;
     payLoad.responseSize = 6;
-    payLoad.filter[0] += window.localStorage.getItem('searchIndexId');
-    fetch(resources.links.etextSearchUrl[domain.getEnvType()], 
-      {
-        method: 'POST',
-        headers: {
-          'application-id': 'ereader',
-          'Content-Type': 'application/json',
-          'X-Authorization': localStorage.getItem('secureToken')
-        },
-        body: JSON.stringify(payLoad)
-      }).then(response => response.json())
-     .then((response) => {
-       handleResults((getSearchFormat(response)));
-     })
+    fetchSearchInfo(searchcontent, handleResults, payLoad);
   }
 };
 

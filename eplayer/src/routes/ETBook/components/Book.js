@@ -89,7 +89,8 @@ export class Book extends Component {
       organizationId: '',
       prefOpen: false,
       searchOpen: false,
-      headerExists: false
+      headerExists: false,
+      rederPage : true
     };
     this.divGlossaryRef = '';
     this.wrapper = '';
@@ -898,14 +899,19 @@ export class Book extends Component {
     this.setState({ searchOpen: false, prefOpen: false });
   };
 
-  onSearchResultClick = (searchHref) => {
+  onSearchResultClick = (searchInfo) => {
+    this.setState({rederPage:false}, () => {
+      this.setState({rederPage:true})
+    });
     let bookObj = {};
-    this.state.pageDetails.playListURL.forEach(function(page) {
+    const searchHref = searchInfo.split('*')[0];
+    this.state.pageDetails.playListURL.forEach(function(page, i) {
       if(page.href && page.href.match(searchHref)) {
         bookObj = page;
+        console.log("onSearchResultClick : ", page, i);
       }
     });
-    this.goToPageCallback(bookObj.id, '', searchHref)
+    this.goToPageCallback(bookObj.id, '', [searchInfo.split('*')[1]]);
   }
   render() {
     const callbacks = {};
@@ -1227,7 +1233,7 @@ export class Book extends Component {
                     <div className="empty" />}
                 </div>
               </div>
-              {playlistReceived ?
+              {playlistReceived && this.state.rederPage ?
                 <div>
                   <VegaViewPager
                     contentType="PXE"
@@ -1236,7 +1242,7 @@ export class Book extends Component {
                     onPageRequest={
                       () => { }
                     }
-                    onPageLoad={this.onPageLoad}
+                    onPageLoad={this.onPageLoad.bind(this)}
                     onPageClick={this.onPageClick}
                     onAnnotationUpdate={this.onPageChange}
                     annSearchId={bootstrapParams.pageDetails.annId}
