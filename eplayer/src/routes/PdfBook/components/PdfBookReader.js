@@ -146,7 +146,7 @@ export class PdfBookReader extends Component {
     data.isLastPage = false;
     data.currentPageNo = currentPageIndex;
     this.setState({data});
-    this.loadPageviaPDFJS(PDFassetURL, this.pageLoadedComplete.bind(this),1);
+    this.loadPageviaPDFJS(PDFassetURL, this.pageLoadedComplete.bind(this),1.5);
   }
   pageLoadedComplete = () =>
   {
@@ -202,7 +202,6 @@ export class PdfBookReader extends Component {
         viewport: viewport
       };
       var canvasOffset = $(canvas).offset();
-      
       $('#text-layer').remove();
       var textLayerElement = document.createElement('div');
       textLayerElement.setAttribute("id","text-layer");
@@ -211,8 +210,8 @@ export class PdfBookReader extends Component {
       var $textLayerDiv = $('#text-layer').css({
             height : viewport.height+'px',
             width : viewport.width+'px',
-            top : canvasOffset.top,
-            left : canvasOffset.left
+            top : '0px',
+            left : '0px'
       });
       page.render(renderContext);
       page.getTextContent().then(function(textContent){
@@ -221,7 +220,6 @@ export class PdfBookReader extends Component {
                 pageIndex : 0,
                 viewport : viewport
             });
- 
             textLayer.setTextContent(textContent);
             textLayer.render();
       });
@@ -258,7 +256,7 @@ export class PdfBookReader extends Component {
     }
     data.currentPageNo = currentPageIndex;
     this.setState({ data });
-    this.loadPageviaPDFJS(PDFassetURL, this.pageLoadedComplete.bind(this),1);
+    this.loadPageviaPDFJS(PDFassetURL, this.pageLoadedComplete.bind(this),1.5);
     const viewer = this;
     $(document).on('keyup',function(evt) {
       if (evt.keyCode === 27 && $('#hotspot'))
@@ -1267,7 +1265,7 @@ printFunc = () => {
     if (this.state.pageLoaded !== true) {
       viewerClassName = 'hideViewerContent';
     } else {
-      viewerClassName = '';
+      viewerClassName = 'pdfContainer';
     }
     /* Here we are passing data, pages, goToPageCallback,
        getPrevNextPage method and isET1 flag in ViewerComponent
