@@ -216,10 +216,10 @@ export const getCourseCallService = (data, isFromCustomToc) => dispatch => Playl
       const studentCheck = resources.constants.zeppelinEnabled;
       const instructorCheck = resources.constants.idcDashboardEnabled;
       if (studentCheck && bookDetails.authgrouptype == 'student' && passportDetails && !passportDetails.access) {
+        console.log("INSIDE IF");
         redirectToZeppelin(bookDetails, passportDetails);
         return false;
-      }
-      else if (instructorCheck && bookDetails.authgrouptype == 'instructor' && !prdType) {
+      }      else if (instructorCheck && bookDetails.authgrouptype == 'instructor' && !prdType) {
         const productType = bookDetails.section.extras.metadata.productModel;
         const prodType = productType;
         const courseId = bookId;

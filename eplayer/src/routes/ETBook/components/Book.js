@@ -110,7 +110,9 @@ export class Book extends Component {
   componentWillMount = () => {
     let isSessionLoaded = false;
     let self = this;
+    let promiseCount = 0;
     const IntervalCheck = setInterval(() => {
+      let thisPromiseCount = ++promiseCount;
       // deeper code
       if (!isSessionLoaded) {
         let redirectCourseUrl = window.location.href;
@@ -120,55 +122,60 @@ export class Book extends Component {
           isSessionLoaded = true;
           piSession.getToken(function (result, userToken) {
             let getTokenValue;
-            console.log('userToken', userToken);
-            if (result === piSession['Success']) {
-              localStorage.setItem('secureToken', userToken);
-              getTokenValue = Promise.resolve(localStorage.getItem('secureToken'));
-              console.log("ifgetTokenValue", getTokenValue);
-              const piUserId = piSession.userId();
-              self.state.urlParams.user = piUserId;
-              clearInterval(IntervalCheck);
-            }
-            else{
-              console.log('inside else');
-              //function for getting current session PiToken
-              function loginCallback(result, token){
-                console.log('token', token);
-                console.log('result', result);
-                if( result === 'success'){
-                  localStorage.setItem('secureToken', token);
-                  console.log('else part userToken', localStorage.getItem('secureToken'));
-                  getTokenValue = Promise.resolve(localStorage.getItem('secureToken'));
-                }
+            function passTocken(value) {
+              console.log("value", value);
+              const getSecureToken = localStorage.getItem('secureToken');
+              console.log('getSecureToken', getSecureToken);
+              self.bookDetailsData = {
+                context: self.state.urlParams.context,
+                piToken: getSecureToken,
+                bookId: self.props.params.bookId
               }
-              piSession.login(redirectCourseUrl, 10, loginCallback);
+              if (window.location.pathname.indexOf('/eplayer/Course/') > -1) {
+                self.bookDetailsData.courseId = self.props.params.bookId;
+                self.courseBook = true;
+                self.props.dispatch(getCourseCallService(self.bookDetailsData));
+              } else {
+                self.props.dispatch(getBookPlayListCallService(self.bookDetailsData));
+              }
+              const getPreferenceData = {
+                userId: self.state.urlParams.user,
+                bookId: self.state.urlParams.context,
+                piToken: localStorage.getItem('secureToken')
+              }
+              self.props.dispatch(getPreferenceCallService(getPreferenceData));
+            };
+
+            function getToken() {
+              new Promise(function(resolve, reject) {
+                if (result === piSession['Success']) {
+                localStorage.setItem('secureToken', userToken);
+                console.log("ifgetTokenValue", localStorage.getItem('secureToken'));
+                const piUserId = piSession.userId();
+                self.state.urlParams.user = piUserId;
+                clearInterval(IntervalCheck);
+              }
+              else{
+                console.log('inside else');
+                //function for getting current session PiToken
+                function loginCallback(result, token){
+                  console.log('token', token);
+                  if( result === 'success'){
+                    localStorage.setItem('secureToken', token);
+                    console.log('else part userToken', localStorage.getItem('secureToken'));
+                  }
+                }
+                piSession.login(redirectCourseUrl, 10, loginCallback);
+              }
+               window.setTimeout(
+                function() {
+                    resolve(thisPromiseCount);
+                }, 1000);
+              }).then(function() {
+                passTocken(localStorage.getItem('secureToken'));
+              })
             }
-          
-        //if(getTokenValue){
-        getTokenValue.then((value) => {
-          console.log("value", value);
-          const getSecureToken = localStorage.getItem('secureToken');
-          console.log('getSecureToken', getSecureToken);
-          self.bookDetailsData = {
-            context: self.state.urlParams.context,
-            piToken: getSecureToken,
-            bookId: self.props.params.bookId
-          }
-          if (window.location.pathname.indexOf('/eplayer/Course/') > -1) {
-            self.bookDetailsData.courseId = self.props.params.bookId;
-            self.courseBook = true;
-            self.props.dispatch(getCourseCallService(self.bookDetailsData));
-          } else {
-            self.props.dispatch(getBookPlayListCallService(self.bookDetailsData));
-          }
-          const getPreferenceData = {
-            userId: self.state.urlParams.user,
-            bookId: self.state.urlParams.context,
-            piToken: localStorage.getItem('secureToken')
-          }
-          self.props.dispatch(getPreferenceCallService(getPreferenceData));
-          });
-    //  }
+          getToken();
         });
         }
       }
