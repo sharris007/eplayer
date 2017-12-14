@@ -1259,7 +1259,7 @@ export class Book extends Component {
       classname: this.state.classname,
       chapterTitle: this.state.currentPageTitle,
       pageTitle: this.state.currentPageTitle,
-      isChapterOpener: true
+      isChapterOpener: false
     };
     const hideIcons = {
       backNav: false,
