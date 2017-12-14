@@ -23,7 +23,7 @@ import { pageDetails, customAttributes, pageLoadData, pageUnLoadData, mathJaxVer
 import './Book.scss';
 import { browserHistory } from 'react-router';
 import { getTotalAnnCallService, getAnnCallService, postAnnCallService, putAnnCallService, deleteAnnCallService, getTotalAnnotationData, deleteAnnotationData, annStructureChange } from '../../../actions/annotation';
-import { getBookPlayListCallService, getPlaylistCallService, getBookTocCallService, getCourseCallService, putCustomTocCallService, gotCustomPlaylistCompleteDetails, tocFlag, getAuthToken } from '../../../actions/playlist';
+import { getBookPlayListCallService, getPlaylistCallService, getBookTocCallService, getCourseCallService, putCustomTocCallService, gotCustomPlaylistCompleteDetails, tocFlag, getAuthToken, getParameterByName, getCourseCallServiceForRedirect, updateProdType  } from '../../../actions/playlist';
 import { getGotoPageCall } from '../../../actions/gotopage';
 import { getPreferenceCallService, postPreferenceCallService } from '../../../actions/preference';
 import { loadPageEvent, unLoadPageEvent } from '../../../api/loadunloadApi';
@@ -170,7 +170,31 @@ export class Book extends Component {
           if (window.location.pathname.indexOf('/eplayer/Course/') > -1) {
             self.bookDetailsData.courseId = self.props.params.bookId;
             self.courseBook = true;
-            self.props.dispatch(getCourseCallService(self.bookDetailsData));
+            const url = window.location.href;
+            const n = url.search('prdType');
+            let prdType = '';
+            let iseSource = '';
+            debugger;
+            const checkSource = url.search('Source=ISE');
+            if (n > 0) {
+              const urlSplit = url.split('prdType=');
+              prdType = getParameterByName('prdType');
+              console.log("prdType", prdType);
+              self.bookDetailsData.prdType = prdType;
+              self.props.dispatch(updateProdType(prdType));
+            }
+            if (!prdType) {
+              localStorage.setItem('backUrl', '');
+            }
+            if (checkSource > 0){
+              iseSource = true;
+            }
+
+            if( (resources.constants.idcDashboardEnabled && !prdtype) || ( resources.constants.iseEnabled && !isetype) ) {
+              self.props.dispatch(getCourseCallServiceForRedirect(self.bookDetailsData));
+            }
+            else{ self.props.dispatch(getCourseCallService(self.bookDetailsData)); }
+
           } else {
             self.props.dispatch(getBookPlayListCallService(self.bookDetailsData));
           }

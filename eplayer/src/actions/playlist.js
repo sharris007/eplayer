@@ -20,6 +20,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import { browserHistory } from 'react-router';
 import find from 'lodash/find';
 import Utilities from '../components/utils';
+import { getPreferenceCallService } from './preference';
 // GET Book Details
 export const getPlaylistCompleteDetails = json => ({
   type: typeConstants.GET_PLAYLIST,
@@ -60,7 +61,7 @@ const gettingTocResponse = () => ({
   updatedToc: false
 });
 
-const updateProdType = prodType => ({
+export const updateProdType = prodType => ({
   type: 'UPDATE_PROD_TYPE',
   prodType
 });
@@ -215,7 +216,7 @@ export const tocFlag = () => (dispatch) => {
   return Promise.resolve();
 };
 
-function getParameterByName(name, url) {
+export const getParameterByName = (name, url) => {
   if (!url) url = window.location.href;
   name = name.replace(/[\[\]]/g, '\\$&');
   const regex = new RegExp(`[?&]${name}(=([^&#]*)|&|#|$)`);
@@ -225,6 +226,28 @@ function getParameterByName(name, url) {
   return decodeURIComponent(results[2].replace(/\+/g, ' '));
 }
 
+export const getCourseCallServiceForRedirect = (data) => dispatch => PlaylistApi.doGetCourseDetailsForRedirct(data)
+  .then(response => response.json())
+  .then((response) => {
+      if (response.status >= 400) {
+        browserHistory.push(`/eplayer/error/${response.status}`);
+        return false;
+      }
+      const getSectionDetails = response.userCourseSectionDetail;
+      const getBookId = getSectionDetails.section.sectionId;
+      const studentCheck = resources.constants.iseEnabled;
+      const instructorCheck = resources.constants.idcDashboardEnabled;
+      if (studentCheck && getSectionDetails.authgrouptype == 'student') {
+         //redirectToZeppelin(bookDetails, passportDetails);
+        redirectToIse(getBookId);
+      }
+      else if (instructorCheck && getSectionDetails.authgrouptype == 'instructor') {
+        const productType = getSectionDetails.section.extras.metadata.productModel;
+        const prodType = data.prdType;
+        const courseId = getBookId;
+        redirectToIDCDashboard(prodType, courseId);
+      }
+});
 
 export const getCourseCallService = (data, isFromCustomToc) => dispatch => PlaylistApi.doGetCourseDetails(data)
   .then(response => response.json())
@@ -252,44 +275,19 @@ export const getCourseCallService = (data, isFromCustomToc) => dispatch => Playl
     bookId = bookDetails.section.sectionId;
 
     if (!isFromCustomToc) {
-      const passportDetails = response.passportPermissionDetail;
-      const url = window.location.href;
-      const n = url.search('prdType');
-      let prdType = '';
-      let iseSource = '';
-      const checkSource = url.search('etext-ise');
-      if (n > 0) {
-        const urlSplit = url.split('prdType=');
-        prdType = getParameterByName('prdType');
-        dispatch(updateProdType(prdType));
+      const getPreferenceData = {
+        userId: data.userId,
+        bookId: bookId,
+        piToken: localStorage.getItem('secureToken')
       }
-      if (!prdType) {
-        localStorage.setItem('backUrl', '');
-      }
-      if (checkSource > 0){
-        iseSource = true;
-      }
-      const studentCheck = resources.constants.zeppelinEnabled;
-      const instructorCheck = resources.constants.idcDashboardEnabled;
-      if (studentCheck && bookDetails.authgrouptype == 'student' && !iseSource) {
-         //redirectToZeppelin(bookDetails, passportDetails);
-        redirectToIse(bookId);
-        return false;
-      }
-      else if (instructorCheck && bookDetails.authgrouptype == 'instructor' && !prdType) {
-        const productType = bookDetails.section.extras.metadata.productModel;
-        const prodType = productType;
-        const courseId = bookId;
-        redirectToIDCDashboard(prodType, courseId);
-        return false;
-      }
-
+      dispatch(getPreferenceCallService(getPreferenceData));
+      const url =window.location.href;
       const getsourceUrl = localStorage.getItem('sourceUrl');
       let getOriginUrl = localStorage.getItem('backUrl');
       if (getsourceUrl === 'bookshelf') {
         getOriginUrl = `${resources.links.authDomainUrl[domain.getEnvType()]}/eplayer`;
       }
-      else if (!getsourceUrl && !prdType) {
+      else if (!getsourceUrl && !data.prdType) {
         getOriginUrl = resources.links.consoleUrl[domain.getEnvType()];
       }
       localStorage.setItem('sourceUrl', '');
@@ -340,7 +338,7 @@ export const getCourseCallService = (data, isFromCustomToc) => dispatch => Playl
         /*Custom dimension for initial Master Play List*/
         dataLayer.push(dataLayerObj);
       });
-  }
+    }
 
   );
 
