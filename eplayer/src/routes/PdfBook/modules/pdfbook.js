@@ -838,7 +838,7 @@ export function fetchHighlightUsingReaderApi(bookId, courseId, userid, roletypei
             hlObj.pageId = pageid;
             hlObj.courseId = highlight.courseId;
             hlObj.shared = highlight.shared;
-            hlObj.highlightHash = highlight.highlightHash;
+            hlObj.highlightHash = highlight.meta.highLightMetadata;
             hlObj.comment = highlight.note;
             hlObj.text = highlight.selectedText;
             hlObj.color = highlight.colour;
@@ -912,7 +912,7 @@ export function saveHighlightUsingReaderApi(userId, bookId, pageId, pageNo,
           pageId: pageid,
           courseId: highlightResponse.courseId,
           shared: highlightResponse.shared,
-          highlightHash: highlightResponse.highlightHash,
+          highlightHash: highlightResponse.meta.highLightMetadata,
           comment: highlightResponse.note,
           text: highlightResponse.selectedText,
           color: highlightResponse.colour,

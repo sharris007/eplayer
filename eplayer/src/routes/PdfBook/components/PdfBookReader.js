@@ -66,6 +66,7 @@ export class PdfBookReader extends Component {
     document.body.addEventListener('contentLoaded', this.parseDom);
     document.body.addEventListener('navChanged', this.navChanged);
     pdfAnnotatorInstance.init();
+    annotator_poc_instance.init(this.saveHighlight.bind(this),this.deleteHighlight.bind(this));
   }
  /* componentDidMount() is invoked immediately after a component is mounted. */
   componentDidMount() {
@@ -154,6 +155,7 @@ export class PdfBookReader extends Component {
     if (this.state.isFirstPageBeingLoad === true) {
       this.setState({ isFirstPageBeingLoad: false });
     }
+    setTimeout(this.displayHighlight, 1000);
     const currPageIndex = this.state.currPageIndex;
     let listOfPagesToLoad = [];
     if(currPageIndex == 0)
@@ -195,6 +197,8 @@ export class PdfBookReader extends Component {
       pdfjsViewer.appendChild(canvasElement);
       var canvas = document.getElementById('the-canvas');
       var context = canvas.getContext('2d');
+      viewport.height = Math.round(viewport.height);
+      viewport.width = Math.round(viewport.width);
       canvas.height = viewport.height;
       canvas.width = viewport.width;
       var renderContext = {
@@ -527,7 +531,7 @@ export class PdfBookReader extends Component {
     }
     // __pdfInstance.setCurrentZoomLevel(currZoomLevel);
     this.loadPageviaPDFJS(this.props.data.book.currentPageInfo.pdfpath,this.pageLoadedComplete.bind(this),currZoomLevel);
-    this.displayHighlight();
+    // this.displayHighlight();
     if(this.props.data.book.regions.length > 0 )
     {
       __pdfInstance.displayRegions(this.props.data.book.regions,this.props.data.book.bookFeatures,_);
@@ -1078,7 +1082,7 @@ handleRegionClick(hotspotID) {
     }
   }
 /* Method created for displaying the selected highLights. */
-  saveHighlight(currentHighlight, highLightMetadata) {
+/*  saveHighlight(currentHighlight, highLightMetadata) {
     const currentPageId = this.state.currPageIndex;
     let courseId = _.toString(this.props.data.book.bookinfo.book.activeCourseID);
     if (courseId === undefined || courseId === '' || courseId === null) {
@@ -1103,6 +1107,34 @@ handleRegionClick(hotspotID) {
       meta, _.toString(currentPageId)).then((newHighlight) => {
         pdfAnnotatorInstance.setCurrentHighlight(newHighlight);
         this.displayHighlight();
+      });
+  }*/
+  saveHighlight(highLightMetadata) {
+    const currentPageId = this.state.currPageIndex;
+    let courseId = _.toString(this.props.data.book.bookinfo.book.activeCourseID);
+    if (courseId === undefined || courseId === '' || courseId === null) {
+      courseId = -1;
+    }
+    const note = highLightMetadata.text;
+    const meta = {
+      userroleid: _.toString(this.props.data.book.bookinfo.book.roleTypeID),
+      userbookid: _.toString(this.props.data.book.bookinfo.userbook.userbookid),
+      bookeditionid: _.toString(this.props.data.book.bookinfo.book.bookeditionid),
+      roletypeid: _.toString(this.props.data.book.bookinfo.book.roleTypeID),
+      colorcode: highLightMetadata.colorCode,
+      author: authorName,
+      highLightMetadata: highLightMetadata
+    };
+    const selectedText = highLightMetadata.quote;
+    const isShared = highLightMetadata.shareable;
+    const currentPage = find(pages, page => page.pageorder === currentPageId);
+    this.props.data.actions.saveHighlightUsingReaderApi(_.toString(this.props.data.book.userInfo.userid),
+      _.toString(this.props.data.location.query.bookid), _.toString(currentPage.pageid),
+      _.toString(currentPage.pagenumber), _.toString(courseId), isShared, "highLightMetadata",
+      note, selectedText, highLightMetadata.colorCode,
+      meta, _.toString(currentPageId)).then((newHighlight) => {
+        // pdfAnnotatorInstance.setCurrentHighlight(newHighlight);
+        this.displayHighlight1(newHighlight);
       });
   }
 
@@ -1137,7 +1169,7 @@ handleRegionClick(hotspotID) {
   }
 
   /* Method for displaying the Highlight already stored. */
-  displayHighlight = () => {
+  /*displayHighlight = () => {
     const currentPageId = this.state.currPageIndex;
     const highlightList = [];
     let noteIconsList = [];
@@ -1161,12 +1193,55 @@ handleRegionClick(hotspotID) {
     __pdfInstance.restoreHighlights(highlightList, this.deleteHighlight);
     __pdfInstance.reRenderHighlightCornerImages(noteIconsList);
     this.setState({ highlightList:highlightList });
+  }*/
+  displayHighlight = () => {
+    const currentPageId = this.state.currPageIndex;
+    const highlightList = [];
+    this.props.data.book.annTotalData.forEach((annotation) => {
+      if (annotation.pageId === currentPageId) {
+        if(annotation.shared){
+          annotation.color = '#00a4e0';
+          annotation.meta.colorcode = '#00a4e0';
+        }
+        else{
+          annotation.color = annotation.originalColor;
+          annotation.meta.colorcode = annotation.originalColor;
+        }
+        let higlightData = annotation.highlightHash;
+        higlightData.id =  annotation.id;
+        higlightData.context = annotation.bookId;
+        higlightData.user = annotation.userId;
+        highlightList.push(higlightData);
+      }
+    });
+    annotator_poc_instance.loadPageAnnotations(highlightList);
+    this.setState({ highlightList:highlightList });
+  }
+  displayHighlight1 = (annotation) => {
+    let highlightList = [];
+    const currentPageId = this.state.currPageIndex;
+    if (annotation.pageId === currentPageId) {
+      if(annotation.shared){
+        annotation.color = '#00a4e0';
+        annotation.meta.colorcode = '#00a4e0';
+      }
+      else{
+        annotation.color = annotation.originalColor;
+        annotation.meta.colorcode = annotation.originalColor;
+      }
+      let higlightData = annotation.highlightHash;
+      higlightData.id =  annotation.id;
+      higlightData.context = annotation.bookId;
+      higlightData.user = annotation.userId;
+      highlightList.push(higlightData);
+      annotator_poc_instance.loadPageAnnotations(highlightList);
+    }
   }
   /* Method for delete Highlight via passing the id of selected area. */
   deleteHighlight = (id) => {
     __pdfInstance.removeHighlightElement(id);
     this.props.data.actions.removeHighlightUsingReaderApi(id).then(() => {
-      this.displayHighlight();
+      // this.displayHighlight();
     });
   }
   /* Method to show or hide hotspots. */
