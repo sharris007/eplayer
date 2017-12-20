@@ -149,14 +149,22 @@ export class Book extends Component {
             }
             else{
               //function for getting current session PiToken
-              function loginCallback(result, token){
-                console.log('result', result);
-                if( result === 'success'){
-                  localStorage.setItem('secureToken', token);
-                  getTokenValue = Promise.resolve(localStorage.getItem('secureToken'));
-                }
+              if(piSession && piSession.currentToken() !== null)
+              {
+                localStorage.setItem('secureToken', piSession.currentToken());
+                getTokenValue = Promise.resolve(piSession.currentToken());
               }
-              piSession.login(redirectCourseUrl, 10, loginCallback);
+              else
+              {
+                function loginCallback(result, token){
+                  console.log('result', result);
+                  if( result === 'success'){
+                    localStorage.setItem('secureToken', token);
+                    getTokenValue = Promise.resolve(localStorage.getItem('secureToken'));
+                  }
+                }
+                piSession.login(redirectCourseUrl, 10, loginCallback);
+              }
             }
           
         //if(getTokenValue){
