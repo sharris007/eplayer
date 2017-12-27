@@ -1325,6 +1325,7 @@ export class Book extends Component {
     };
     return (
       <div onClick={this.closeHeaderPopups}>
+        {!playlistReceived?<CircularProgress className="circularProgress" />:null}
         {playlistReceived &&
           <LearningContextProvider
             contextId="ddddd"
@@ -1407,7 +1408,7 @@ export class Book extends Component {
                     pagePlayList={this.props.playListWithOutDuplicates}
                     currentPageId={bootstrapParams.pageDetails.currentPageURL.id}
                   />
-                </div> : <div><CircularProgress className="circularProgress" /></div>
+                </div> : null
               }
             </div>
           </LearningContextProvider>}
