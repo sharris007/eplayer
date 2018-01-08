@@ -74,7 +74,6 @@ class ErrorPage extends React.Component {
           modal={true}
           open={this.state.open}
           onRequestClose={this.handleClose}
-          contentStyle = {{'max-width':'850px'}}
         >
          <div>You are not authorized to request this resource. You may see this message if you try to access a recently created course or follow a link to a course where you are not enrolled. Go to the My Courses list and try again. If this issue persists and you believe you should have access to this resource, please contact support with following information:</div>
          <div className="error-response">{JSON.stringify(bookdetailsdata)}</div>
