@@ -159,9 +159,9 @@ export const contentUrl = {
     prod         :"content.openclass.com"
   },
   SecuredUrl: {
-    local        :"content.stg-openclass.com",
-    dev          :"content.stg-openclass.com", //etext-dev.pearson.com
-    qa           :"content.stg-openclass.com",  //etext-qa-stg.pearson.com
+    local        :"etext-dev.pearson.com",
+    dev          :"etext-dev.pearson.com", //etext-dev.pearson.com
+    qa           :"etext-qa-stg.pearson.com",  //etext-qa-stg.pearson.com
     stage        :"etext-stg.pearson.com", //etext-qa-stg.pearson.com
     prod         :"etext.pearson.com" //etext.pearson.com
   }
