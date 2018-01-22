@@ -18,9 +18,9 @@ export const resources = {
     TextSearchLimit: 100,
     PiTokenRefreshTimeout:1800,
     secureApi      : true,
-    idcDashboardEnabled : true,
-    iseEnabled : true,
-    zeppelinEnabled     : true,
+    idcDashboardEnabled : false,
+    iseEnabled : false,
+    zeppelinEnabled     : false,
     isDisableAnnotation : false
   },
   links: {
@@ -159,9 +159,9 @@ export const contentUrl = {
     prod         :"content.openclass.com"
   },
   SecuredUrl: {
-    local        :"etext-dev.pearson.com",
-    dev          :"etext-dev.pearson.com", //etext-dev.pearson.com
-    qa           :"etext-qa-stg.pearson.com",  //etext-qa-stg.pearson.com
+    local        :"content.stg-openclass.com",
+    dev          :"content.stg-openclass.com", //etext-dev.pearson.com
+    qa           :"content.stg-openclass.com",  //etext-qa-stg.pearson.com
     stage        :"etext-stg.pearson.com", //etext-qa-stg.pearson.com
     prod         :"etext.pearson.com" //etext.pearson.com
   }

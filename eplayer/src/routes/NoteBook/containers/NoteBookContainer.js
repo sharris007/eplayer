@@ -11,7 +11,7 @@ class NoteBookContainer extends React.Component {
     super(props);
     const params = {
       context: props.params.bookId,
-      user: 'ffffffff57a9f814e4b00d0a20bf6029', // piSession.userId(),
+      user: 'ffffffff59cbc04be4b09efb34405e52', // piSession.userId(),
       xAuth: localStorage.getItem('secureToken'),
       annHeaders: {
         Accept: 'application/json',
@@ -81,7 +81,7 @@ class NoteBookContainer extends React.Component {
         headers: myHeaders,
         body: JSON.stringify(payload)
       };
-      const url = `https://spectrum-qa.stg-openclass.com/api/context/${this.props.params.bookId}/identities/ffffffff59b8c629e4b09efb34405de7/notesX/`;
+      const url = `https://spectrum-qa.stg-openclass.com/api/context/${this.props.params.bookId}/identities/ffffffff59cbc04be4b09efb34405e52/notesX/`;
       fetch(url, myInit).then(response => response.json()).then((res) => {
         // console.log(res);
         notes.splice(index, 1, res.response[0]);
@@ -89,7 +89,7 @@ class NoteBookContainer extends React.Component {
       });
     } else if (msg === 'DELETE') {
       const index = _.findIndex(this.state.notes, note => note.id === data.id);
-      const url = `https://spectrum-qa.stg-openclass.com/api/context/${this.props.params.bookId}/identities/ffffffff59b8c629e4b09efb34405de7/notesX/`;
+      const url = `https://spectrum-qa.stg-openclass.com/api/context/${this.props.params.bookId}/identities/ffffffff59cbc04be4b09efb34405e52/notesX/`;
       const payload = { ids: [data.id] };
       const myInit = { method: 'DELETE',
         headers: myHeaders,
