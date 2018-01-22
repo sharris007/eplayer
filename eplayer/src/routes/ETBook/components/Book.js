@@ -1238,12 +1238,12 @@ export class Book extends Component {
         }
       });
       if (this.userType === 'instructor') {
-        annJsPath = 'eplayer/annotation-lib/instructor-annotator/instructor-annotator.js';
-        annCssPath = 'eplayer/annotation-lib/instructor-annotator/instructor-annotator.css';
+        annJsPath = 'annotation-lib/instructor-annotator/instructor-annotator.js';
+        annCssPath = 'annotation-lib/instructor-annotator/instructor-annotator.css';
       }
       else {
-        annJsPath = 'eplayer/annotation-lib/annotator.js';
-        annCssPath = 'eplayer/annotation-lib/annotator.css';
+        annJsPath = 'annotation-lib/annotator.js';
+        annCssPath = 'annotation-lib/annotator.css';
       }
       productData = {
         product: 'PXE',
@@ -1253,7 +1253,7 @@ export class Book extends Component {
           auth: {
             get: function () {
               return {
-                id: 'ffffffff55099736e4b0c2dbd412938c',
+                id: 'ffffffff56b90bd7e4b0f8eeaa4655d4',
                 token: 'eyJhbGciOiJSUzUxMiIsImtpZCI6ImsxMDY5NDgxOTAifQ.eyJleHAiOjE1MDM1MzI3NTQsInN1YiI6ImZmZmZmZmZmNTUwOTk3MzZlNGIwYzJkYmQ0MTI5MzhjIiwic2Vzc2lkIjoiMTNlZGY3NDI2ZWU3NDc0YTk0ZTNkMTBjMTc3YzY1ODEiLCJoY2MiOiJVUyIsImNsaWVudF9pZCI6IkdzNW5DR3FvcXdkaWNjSlNrVllBaXZISzY1UENiUTBtIiwidHlwZSI6ImF0IiwiaWF0IjoxNTAzNTMwOTUzfQ.Pe5nKOmG_UW9WI3iTxdMncgchLjCOSi3Az5f7eRV57_LLUL1gdGL_rJ7kqi9munP_lR9vvUfVH4ZI1-qi18ssssZN1QqvtKVxhOlacVILvYgkOiv0EcnoNpuKwZn2pRy0HFpQizswCWRjhh4LgJzVjP7vrt9CFYw0jRBas88KDw'
               }
             }
@@ -1266,22 +1266,22 @@ export class Book extends Component {
           }
         },
         pxeOptions: {
-          script: `${window.location.origin}/eplayer/pxe_scripts/bundle.js`,
-          style: `${window.location.origin}/eplayer/pxe_scripts/style.css`,
+          script: `${window.location.origin}/pxe_scripts/bundle.js`,
+          style: `${window.location.origin}/pxe_scripts/style.css`,
           scriptsToReplace: [
             {
               old: 'https://revel-content.openclass.com/content/amc/amc-bootstrap.js',
-              new: `${window.location.origin}/eplayer/bxix_scripts/brix.js`
+              new: `${window.location.origin}/bxix_scripts/brix.js`
             }
           ],
-          scriptsToAdd: [`${window.location.origin}/eplayer/annotation-lib/jquery.min.js`,
+          scriptsToAdd: [`${window.location.origin}/annotation-lib/jquery.min.js`,
           `${window.location.origin}/${annJsPath}`,
             getMathjaxJs],
           stylesToAdd: [`${window.location.origin}/${annCssPath}`]
         },
         metaData: {
           brixClient: 'https://grid-static-dev.pearson.com/11-thinclient/0.0.0/js/brixClient-3.6.1-exp.5129.0.js',
-          brixCss: `${window.location.origin}/eplayer/bxix_scripts/brix.css`,
+          brixCss: `${window.location.origin}/bxix_scripts/brix.css`,
           environment: 'LOCAL',
           pxeUserPreference: {
             theme: bootstrapParams.pageDetails.bgColor,
