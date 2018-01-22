@@ -245,10 +245,7 @@
   },
   "jest": {
     "moduleFileExtensions": [
-      "es6",
-      "js",
-      "jsx",
-      "json"
+      "js"
     ],
     "collectCoverage": true,
     "testEnvironment": "jsdom"
